@@ -16,6 +16,9 @@ SALInstaller/Libs/*
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Visual studio severity config
+*.editorconfig
+
 # Mono auto generated files
 mono_crash.*
 
