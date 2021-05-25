@@ -1,12 +1,12 @@
 <p align="center"><a href="https://www.nexusmods.com//mods/1&game_id=3759" target="_blank"><img src="https://i.imgur.com/rOaoLGA.png"></a></p>
 
-# Smol Ame Loader #
+# Smol Ame Loader Thing #
 A completely open source mod loader and modding framework for the game Smol Ame
 
 ## Building ##
 Follow the **wiki** for a setup guide.
 
-## Developing with SAL ##
+## Developing with SALT ##
 N/A
 
 ## Acknowledgements ##
