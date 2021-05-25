@@ -1,7 +1,7 @@
-﻿using SAL.Editor.Runtime;
+﻿using SALT.Editor.Runtime;
 using System;
 
-namespace SAL.Editor
+namespace SALT.Editor
 {
     internal class ResolvedInstance
     {

@@ -3,16 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using SAL.Utils;
+using SALT.Utils;
 
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
     public static class GameObjectExtensions
     {
+        public static string GetPath(this GameObject gameObject) => gameObject.transform.GetHierarchyString();
         public static T Initialize<T>(this T obj, System.Action<T> action) where T : UnityEngine.Object
         {
             action(obj);
             return obj;
+        }
+
+        public static void SetActiveRecursivelyExt(this GameObject obj, bool state)
+        {
+            obj.SetActive(state);
+            foreach (Transform child in obj.transform)
+            {
+                SetActiveRecursivelyExt(child.gameObject, state);
+            }
+        }
+
+        public static void SetChildActive(this GameObject obj,string name, bool state)
+        {
+            if (obj.name.ToLower() == name.ToLower())
+                obj.SetActive(state);
+            else
+                obj.FindChild(name, true).SetActive(state);
         }
 
         public static T GetComponentInParent<T>(this GameObject gameObject, bool includeInactive = false) where T : Component => ((IEnumerable<T>)gameObject.GetComponentsInParent<T>(includeInactive)).FirstOrDefault<T>();
@@ -205,7 +223,7 @@ namespace SAL.Extensions
             GameObject prefabCopy = obj.CreatePrefabCopy();
             GameObject child = prefabCopy.FindChild(name);
             child.SetActive(false);
-            child.transform.parent = (Transform)null;
+            child.transform.SetParent(null);
             GameObjectUtils.Prefabitize(child);
             UnityEngine.Object.Destroy((UnityEngine.Object)prefabCopy);
             return child;
@@ -274,6 +292,8 @@ namespace SAL.Extensions
             }
         }
 
+        public static void Destroy(this GameObject go) => UnityEngine.Object.Destroy(go);
+
         public static void RemoveComponent<T>(this GameObject go) where T : Component => UnityEngine.Object.Destroy(go.GetComponent<T>());
 
         public static T AddComponent<T>(this GameObject go, T toAdd) where T : Component => go.AddComponent<T>().GetCopyOf<T>(toAdd);
@@ -282,6 +302,12 @@ namespace SAL.Extensions
         {
             child.transform.SetParent(obj.transform);
         }
+
+        public static void AddChild(this GameObject obj, GameObject child, bool worldPositionStays)
+        {
+            child.transform.SetParent(obj.transform, worldPositionStays);
+        }
+
         public static GameObject[] GetChildren(this GameObject obj, bool noDive = false)
         {
             List<GameObject> gameObjectList = new List<GameObject>();

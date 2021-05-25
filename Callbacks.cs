@@ -1,13 +1,23 @@
 ﻿using UnityEngine;
 
-namespace SAL
+namespace SALT
 {
+    /// <summary>
+    /// Class with events
+    /// </summary>
     public static class Callbacks
     {
-        public static event Callbacks.OnSaveGameLoadedDelegate OnSaveGameLoaded;
-
-        public static event Callbacks.OnSaveGameLoadedDelegate PreSaveGameLoad;
-
+        /// <summary>
+        /// Event for when the main menu is loaded.
+        /// </summary>
+        public static event Callbacks.OnLevelLoadedDelegate OnMainMenuLoaded;
+        /// <summary>
+        /// Event for when any level, that isn't the main menu, is loaded.
+        /// </summary>
+        public static event Callbacks.OnLevelLoadedDelegate OnLevelLoaded;
+        /// <summary>
+        /// Event that's called when <see cref="MainScript.Start"/> ends.
+        /// </summary>
         internal static event Callbacks.OnGameContextReadyDelegate OnGameContextReady;
 
         internal static void OnLoad()
@@ -21,24 +31,23 @@ namespace SAL
         internal static void OnSceneLoaded()
         {
             if (Levels.isMainMenu())
+            {
+                Callbacks.OnLevelLoadedDelegate onMainMenuLoaded = Callbacks.OnMainMenuLoaded;
+                if (onMainMenuLoaded == null)
+                    return;
+                onMainMenuLoaded();
                 return;
-            Callbacks.OnSaveGameLoadedDelegate onSaveGameLoaded = Callbacks.OnSaveGameLoaded;
-            if (onSaveGameLoaded == null)
+            }
+            Callbacks.OnLevelLoadedDelegate onLevelLoaded = Callbacks.OnLevelLoaded;
+            if (onLevelLoaded == null)
                 return;
-            onSaveGameLoaded();
+            onLevelLoaded();
         }
 
-        internal static void PreSceneLoad()
-        {
-            if (Levels.isMainMenu())
-                return;
-            Callbacks.OnSaveGameLoadedDelegate preSaveGameLoad = Callbacks.PreSaveGameLoad;
-            if (preSaveGameLoad == null)
-                return;
-            preSaveGameLoad();
-        }
-
-        public delegate void OnSaveGameLoadedDelegate();
+        /// <summary>
+        /// Delegate for when a level is loaded.
+        /// </summary>
+        public delegate void OnLevelLoadedDelegate();
 
         internal delegate void OnGameContextReadyDelegate();
     }

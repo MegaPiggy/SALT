@@ -1,7 +1,7 @@
-﻿using SAL.Extensions;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace System.Collections.Generic
+namespace SALT.Extensions
 {
     public static class TableExtensions
     {
@@ -9,7 +9,7 @@ namespace System.Collections.Generic
         {
             if (array != null && capacity <= array.Length)
                 return;
-            Array.Resize<T>(ref array, capacity.NextPowerOfTwo());
+            System.Array.Resize<T>(ref array, capacity.NextPowerOfTwo());
         }
 
         public static void ArrayExpand<T>(this T[] array, int capacity)

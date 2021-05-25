@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SAL
+namespace SALT
 {
     public interface InputDetector : UISDetector
     {

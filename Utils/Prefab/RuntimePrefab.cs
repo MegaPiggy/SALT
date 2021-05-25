@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SAL.Utils.Prefab
+namespace SALT.Utils.Prefab
 {
     public class RuntimePrefab : MonoBehaviour
     {

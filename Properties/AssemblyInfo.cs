@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SAL")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("SALT")]
+[assembly: AssemblyDescription("A mod loader and modding framework for Smol Ame")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SAL")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
+[assembly: AssemblyCompany("MegaPiggy")]
+[assembly: AssemblyProduct("SALT")]
+[assembly: AssemblyCopyright("MegaPiggy © All Rights Reserved")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

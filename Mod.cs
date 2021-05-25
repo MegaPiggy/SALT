@@ -1,10 +1,11 @@
 ﻿using HarmonyLib;
-using SAL.Utils;
+using SALT.Config;
+using SALT.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace SAL
+namespace SALT
 {
     internal class Mod
     {
@@ -15,6 +16,8 @@ namespace SAL
         public ModInfo ModInfo { get; private set; }
 
         public string Path { get; private set; }
+
+        public List<ConfigFile> Configs { get; private set; } = new List<ConfigFile>();
 
         public Type EntryType { get; private set; }
 
@@ -37,7 +40,7 @@ namespace SAL
 
         public void CreateHarmonyInstance(string name) => this.HarmonyInstance = new Harmony(name);
 
-        public string GetDefaultHarmonyName() => "net." + (this.ModInfo.Author == null || this.ModInfo.Author.Length == 0 ? "SAL" : Regex.Replace(this.ModInfo.Author, "\\s+", "")) + "." + this.ModInfo.Id;
+        public string GetDefaultHarmonyName() => "net." + (this.ModInfo.Author == null || this.ModInfo.Author.Length == 0 ? "SALT" : Regex.Replace(this.ModInfo.Author, "\\s+", "")) + "." + this.ModInfo.Id;
 
         public Mod(ModInfo info, IModEntryPoint entryPoint)
         {

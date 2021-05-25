@@ -19,12 +19,15 @@ public class Levels
     {
         replacedScene = replaced;
         newScene = next;
+        SALT.Callbacks.OnSceneLoaded();
     }
 
     public static string LevelName => LevelLoader.levelName;
 
     public static bool isMainMenu() => Levels.IsLevel(MAIN_MENU);
 
+    public static bool isTitleScreen() => isMainMenu() && MainScript.title;
+    
     public static bool IsLevel(string name) => SceneManager.GetActiveScene().name == name || SceneManager.GetActiveScene().buildIndex == 0;
 
     public static bool isOffice() => SceneManager.GetActiveScene().buildIndex == 1;

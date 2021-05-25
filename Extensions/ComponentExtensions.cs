@@ -5,7 +5,7 @@ using System.Reflection;
 using Object = UnityEngine.Object;
 using UnityEngine;
 
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
     public static class ComponentExtensions
     {

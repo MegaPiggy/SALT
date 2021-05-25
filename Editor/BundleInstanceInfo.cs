@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SAL.Editor
+namespace SALT.Editor
 {
     public struct BundleInstanceInfo : IInstanceInfo
     {

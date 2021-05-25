@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using HarmonyLib;
-using SAL.Extensions;
+using SALT.Extensions;
 
-namespace SAL
+namespace SALT
 {
     public class UserInputService : MonoBehaviour
     {
@@ -13,6 +13,9 @@ namespace SAL
         protected Vector2 mousePos = Vector2.zero;
 
         internal static string Platform { get; private set; }
+
+        private static bool mouseVisible = false;
+        public static bool MouseVisible { get => mouseVisible; set => mouseVisible = value;  }
 
         public static int GetSystemBuildNumber() => System.Environment.OSVersion.Version.Build;
 
@@ -365,6 +368,7 @@ namespace SAL
 
         public void Update()
         {
+            Cursor.visible = MouseVisible;
             float oldX = this.mousePos.x;
             float oldY = this.mousePos.y;
             float newX = Input.mousePosition.x;
@@ -591,15 +595,23 @@ namespace SAL
         }
     }
 
-    [HarmonyPatch(typeof(MainScript))]
-    [HarmonyPatch("Start")]
-    internal class InputInject
-    {
-        [HarmonyPriority(Priority.First)]
-        public static void Prefix(MainScript __instance)
-        {
-            if (!__instance.HasComponent<UserInputService>())
-                __instance.AddComponent<UserInputService>();
-        }
-    }
+    //[HarmonyPatch(typeof(MainScript))]
+    //[HarmonyPatch("Start")]
+    //internal class InputInject
+    //{
+    //    [HarmonyPriority(Priority.First)]
+    //    public static void Prefix(MainScript __instance)
+    //    {
+    //        if (!__instance.HasComponent<UserInputService>())
+    //            __instance.AddComponent<UserInputService>();
+    //    }
+
+    //    [HarmonyPriority(Priority.First)]
+    //    public static void Postfix(MainScript __instance)
+    //    {
+    //        SALT.Console.KeyBindManager.ReadBinds();
+    //        if (!__instance.HasComponent<SALT.Console.KeyBindManager.ProcessAllBindings>())
+    //            __instance.AddComponent<SALT.Console.KeyBindManager.ProcessAllBindings>();
+    //    }
+    //}
 }

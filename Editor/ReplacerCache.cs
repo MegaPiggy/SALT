@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SAL.Editor
+namespace SALT.Editor
 {
     internal static class ReplacerCache
     {

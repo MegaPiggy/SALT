@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
     public static class TextureExtensions
     {

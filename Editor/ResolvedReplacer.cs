@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace SAL.Editor
+namespace SALT.Editor
 {
     internal class ResolvedReplacer
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{671EFC59-4DF0-44E0-BAC2-269B5B3D4A72}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SAL</RootNamespace>
-    <AssemblyName>SAL</AssemblyName>
+    <RootNamespace>SALT</RootNamespace>
+    <AssemblyName>SALT</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -22,6 +22,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Debug\SALT.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -37,7 +39,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
     <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>E:\Games\SmolAme\AmeLoader\Libs\INIFileParser.dll</HintPath>
@@ -80,11 +82,27 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ugui, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\Unity.ugui.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -105,22 +123,76 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.UI.dll</HintPath>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Callbacks.cs" />
+    <Compile Include="Character.cs" />
+    <Compile Include="CharacterExtensions.cs" />
+    <Compile Include="CharacterIdentifiable.cs" />
+    <Compile Include="Config\Attributes\ConfigCallbackAttribute.cs" />
+    <Compile Include="Config\Attributes\ConfigCommentAttribute.cs" />
+    <Compile Include="Config\Attributes\ConfigFileAttribute.cs" />
+    <Compile Include="Config\Attributes\ConfigNameAttribute.cs" />
+    <Compile Include="Config\Attributes\ConfigParserAttribute.cs" />
+    <Compile Include="Config\Attributes\ConfigRangeAttribute.cs" />
+    <Compile Include="Config\Attributes\ConfigReloadAttribute.cs" />
+    <Compile Include="Config\Attributes\ConfigSectionAttribute.cs" />
+    <Compile Include="Config\ConfigElement.cs" />
+    <Compile Include="Config\ConfigFile.cs" />
+    <Compile Include="Config\ConfigManager.cs" />
+    <Compile Include="Config\ConfigSection.cs" />
+    <Compile Include="Config\Parsing\ArrayParser.cs" />
+    <Compile Include="Config\Parsing\DelegateStringParser.cs" />
+    <Compile Include="Config\Parsing\IStringParser.cs" />
+    <Compile Include="Config\Parsing\IStringParserProvider.cs" />
+    <Compile Include="Config\Parsing\ParserRegistry.cs" />
+    <Compile Include="Config\Parsing\StringParser.cs" />
+    <Compile Include="Config\Range.cs" />
+    <Compile Include="Console\Commands\AddButtonCommand.cs" />
+    <Compile Include="Console\Commands\BindCommand.cs" />
+    <Compile Include="Console\Commands\CheckpointCommand.cs" />
+    <Compile Include="Console\Commands\ClearCommand.cs" />
+    <Compile Include="Console\Commands\CompleteLevelCommand.cs" />
+    <Compile Include="Console\Commands\ConfigCommand.cs" />
+    <None Include=".editorconfig" />
+    <None Include="Console\Commands\OldDumpCommand.cs" />
+    <Compile Include="Console\Commands\DumpCommand.cs" />
+    <Compile Include="Console\Commands\EditButtonCommand.cs" />
+    <Compile Include="Console\Commands\CoordinatesCommand.cs" />
+    <Compile Include="Console\Commands\HelpCommand.cs" />
+    <Compile Include="Console\Commands\LoadLevelCommand.cs" />
+    <Compile Include="Console\Commands\ModsCommand.cs" />
+    <Compile Include="Console\Commands\ReloadCommand.cs" />
+    <Compile Include="Console\Commands\RemoveButtonCommand.cs" />
+    <Compile Include="Console\Commands\RespawnCommand.cs" />
+    <Compile Include="Console\Commands\SwitchCharacterCommand.cs" />
+    <Compile Include="Console\Commands\UnbindCommand.cs" />
+    <Compile Include="Console\Console.cs" />
+    <Compile Include="Console\ConsoleBinder.cs" />
+    <Compile Include="Console\ConsoleButton.cs" />
+    <Compile Include="Console\ConsoleCommand.cs" />
+    <Compile Include="Console\ConsoleWindow.cs" />
+    <Compile Include="Console\KeyBindManager.cs" />
+    <Compile Include="Console\FileLogger.cs" />
+    <Compile Include="Debug\DumpUtils.cs" />
+    <Compile Include="DoubleConstrainedInt.cs" />
     <Compile Include="InputBehaviour.cs" />
+    <Compile Include="Level.cs" />
+    <Compile Include="NoRotation.cs" />
     <Compile Include="ObjectCopier.cs" />
     <Compile Include="DependencyChecker.cs" />
-    <Compile Include="Editor\BundleFieldReplacement.cs" />
     <Compile Include="Editor\BundleFieldReplacer.cs" />
     <Compile Include="Editor\BundleInstanceInfo.cs" />
     <Compile Include="Editor\FieldReplacerContainer.cs" />
     <Compile Include="Editor\IDType.cs" />
-    <Compile Include="Editor\IFieldReplacement.cs" />
-    <Compile Include="Editor\IFieldReplacer.cs" />
     <Compile Include="Editor\IInstanceInfo.cs" />
     <Compile Include="Editor\ReplacerCache.cs" />
     <Compile Include="Editor\ResolvedInstance.cs" />
@@ -151,11 +223,24 @@
     <Compile Include="ModEntryPoint.cs" />
     <Compile Include="ModInfo.cs" />
     <Compile Include="ModLoader.cs" />
+    <Compile Include="Patches\GPtutPatch.cs" />
+    <Compile Include="Patches\MainPatches.cs" />
+    <Compile Include="Patches\OptionPatches.cs" />
+    <Compile Include="Patches\PlayerPatches.cs" />
+    <Compile Include="Patches\PotPatches.cs" />
+    <Compile Include="Patches\SaveFilePatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Randoms.cs" />
+    <Compile Include="Registries\CharacterRegistry.cs" />
+    <Compile Include="SAObjects.cs" />
+    <Compile Include="Timer.cs" />
     <Compile Include="TouchDetector.cs" />
     <Compile Include="UISDetector.cs" />
+    <Compile Include="UI\ErrorUI.cs" />
+    <Compile Include="UI\ModListUI.cs" />
+    <Compile Include="UI\TimerUI.cs" />
     <Compile Include="UserInputService.cs" />
+    <Compile Include="Utils\BinaryUtils.cs" />
     <Compile Include="Utils\EnumUtils.cs" />
     <Compile Include="Utils\GameObjectUtils.cs" />
     <Compile Include="Utils\HarmonyOverrideAttribute.cs" />
@@ -167,6 +252,9 @@
     <Compile Include="Utils\RaycastUtils.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Vector3Surrogate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utils\Debug\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

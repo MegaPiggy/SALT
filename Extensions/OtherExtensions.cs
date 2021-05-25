@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
     public static class OtherExtensions
     {
@@ -62,28 +60,6 @@ namespace SAL.Extensions
         {
             body.isKinematic = !state;
             body.detectCollisions = state;
-        }
-
-
-        /// <summary>
-        /// Create EventTriggerType Callback entry and subscribe to EventTrigger
-        /// </summary>
-        public static EventTrigger.Entry OnEventSubscribe(this EventTrigger trigger, EventTriggerType eventType, System.Action<BaseEventData> callback)
-        {
-            EventTrigger.Entry entry = new EventTrigger.Entry();
-            entry.eventID = eventType;
-            entry.callback = new EventTrigger.TriggerEvent();
-            entry.callback.AddListener(new UnityAction<BaseEventData>(callback));
-            trigger.triggers.Add(entry);
-            return entry;
-        }
-
-        /// <summary>
-        /// Unsubscribe Callback entry from EventTrigger
-        /// </summary>
-        public static void OnEventUnsubscribe(this EventTrigger trigger, EventTrigger.Entry entry)
-        {
-            trigger.triggers.Add(entry);
         }
 
         public static bool HasMethod(this object target, string methodName)
@@ -442,5 +418,12 @@ namespace SAL.Extensions
         {
             return !m_TypeAliases.TryGetValue(type, out string str) ? type.ToString() : str;
         }
+
+        public static void Edit(this TextArea textArea, string text)
+        {
+            textArea.text = new TextAsset(text);
+        }
+
+        public static void Log(this string str, bool logToFile = true) => Console.Console.Log(str, logToFile);
     }
 }

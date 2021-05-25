@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace SAL.Utils
+namespace SALT.Utils
 {
     internal static class HarmonyOverrideHandler
     {

@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = suggestion
+
+# CS0693: Type parameter has the same name as the type parameter from outer type
+dotnet_diagnostic.CS0693.severity = suggestion

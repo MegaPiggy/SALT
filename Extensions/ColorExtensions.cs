@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
     public static class ColorExtensions
     {
@@ -26,16 +25,6 @@ namespace SAL.Extensions
         public static Color WithAlphaSetTo(this Color color, float a)
         {
             return new Color(color.r, color.g, color.b, a);
-        }
-
-        /// <summary>
-        /// Set Alpha of Image.Color
-        /// </summary>
-        public static void SetAlpha(this Graphic graphic, float a)
-        {
-            var color = graphic.color;
-            color = new Color(color.r, color.g, color.b, a);
-            graphic.color = color;
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SAL.Extensions;
+using SALT.Extensions;
 
 public static class PhysicsUtil
 {

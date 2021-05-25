@@ -1,4 +1,4 @@
-﻿namespace SAL.Editor.Runtime
+﻿namespace SALT.Editor.Runtime
 {
     public delegate object RuntimeInstanceProviderDelegate();
 }

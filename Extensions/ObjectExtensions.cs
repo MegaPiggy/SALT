@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using Object = UnityEngine.Object;
 
-/// <summary>
-/// Contains extension methods for Objects
-/// </summary>
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
+    /// <summary>
+    /// Contains extension methods for Objects
+    /// </summary>
     public static class ObjectExtensions
     {
         public static Dictionary<T, GameObject> Find<T>()
@@ -141,7 +142,6 @@ namespace SAL.Extensions
         /// Invokes a private static method
         /// </summary>
         /// <typeparam name="T">Type of object</typeparam>
-        /// <param name="obj">The object you are invoking the method in</param>
         /// <param name="name">The name of the method</param>
         /// <param name="list">parameters</param>
         public static object InvokePrivateStaticMethod<T>(string name, params object[] list)
@@ -171,7 +171,6 @@ namespace SAL.Extensions
         /// </summary>
         /// <typeparam name="T">Type of object</typeparam>
         /// <typeparam name="R">Type of return</typeparam>
-        /// <param name="obj">The object you are invoking the method in</param>
         /// <param name="name">The name of the method</param>
         /// <param name="list">parameters</param>
         public static R InvokePrivateStaticMethod<T, R>(string name, params object[] list)
@@ -286,6 +285,50 @@ namespace SAL.Extensions
                 if (field == null) return default;
 
                 return field.CanRead ? (E)field.GetValue(obj, null) : obj.GetPrivateField<E>($"<{name}>k__BackingField");
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return default;
+        }
+
+        /// <summary>
+        /// Gets the value of a field
+        /// </summary>
+        /// <param name="obj">The object to get the value from</param>
+        /// <param name="name">The name of the field</param>
+        public static object GetField(this object obj, string name)
+        {
+            try
+            {
+                FieldInfo field = obj.GetType().GetFields().FirstOrDefault(fi => fi.Name == name);
+                return field?.GetValue(obj);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return default;
+        }
+
+
+        /// <summary>
+        /// Gets the value of a property
+        /// </summary>
+        /// <param name="obj">The object to get the value from</param>
+        /// <param name="name">The name of the property</param>
+        public static object GetProperty(this object obj, string name)
+        {
+            try
+            {
+                PropertyInfo field = obj.GetType().GetProperties().FirstOrDefault(pi => pi.Name == name);
+
+                if (field == null) return default;
+
+                return field.CanRead ? field.GetValue(obj, null) : obj.GetField($"<{name}>k__BackingField");
             }
             catch
             {

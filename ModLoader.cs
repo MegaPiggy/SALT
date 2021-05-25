@@ -1,4 +1,5 @@
-﻿using SAL.Utils;
+﻿using SALT.Config;
+using SALT.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace SAL
+namespace SALT
 {
     public static class ModLoader
     {
@@ -56,7 +57,7 @@ namespace SAL
                 foreach (string file in Directory.GetFiles(protomod.path, "*.dll", SearchOption.AllDirectories))
                     foundAssemblies.Add(new AssemblyInfo(AssemblyName.GetAssemblyName(Path.GetFullPath(file)), Path.GetFullPath(file), protomod));
             }
-            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(FindAssembly);
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(FindAssembly);//AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(FindAssembly);
             try
             {
                 using (IEnumerator<ProtoMod> enumerator = protomods.GetEnumerator())
@@ -102,6 +103,8 @@ namespace SAL
 
         internal static ICollection<Mod> GetMods() => (ICollection<Mod>)Mods.Values;
 
+        internal static bool AllowSaves => GetMods().All(mod => mod.ModInfo.AllowSaves == true);
+
         private static Mod AddMod(ProtoMod modInfo, Type entryType)
         {
             IModEntryPoint instance = (IModEntryPoint)Activator.CreateInstance(entryType);
@@ -117,13 +120,15 @@ namespace SAL
                 Mod mod = Mods[key];
                 try
                 {
-                    //EnumHolderResolver.RegisterAllEnums(mod.EntryType.Module);
+                    ConfigManager.PopulateConfigs(mod);
                     mod.PreLoad();
-                    //Debug.Reload += (Debug.ReloadAction)(() =>
-                    //{
-                    //    Mod.ForceModContext(mod);
-                    //    Mod.ClearModContext();
-                    //});
+                    Console.Console.Reload += (Console.Console.ReloadAction)(() =>
+                    {
+                        Mod.ForceModContext(mod);
+                        foreach (ConfigFile config in mod.Configs)
+                            config.TryLoadFromFile();
+                        Mod.ClearModContext();
+                    });
                 }
                 catch (Exception ex)
                 {
@@ -144,7 +149,7 @@ namespace SAL
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error loading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error loading mod '{0}'!"+Environment.NewLine+"{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
                 }
             }
         }
@@ -207,6 +212,8 @@ namespace SAL
             [JsonInclude]
             public string description;
             [JsonInclude]
+            public bool nosave;
+            [JsonInclude]
             public string[] dependencies;
             [JsonInclude]
             public string[] load_after;
@@ -221,6 +228,7 @@ namespace SAL
                 info.author = mod.author;
                 info.version = mod.version;
                 info.description = mod.description;
+                info.nosave = mod.nosave;
                 info.dependencies = mod.dependencies;
                 info.load_after = mod.load_after;
                 info.load_before = mod.load_before;
@@ -235,6 +243,7 @@ namespace SAL
                 mod.author = info.author;
                 mod.version = info.version;
                 mod.description = info.description;
+                mod.nosave = info.nosave;
                 mod.dependencies = info.dependencies;
                 mod.load_after = info.load_after;
                 mod.load_before = info.load_before;
@@ -255,6 +264,8 @@ namespace SAL
             public string version;
             [JsonInclude]
             public string description;
+            [JsonInclude]
+            public bool nosave;
             public string path;
             [JsonInclude]
             public string[] dependencies;
@@ -270,19 +281,7 @@ namespace SAL
 
             public bool HasDependencies => this.dependencies != null && (uint)this.dependencies.Length > 0U;
 
-            public static ProtoMod JsonToProto(string jsonData)
-            {
-                UnityEngine.Debug.Log(jsonData);
-                var info = UnityEngine.JsonUtility.FromJson<ProtoInfo>(jsonData);
-                UnityEngine.Debug.Log(info);
-                UnityEngine.Debug.Log("info");
-                UnityEngine.Debug.Log("id: " + info.id);
-                UnityEngine.Debug.Log("name: " + info.name);
-                UnityEngine.Debug.Log("author: " + info.author);
-                UnityEngine.Debug.Log("version: " + info.version);
-                UnityEngine.Debug.Log("description: " + info.description);
-                return info;
-            }
+            public static ProtoMod JsonToProto(string jsonData) => UnityEngine.JsonUtility.FromJson<ProtoInfo>(jsonData);
 
             public static ProtoMod ParseFromJson(string jsonFile) => ProtoMod.ParseFromJson(File.ReadAllText(jsonFile), jsonFile);
 
@@ -297,31 +296,19 @@ namespace SAL
 
             public static bool TryParseFromDLL(string dllFile, out ProtoMod mod)
             {
-                UnityEngine.Debug.Log("start");
                 Assembly assembly = Assembly.LoadFile(dllFile);
-                UnityEngine.Debug.Log("loadfile");
                 mod = new ProtoMod();
-                UnityEngine.Debug.Log("proto");
                 mod.isFromJSON = false;
-                UnityEngine.Debug.Log("notjson");
                 mod.path = Path.GetDirectoryName(dllFile);
-                UnityEngine.Debug.Log("path");
                 mod.entryFile = dllFile;
-                UnityEngine.Debug.Log("entry");
                 string name = ((IEnumerable<string>)assembly.GetManifestResourceNames()).FirstOrDefault<string>((Func<string, bool>)(x => x.EndsWith("modinfo.json")));
-                UnityEngine.Debug.Log("name");
                 if (name == null)
                     return false;
-                UnityEngine.Debug.Log("name exists");
                 using (StreamReader streamReader = new StreamReader(assembly.GetManifestResourceStream(name)))
                 {
-                    UnityEngine.Debug.Log("st");
                     mod = ParseFromJson(streamReader.ReadToEnd(), dllFile);
-                    UnityEngine.Debug.Log("st2");
                     mod.isFromJSON = false;
-                    UnityEngine.Debug.Log("st3");
                 }
-                UnityEngine.Debug.Log("end");
                 return true;
             }
 
@@ -336,7 +323,7 @@ namespace SAL
                 this.load_before = this.load_before ?? new string[0];
             }
 
-            public ModInfo ToModInfo() => new ModInfo(this.id, this.name, this.author, ModInfo.ModVersion.Parse(this.version), this.description);
+            public ModInfo ToModInfo() => new ModInfo(this.id, this.name, this.author, ModInfo.ModVersion.Parse(this.version), this.description, this.nosave);
 
             public override int GetHashCode() => 1877310944 + EqualityComparer<string>.Default.GetHashCode(this.id);
 

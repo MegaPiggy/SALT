@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SAL.Utils
+namespace SALT.Utils
 {
     public class HarmonyOverrideAttribute : Attribute
     {

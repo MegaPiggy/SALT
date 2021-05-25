@@ -1,4 +1,4 @@
-﻿namespace SAL.Editor
+﻿namespace SALT.Editor
 {
     public enum IDType
     {

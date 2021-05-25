@@ -1,7 +1,7 @@
-﻿using SAL.Utils;
+﻿using SALT.Utils;
 using System;
 
-namespace SAL
+namespace SALT
 {
     public class ModInfo
     {
@@ -10,13 +10,15 @@ namespace SAL
           string name,
           string author,
           ModInfo.ModVersion version,
-          string description)
+          string description,
+          bool nosave)
         {
             this.Id = modid;
             this.Name = name;
             this.Author = author;
             this.Version = version;
             this.Description = description;
+            this.AllowSaves = !nosave;
         }
 
         public string Id { get; private set; }
@@ -26,6 +28,8 @@ namespace SAL
         public string Author { get; private set; }
 
         public string Description { get; private set; }
+
+        public bool AllowSaves { get; private set; }
 
         public ModInfo.ModVersion Version { get; private set; }
 

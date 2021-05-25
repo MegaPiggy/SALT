@@ -1,15 +1,15 @@
-﻿using SAL.Utils;
+﻿using SALT.Utils;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-namespace SAL
+namespace SALT
 {
     public static class FileSystem
     {
         public const string DataPath = "SlimeRancher_Data";
-        public static string ModPath = "SAL/Mods";
-        public static string LibPath = "SAL/Libs";
+        public static string ModPath = "SALT/Mods";
+        public static string LibPath = "SALT/Libs";
 
         public static string CheckDirectory(string path)
         {
@@ -24,7 +24,7 @@ namespace SAL
             return ModLoader.GetModForAssembly(relevantAssembly)?.Path ?? Path.GetDirectoryName(relevantAssembly.Location);
         }
 
-        internal static string GetConfigPath(Mod mod) => FileSystem.CheckDirectory(Path.Combine(Path.Combine(Application.persistentDataPath, "SAL/Config"), mod?.ModInfo.Id ?? "SAL"));
+        internal static string GetConfigPath(Mod mod) => FileSystem.CheckDirectory(Path.Combine(Path.Combine(Application.persistentDataPath, "SALT/Config"), mod?.ModInfo.Id ?? "SALT"));
 
         public static string GetMyConfigPath() => FileSystem.GetConfigPath(Mod.GetCurrentMod());
     }

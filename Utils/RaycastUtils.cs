@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace SAL.Utils
+namespace SALT.Utils
 {
     public class RaycastUtils
     {

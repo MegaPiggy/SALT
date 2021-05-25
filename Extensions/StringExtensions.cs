@@ -9,11 +9,11 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-/// <summary>
-/// Contains extension methods for strings
-/// </summary>
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
+    /// <summary>
+    /// Contains extension methods for strings
+    /// </summary>
     public static class StringExtensions
     {
         public static string ToString(object arg)
@@ -29,6 +29,8 @@ namespace SAL.Extensions
             }
         }
 
+        public static int ToInt(this string str) => int.Parse(str);
+
         public static string Pad(this int val, int numDigits)
         {
             string str = string.Empty + (object)val;
@@ -37,7 +39,7 @@ namespace SAL.Extensions
             return str;
         }
 
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         /// <summary>
         /// Get string representation of serialized property, even for non-string fields
         /// </summary>
@@ -235,6 +237,46 @@ namespace SAL.Extensions
                         .TrimEnd('"')
                         .Replace("\\n", "\n")
                         .Replace("\\\"", "\"");
+        }
+
+        internal static string ToQuotedString(this string str)
+        {
+            if (str == null)
+                str = "";
+            string str1 = "" + "\"";
+            foreach (char ch in str)
+                str1 = ch != '"' ? str1 + ch.ToString() : str1 + "\\\"";
+            return str1 + "\"";
+        }
+
+        internal static string FromQuotedString(this string str)
+        {
+            if (str == null)
+                str = "";
+            string str1 = "";
+            str = str.Trim(' ', '"');
+            bool flag = false;
+            foreach (char ch in str)
+            {
+                if (!flag && ch == '\\')
+                    flag = true;
+                else if (ch == '\\')
+                {
+                    str1 += "\\";
+                    flag = false;
+                }
+                else if (flag && ch == '"')
+                {
+                    str1 += "\"";
+                    flag = false;
+                }
+                else
+                {
+                    flag = false;
+                    str1 += ch.ToString();
+                }
+            }
+            return str1;
         }
     }
 

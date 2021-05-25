@@ -11,11 +11,15 @@ public static class EnumUtils
     /// </summary>
     /// <typeparam name="T">Type of the enum</typeparam>
     /// <param name="value">Value to parse</param>
-    /// <returns>The parsed enum</returns>
-    public static T Parse<T>(string value)
+    /// <param name="errorReturn">What to return if the parse fails.</param>
+    /// <returns>The parsed enum on success, <paramref name="errorReturn"/> on failure.</returns>
+    public static T Parse<T>(string value, T errorReturn = default)
     {
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
+
+        if (typeof(T) == typeof(SALT.Character))
+            return (T)(object)SALT.Registries.CharacterRegistry.Parse(value);
 
         try
         {
@@ -23,8 +27,48 @@ public static class EnumUtils
         }
         catch
         {
-            return default;
+            return errorReturn;
         }
+    }
+
+    /// <summary>
+    /// Parses an enum in a easier way
+    /// </summary>
+    /// <typeparam name="T">Type of the enum</typeparam>
+    /// <param name="value">Value to parse</param>
+    /// <param name="ignoreCase">true to ignore case; false to regard case.</param>
+    /// <param name="errorReturn">What to return if the parse fails.</param>
+    /// <returns>The parsed enum on success, <paramref name="errorReturn"/> on failure.</returns>
+    public static T Parse<T>(string value, bool ignoreCase, T errorReturn = default)
+    {
+        if (!typeof(T).IsEnum)
+            throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
+
+        if (typeof(T) == typeof(SALT.Character))
+            return (T)(object)SALT.Registries.CharacterRegistry.Parse(value);
+
+        try
+        {
+            return (T)Enum.Parse(typeof(T), value, ignoreCase);
+        }
+        catch
+        {
+            return errorReturn;
+        }
+    }
+
+    /// <summary>
+    /// Converts int to enum
+    /// </summary>
+    /// <typeparam name="T">Type of the enum</typeparam>
+    /// <param name="value">Int to convert to enum</param>
+    /// <returns>The enum equal to the int</returns>
+    public static T FromInt<T>(int value)
+    {
+        if (!typeof(T).IsEnum)
+            throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
+
+        return (T)Enum.ToObject(typeof(T), value);
     }
 
     /// <summary>
@@ -36,6 +80,9 @@ public static class EnumUtils
     {
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
+
+        if (typeof(T) == typeof(SALT.Character))
+            return SALT.Registries.CharacterRegistry.GetNames();
 
         return Enum.GetNames(typeof(T));
     }
@@ -69,6 +116,9 @@ public static class EnumUtils
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
 
+        if (typeof(T) == typeof(SALT.Character))
+            return SALT.Registries.CharacterRegistry.IsDefined(value);
+
         try
         {
             return Enum.IsDefined(typeof(T), value);
@@ -99,5 +149,35 @@ public static class EnumUtils
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Checks all values in an enum to get the lowest.
+    /// </summary>
+    /// <typeparam name="T">Type of the enum</typeparam>
+    /// <returns>enum with the lowest value attached to it.</returns>
+    public static T GetLowestValue<T>() where T : Enum
+    {
+        if (!typeof(T).IsEnum)
+            throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
+
+        if (typeof(T) == typeof(SALT.Character))
+            return (T)(object)SALT.Character.AMELIA;
+
+        T lowest = default;
+        object lval = Convert.ChangeType(lowest, lowest.GetTypeCode());
+        int lnum = (int)lval;
+
+        foreach (T value in GetAll<T>())
+        {
+            object val = Convert.ChangeType(value, value.GetTypeCode());
+            int number = (int)val;
+            if (number < lnum)
+            {
+                lowest = value;
+            }
+        }
+
+        return lowest;
     }
 }

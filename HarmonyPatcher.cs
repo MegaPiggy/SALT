@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using System.Reflection;
 
-namespace SAL
+namespace SALT
 {
     public static class HarmonyPatcher
     {
@@ -17,7 +17,7 @@ namespace SAL
             }
         }
 
-        private static void InitializeInstance() => HarmonyPatcher._instance = new Harmony("net.megapiggy.SAL");
+        private static void InitializeInstance() => HarmonyPatcher._instance = new Harmony("net.megapiggy.SALT");
 
         internal static void PatchAll() => HarmonyPatcher.Instance.PatchAll(Assembly.GetExecutingAssembly());
 

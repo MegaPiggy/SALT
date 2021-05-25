@@ -1,4 +1,4 @@
-﻿using SAL.Utils.Prefab;
+﻿using SALT.Utils.Prefab;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace SAL.Utils
+namespace SALT.Utils
 {
     public static class GameObjectUtils
     {

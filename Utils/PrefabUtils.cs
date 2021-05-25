@@ -1,11 +1,11 @@
-﻿using SAL.Editor;
+﻿using SALT.Editor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace SAL.Utils
+namespace SALT.Utils
 {
     public static class PrefabUtils
     {
@@ -57,6 +57,14 @@ namespace SAL.Utils
         {
             GameObject gameObject = GameObjectUtils.InstantiateInactive(prefab);
             GameObjectUtils.Prefabitize(gameObject);
+            return gameObject;
+        }
+
+        public static GameObject CopyPrefabActive(GameObject prefab)
+        {
+            GameObject gameObject = GameObjectUtils.InstantiateInactive(prefab);
+            GameObjectUtils.Prefabitize(gameObject);
+            gameObject.SetActive(true);
             return gameObject;
         }
 

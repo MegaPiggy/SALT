@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
-namespace SAL
+namespace SALT
 {
     internal static class Load
     {
@@ -11,7 +11,7 @@ namespace SAL
         {
             try
             {
-                foreach (string file in Directory.GetFiles("SAL/Libs", "*.dll", SearchOption.AllDirectories))
+                foreach (string file in Directory.GetFiles("SALT/Libs", "*.dll", SearchOption.AllDirectories))
                     Assembly.LoadFrom(file);
                 Main.PreLoad();
             }

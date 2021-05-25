@@ -4,7 +4,7 @@ using System.IO;
 using System.Dynamic;
 using System.Text.Json;
 
-namespace SAL.Utils
+namespace SALT.Utils
 {
 	/// <summary>Provides methods for working with data in JavaScript Object Notation (JSON) format.</summary>
 	public static class Json

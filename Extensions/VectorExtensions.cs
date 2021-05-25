@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
     public static class VectorExtensions
     {

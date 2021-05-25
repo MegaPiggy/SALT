@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-namespace SAL.Extensions
+namespace SALT.Extensions
 {
     public static class MathExtensions
     {
@@ -85,6 +85,14 @@ namespace SAL.Extensions
         /// Stop value from going above max or below min values.
         /// </summary>
         public static float Clamp(this float val, float min, float max)
+        {
+            return Mathf.Clamp(val, min, max);
+        }
+
+        /// <summary>
+        /// Stop value from going above max or below min values.
+        /// </summary>
+        public static int Clamp(this int val, int min, int max)
         {
             return Mathf.Clamp(val, min, max);
         }
