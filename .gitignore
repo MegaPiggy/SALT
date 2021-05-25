@@ -11,13 +11,13 @@
 *.sln.docstates
 
 # ignore built libs
-SALInstaller/Libs/*
+SALTInstaller/Libs/*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
 # Visual studio severity config
-*.editorconfig
+.editorconfig
 
 # Mono auto generated files
 mono_crash.*
