@@ -26,9 +26,7 @@ namespace SALT.Utils
                         return assembly;
                 }
             }
-            catch
-            {
-            }
+            catch { }
             return ReflectionUtils.ourAssembly;
         }
 

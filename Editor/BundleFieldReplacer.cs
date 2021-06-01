@@ -41,7 +41,7 @@ namespace SALT.Editor
     }
 
     [Serializable]
-    public struct BundleFieldReplacement : IFieldReplacement //if this isnt a scriptable object unity absolutely refuses to serialize it correctly
+    public struct BundleFieldReplacement : IFieldReplacement, IEquatable<BundleFieldReplacement> //if this isnt a scriptable object unity absolutely refuses to serialize it correctly
     {
         [SerializeField]
         public string fieldToReplaceType;
@@ -74,5 +74,7 @@ namespace SALT.Editor
             field = null;
             return false;
         }
+
+        public bool Equals(BundleFieldReplacement other) => other.fieldToReplaceFieldName == this.fieldToReplaceFieldName && other.fieldToReplaceType == this.fieldToReplaceType && other.replacementSourceFieldName == this.replacementSourceFieldName && other.replacementSourceType == this.replacementSourceType;
     }
 }
