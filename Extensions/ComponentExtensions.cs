@@ -95,7 +95,7 @@ namespace SALT.Extensions
 
         public static T[] Group<T>(this T obj, params T[] others) where T : Object
         {
-            List<T> objList = new List<T>() { obj };
+            List<T> objList = new List<T>{ obj };
             objList.AddRange((IEnumerable<T>)others);
             return objList.ToArray();
         }

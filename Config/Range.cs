@@ -66,7 +66,7 @@ namespace SALT.Config
 
             public string GetUsageString()
             {
-                return typeof(T) + " in range of " + range.Min.ToString() + " to " + range.Max.ToString();
+                return typeof(T) + " in range of " + range.Min + " to " + range.Max;
             }
 
             public object ParseObject(string str)

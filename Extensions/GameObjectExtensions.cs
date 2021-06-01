@@ -322,7 +322,7 @@ namespace SALT.Extensions
             return gameObjectList.ToArray();
         }
 
-        public static void Activate(this GameObject obj, bool activate = true) => obj.SetActive(activate);
+        public static void Activate(this GameObject obj, bool active = true) => obj.SetActive(active);
 
         public static void Deactivate(this GameObject obj) => obj.Activate(false);
 

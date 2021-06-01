@@ -60,14 +60,14 @@ namespace SALT.Utils
 
         public static void ReadMesh(BinaryReader reader, Mesh mesh)
         {
-            mesh.vertices = BinaryUtils.ReadArray<Vector3>(reader, new Func<BinaryReader, Vector3>(BinaryUtils.ReadVector3));
-            mesh.triangles = BinaryUtils.ReadArray<int>(reader, (Func<BinaryReader, int>)(x => x.ReadInt32()));
-            mesh.normals = BinaryUtils.ReadArray<Vector3>(reader, new Func<BinaryReader, Vector3>(BinaryUtils.ReadVector3));
-            mesh.colors = BinaryUtils.ReadArray<Color>(reader, new Func<BinaryReader, Color>(BinaryUtils.ReadColor));
-            mesh.uv = BinaryUtils.ReadArray<Vector2>(reader, new Func<BinaryReader, Vector2>(BinaryUtils.ReadVector2));
-            mesh.tangents = BinaryUtils.ReadArray<Vector4>(reader, new Func<BinaryReader, Vector4>(BinaryUtils.ReadVector4));
-            mesh.bindposes = BinaryUtils.ReadArray<Matrix4x4>(reader, new Func<BinaryReader, Matrix4x4>(BinaryUtils.ReadMatrix4));
-            mesh.boneWeights = BinaryUtils.ReadArray<BoneWeight>(reader, new Func<BinaryReader, BoneWeight>(BinaryUtils.ReadBoneWeight));
+            mesh.vertices = BinaryUtils.ReadArray<Vector3>(reader, BinaryUtils.ReadVector3);
+            mesh.triangles = BinaryUtils.ReadArray<int>(reader, x => x.ReadInt32());
+            mesh.normals = BinaryUtils.ReadArray<Vector3>(reader, BinaryUtils.ReadVector3);
+            mesh.colors = BinaryUtils.ReadArray<Color>(reader, BinaryUtils.ReadColor);
+            mesh.uv = BinaryUtils.ReadArray<Vector2>(reader, BinaryUtils.ReadVector2);
+            mesh.tangents = BinaryUtils.ReadArray<Vector4>(reader, BinaryUtils.ReadVector4);
+            mesh.bindposes = BinaryUtils.ReadArray<Matrix4x4>(reader, BinaryUtils.ReadMatrix4);
+            mesh.boneWeights = BinaryUtils.ReadArray<BoneWeight>(reader, BinaryUtils.ReadBoneWeight);
         }
 
         public static void WriteBoneWeight(BinaryWriter writer, BoneWeight weight)

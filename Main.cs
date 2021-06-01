@@ -238,7 +238,7 @@ namespace SALT
             if (UnityEngine.Object.FindObjectsOfType<TextArea>().FirstOrDefault(go => go.transform.parent.name == "ModsEmpty") != null)
                 return;
             GameObject creditsObject = UnityEngine.Object.FindObjectsOfType<TextArea>().FirstOrDefault(go => go.transform.parent.name == "CreditsEmpty").transform.parent.gameObject;
-            TextArea creditsText = creditsObject.GetComponentInChildren<TextArea>();
+            //TextArea creditsText = creditsObject.GetComponentInChildren<TextArea>();
             //creditsText.text.text.CopyToClipboard();
             //string text = creditsText.text.text.Replace("Smol Ame sprite by Walfie", "Smol Ame sprite by Walfie" + NewLine + "Mod Loader by MegaPiggy");
             //creditsText.Edit(text);

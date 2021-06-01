@@ -12,7 +12,7 @@ namespace SALT.Patches
 {
     [HarmonyPatch(typeof(MainScript))]
     [HarmonyPatch("SaveSaveData")]
-    internal class SavePatch
+    internal static class SavePatch
     {
         internal static bool stopSave = false;
 
@@ -35,7 +35,7 @@ namespace SALT.Patches
 
     [HarmonyPatch(typeof(MainScript))]
     [HarmonyPatch("BackupSaveData")]
-    internal class BackupSavePatch
+    internal static class BackupSavePatch
     {
         [HarmonyPriority(Priority.First)]
         public static bool Prefix()
@@ -60,7 +60,7 @@ namespace SALT.Patches
 
     [HarmonyPatch(typeof(MainScript))]
     [HarmonyPatch("LoadSaveData")]
-    internal class LoadSavePatch
+    internal static class LoadSavePatch
     {
         private static bool doneAlready = false;
         internal static Dictionary<string, LevelSaveData> levelData = new Dictionary<string, LevelSaveData>();
