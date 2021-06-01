@@ -447,6 +447,8 @@ namespace SALT
                 case 9:
                     if (Input.GetKeyDown(KeyCode.Alpha9) || Input.GetKeyDown(KeyCode.Keypad9)) return true;
                     break;
+                default:
+                    break;
             }
 
             return false;

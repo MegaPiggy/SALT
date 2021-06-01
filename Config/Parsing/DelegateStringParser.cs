@@ -17,7 +17,7 @@
 
         public override T Parse(string str) => this.parser(str);
 
-        public delegate string EncodeGenericDelegate<T>(T obj);
+        public delegate string EncodeGenericDelegate<in T>(T obj);
 
         public delegate T ParseGenericDelegate<T>(string str);
     }

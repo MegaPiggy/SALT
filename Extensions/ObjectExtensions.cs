@@ -356,12 +356,7 @@ namespace SALT.Extensions
         /// <typeparam name="E">The type of object getting from</typeparam>
         /// <returns>The object itself for convenience</returns>
         // ReSharper disable once RedundantAssignment
-        public static T SetFromPrivate<T, E>(this T obj, E from, string name)
-        {
-            obj = from.GetPrivateField<T>(name);
-
-            return obj;
-        }
+        public static T SetFromPrivate<T, E>(this T obj, E from, string name) => from.GetPrivateField<T>(name);
 
         /// <summary>
         /// Is the component present in the object?

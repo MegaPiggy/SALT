@@ -128,14 +128,14 @@ namespace SALT.Patches
         }
     }
 
-    [HarmonyPatch(typeof(CharacterIdentifiable))]
-    [HarmonyPatch("Awake")]
-    internal static class CharIdPatch
-    {
-        [HarmonyPriority(Priority.First)]
-        public static void Postfix(CharacterIdentifiable __instance)
-        {
-        }
-    }
+    //[HarmonyPatch(typeof(CharacterIdentifiable))]
+    //[HarmonyPatch("Awake")]
+    //internal static class CharIdPatch
+    //{
+    //    [HarmonyPriority(Priority.First)]
+    //    public static void Postfix(CharacterIdentifiable __instance)
+    //    {
+    //    }
+    //}
 
 }

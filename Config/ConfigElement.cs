@@ -81,7 +81,7 @@ namespace SALT.Config
             return (T)Value;
         }
 
-        public ConfigElement(ConfigElementOptions options)
+        protected ConfigElement(ConfigElementOptions options)
         {
             this.Options = options;
 
@@ -96,8 +96,7 @@ namespace SALT.Config
 
         public static ConfigElementOptions GenerateDefaultOptions(Type type, string name)
         {
-            return new ConfigElementOptions()
-            {
+            return new ConfigElementOptions{
                 Parser = ParserRegistry.TryGetParser(type, out var parser) ? parser : null,
                 DefaultValue = type.IsValueType ? Activator.CreateInstance(type) : null,
                 Name = name

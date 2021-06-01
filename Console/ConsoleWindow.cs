@@ -54,7 +54,7 @@ namespace SALT.Console
         private static float cmdLineY = leftGroup.height - 25;
         private static Rect cmdRect = new Rect(0, cmdLineY, leftGroup.width, 20);
 
-        private static GUIContent FullContent => new GUIContent(fullText.ToString());
+        private static GUIContent FullContent => new GUIContent(fullText);
         private static Vector2 TextSize => textArea?.CalcSize(FullContent) ?? Vector2.zero;
 
         private static Rect oRect = new Rect(0, 0, leftGroup.width, cmdLineY - 5);
