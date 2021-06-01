@@ -57,7 +57,7 @@ namespace SALT.Console.Commands
             LevelManager.levelManager.deaths = 0;
             LevelManager.levelManager.bubbaTokens = new bool[3] { true, true, true };
             LevelManager.levelManager.collectedMoustaches = LevelManager.levelManager.totalMoustaches;
-            MainScript.main.levelTime = 0.0f;
+            MainScript.main.levelTime = 0.01f;
             ClearBtn.Pound();
             Console.LogSuccess("Successfully completed level.");
             return true;

@@ -77,8 +77,7 @@ namespace SALT
             public static DependencyChecker.Dependency ParseFromString(string s)
             {
                 string[] strArray = s.Split(' ');
-                return new DependencyChecker.Dependency()
-                {
+                return new DependencyChecker.Dependency{
                     mod_id = strArray[0],
                     mod_version = ModInfo.ModVersion.Parse(strArray[1])
                 };

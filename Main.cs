@@ -91,7 +91,7 @@ namespace SALT
             catch (Exception ex)
             {
                 Debug.LogError((object)ex);
-                //CreateError(ex.GetType().Name + ": " + ex.Message);
+                UI.ErrorUI.CreateError(ex.GetType().Name + ": " + ex.Message);
                 return;
             }
             FileLogger.Init();

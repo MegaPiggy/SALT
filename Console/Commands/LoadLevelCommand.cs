@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using SALT.Extensions;
 
 namespace SALT.Console.Commands
@@ -18,7 +19,7 @@ namespace SALT.Console.Commands
         public static int Increment()
         {
             i += 1;
-            if (i > (int)EnumUtils.GetHighestValue<Level>())
+            if (i >= SceneManager.sceneCountInBuildSettings)
                 i = 0;
             return i;
         }
@@ -47,7 +48,16 @@ namespace SALT.Console.Commands
             if (argIndex == 0)
             {
                 List<Level> levels = EnumUtils.GetAll<Level>().ToList();
-                return levels.Select<Level,string>(l => l.ToString()).ToList();
+                List<Level> realLevels = new List<Level>();
+                int index = 1;
+                foreach (Level lvl in levels)
+                {
+                    if (index > SceneManager.sceneCountInBuildSettings)
+                        break;
+                    realLevels.Add(lvl);
+                    index++;
+                }
+                return realLevels.Select<Level, string>(l => l.ToString()).ToList();
             }
             return base.GetAutoComplete(argIndex, argText);
         }
