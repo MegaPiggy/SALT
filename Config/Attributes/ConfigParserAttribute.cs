@@ -5,7 +5,7 @@ namespace SALT.Config.Attributes
 {
     public class ConfigParserAttribute : Attribute
     {
-        public IStringParser Parser;
+        internal IStringParser Parser;
 
         public ConfigParserAttribute(IStringParser parser) => this.Parser = parser;
     }

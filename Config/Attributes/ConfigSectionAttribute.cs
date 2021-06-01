@@ -6,7 +6,7 @@ namespace SALT.Config.Attributes
     {
         internal string SectionName;
 
-        public ConfigSectionAttribute()
+        internal ConfigSectionAttribute()
         {
         }
 

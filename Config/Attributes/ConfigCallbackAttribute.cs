@@ -10,7 +10,7 @@ namespace SALT.Config.Attributes
         /// <summary>
         /// The method inside <see cref="ConfigFile"/> to run when the field is changed.
         /// </summary>
-        public string methodName;
+        internal string methodName;
 
         /// <summary>
         /// Registers a method inside <see cref="ConfigFile"/> to run when the field is changed.
