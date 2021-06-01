@@ -66,10 +66,10 @@ namespace SALT
                     if (enumerator.MoveNext())
                     {
                         ProtoMod mod = enumerator.Current;
-                        foreach (AssemblyInfo assemblyInfo in foundAssemblies.Where<AssemblyInfo>((Func<AssemblyInfo, bool>)(x => x.mod == mod)))
+                        foreach (AssemblyInfo assemblyInfo in foundAssemblies.Where(x => x.mod == mod))
                         {
                             Type entryType;
-                            if (TryGetEntryType(assemblyInfo.LoadAssembly(), out entryType) && !assemblyInfo.IsModAssembly && (mod.isFromJSON || !(Path.GetFullPath(assemblyInfo.Path) != Path.GetFullPath(mod.entryFile))))
+                            if (TryGetEntryType(assemblyInfo.LoadAssembly(), out entryType) && !assemblyInfo.IsModAssembly && (mod.isFromJSON || Path.GetFullPath(assemblyInfo.Path) == Path.GetFullPath(mod.entryFile)))
                             {
                                 assemblyInfo.IsModAssembly = true;
                                 AddMod(assemblyInfo.mod, entryType);

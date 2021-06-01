@@ -2,7 +2,7 @@
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
-public class Levels
+public static class Levels
 {
     public const string MAIN_MENU = "LevelSelect";
     private static Scene replacedScene;

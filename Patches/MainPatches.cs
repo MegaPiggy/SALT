@@ -4,7 +4,7 @@ namespace SALT.Patches
 {
     [HarmonyPatch(typeof(MainScript))]
     [HarmonyPatch("Awake")]
-    internal class AwakePatch
+    internal static class AwakePatch
     {
         [HarmonyPriority(Priority.First)]
         public static void Postfix(MainScript __instance)
@@ -17,7 +17,7 @@ namespace SALT.Patches
 
     [HarmonyPatch(typeof(MainScript))]
     [HarmonyPatch("Start")]
-    internal class ContextPatch
+    internal static class ContextPatch
     {
         [HarmonyPriority(Priority.First)]
         public static void Prefix(MainScript __instance)

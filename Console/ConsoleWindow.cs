@@ -102,8 +102,8 @@ namespace SALT.Console
         /// </summary>
         public static void AttachWindow(Scene oldScene, Scene newScene)
         {
-            GameObject window = new GameObject("_ConsoleWindow", typeof(ConsoleWindow));
-            DontDestroyOnLoad(window);
+            GameObject iwindow = new GameObject("_ConsoleWindow", typeof(ConsoleWindow));
+            DontDestroyOnLoad(iwindow);
 
             SceneManager.activeSceneChanged -= AttachWindow;
             Console.Log("Attached Console Window successfully!");

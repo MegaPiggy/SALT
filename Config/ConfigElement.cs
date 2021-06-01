@@ -54,7 +54,8 @@ namespace SALT.Config
             Options.DefaultValue = Value;
             if (Value is IStringParserProvider val) Options.Parser = val.GetParser();
             if (Options.Parser == null) throw new Exception(field.FieldType.ToString());
-            if (GetAttributeOfType<ConfigCallbackAttribute>(field, out var attribute)) OnValueChanged += x => AccessTools.Method(field.DeclaringType, attribute.methodName).Invoke(null, new object[] { Value, x }); ;
+            if (GetAttributeOfType<ConfigCallbackAttribute>(field, out var attribute))
+                OnValueChanged += x => AccessTools.Method(field.DeclaringType, attribute.methodName).Invoke(null, new[]{ Value, x });
         }
     }
     public class ConfigElement<T> : ConfigElement

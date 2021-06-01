@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SALT.Utils
 {
-    public class RaycastUtils
+    public static class RaycastUtils
     {
         public static Tuple<GameObject, Vector3> SmartCast(Vector3 origin, Vector3 direction, LayerMask ignore)
         {

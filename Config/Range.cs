@@ -51,7 +51,7 @@ namespace SALT.Config
         public class RangeParser<T> : IStringParser
         {
             public Type ParsedType => typeof(Range<T>);
-            Range<T> range;
+            private Range<T> range;
 
             public RangeParser(Range<T> range)
             {
@@ -60,8 +60,8 @@ namespace SALT.Config
 
             public string EncodeObject(object obj)
             {
-                Range<T> range = (Range<T>)obj;
-                return ParserRegistry.GetParser(typeof(T)).EncodeObject(range.Value);
+                Range<T> erange = (Range<T>)obj;
+                return ParserRegistry.GetParser(typeof(T)).EncodeObject(erange.Value);
             }
 
             public string GetUsageString()
