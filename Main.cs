@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace SALT
 {
-    public class Main
+    public static class Main
     {
         public const string Version = "1.1b";
         private static string NewLine { get => System.Environment.NewLine + "  "; }

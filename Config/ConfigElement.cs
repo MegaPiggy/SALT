@@ -91,7 +91,15 @@ namespace SALT.Config
         public virtual void SetValue<T>(T value)
         {
             OnValueChanged?.Invoke(value);
-            Console.Console.Log("Set to " + value.ToString());
+            Console.Console.Log("Set to " + value);
+            Value = value;
+        }
+
+        public virtual void SetValue<T>(T value, bool log)
+        {
+            OnValueChanged?.Invoke(value);
+            if (log)
+                Console.Console.Log("Set to " + value);
             Value = value;
         }
 

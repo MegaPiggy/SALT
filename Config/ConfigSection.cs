@@ -37,7 +37,7 @@ namespace SALT.Config
             {
                 if (elementDict.TryGetValue(data.KeyName, out var element))
                 {
-                    element.SetValue(element.Options.Parser.ParseObject(data.Value));
+                    element.SetValue(element.Options.Parser.ParseObject(data.Value), false);
                 }
                 else
                 {

@@ -189,7 +189,7 @@ namespace SALT.Extensions
         public static T FindComponentInParent<T>(this GameObject obj) where T : Component
         {
             T obj1;
-            if (!((UnityEngine.Object)obj == (UnityEngine.Object)null))
+            if (obj != null)
             {
                 Transform parent1 = obj.transform.parent;
                 T obj2 = parent1 != null ? parent1.GetComponent<T>() : default(T);
