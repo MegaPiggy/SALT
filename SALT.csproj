@@ -163,6 +163,7 @@
     <Compile Include="Console\Commands\CompleteLevelCommand.cs" />
     <Compile Include="Console\Commands\ConfigCommand.cs" />
     <Compile Include="Patches\VFXPatches.cs" />
+    <Compile Include="Registries\LevelRegistry.cs" />
     <Compile Include="VFXOption.cs" />
     <None Include=".editorconfig" />
     <None Include="Console\Commands\OldDumpCommand.cs" />
