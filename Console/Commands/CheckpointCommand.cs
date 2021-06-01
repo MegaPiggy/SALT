@@ -34,7 +34,6 @@ namespace SALT.Console.Commands
                 Console.LogError("Failed to create a checkpoint");
                 return false;
             }
-            Main.StopSave();
             PlayerScript.player.SetCheckpoint(CreateCheckpoint().transform);
             Console.LogSuccess("Successfully created a checkpoint");
             return true;

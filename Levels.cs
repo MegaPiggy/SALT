@@ -25,18 +25,9 @@ public static class Levels
     public static string LevelName => LevelLoader.levelName;
 
     public static bool isMainMenu() => Levels.IsLevel(MAIN_MENU);
-
-    public static bool isTitleScreen() => isMainMenu() && MainScript.title;
     
     public static bool IsLevel(string name) => SceneManager.GetActiveScene().name == name || SceneManager.GetActiveScene().buildIndex == 0;
 
     public static bool isOffice() => SceneManager.GetActiveScene().buildIndex == 1;
     public static bool isPopOnRocks() => SceneManager.GetActiveScene().buildIndex == 2;
-    public static bool isRedHeart() => SceneManager.GetActiveScene().buildIndex == 3;
-    public static bool isPekoland() => SceneManager.GetActiveScene().buildIndex == 4;
-    public static bool isOfficeReversed() => SceneManager.GetActiveScene().buildIndex == 5;
-    public static bool isToTheMoon() => SceneManager.GetActiveScene().buildIndex == 6;
-    public static bool isNothing() => SceneManager.GetActiveScene().buildIndex == 7;
-    public static bool isMoguMogu() => SceneManager.GetActiveScene().buildIndex == 8;
-    public static bool isInumore() => SceneManager.GetActiveScene().buildIndex == 9;
 }

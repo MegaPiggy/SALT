@@ -77,7 +77,7 @@ namespace SALT.Console.Commands
 		{
 			if (argIndex == 0)
 			{
-				List<string> vs = new List<string>() { "all" };
+				List<string> vs = new List<string>{ "all" };
 				vs.AddRange(Console.dumpActions.Keys);
 				return vs;
 			}

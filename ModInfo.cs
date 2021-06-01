@@ -10,15 +10,13 @@ namespace SALT
           string name,
           string author,
           ModInfo.ModVersion version,
-          string description,
-          bool nosave)
+          string description)
         {
             this.Id = modid;
             this.Name = name;
             this.Author = author;
             this.Version = version;
             this.Description = description;
-            this.AllowSaves = !nosave;
         }
 
         public string Id { get; private set; }
@@ -28,8 +26,6 @@ namespace SALT
         public string Author { get; private set; }
 
         public string Description { get; private set; }
-
-        public bool AllowSaves { get; private set; }
 
         public ModInfo.ModVersion Version { get; private set; }
 

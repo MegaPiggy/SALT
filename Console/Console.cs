@@ -87,7 +87,6 @@ namespace SALT.Console
             RegisterCommand(new Commands.RespawnCommand());
             RegisterCommand(new Commands.CheckpointCommand());
             RegisterCommand(new Commands.UnbindCommand());
-            RegisterCommand(new Commands.SwitchCharacterCommand());
             RegisterCommand(new Commands.CompleteLevelCommand());
             RegisterCommand(new Commands.CoordinatesCommand());
             RegisterCommand(new Commands.LoadLevelCommand()); 

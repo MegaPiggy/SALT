@@ -206,7 +206,7 @@ namespace SALT.Extensions
                 .Select(c => new ComponentOfInterface<T>(c, c as T)).ToArray();
         }
 
-        public struct ComponentOfInterface<T>
+        public struct ComponentOfInterface<T> : IEquatable<ComponentOfInterface<T>>
         {
             public readonly Component Component;
             public readonly T Interface;
@@ -216,6 +216,8 @@ namespace SALT.Extensions
                 Component = component;
                 Interface = @interface;
             }
+
+            public bool Equals(ComponentOfInterface<T> cof) => object.Equals(cof.Interface, this.Interface) && this.Component == cof.Component;
         }
 
         #region One Per Instance

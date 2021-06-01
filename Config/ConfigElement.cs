@@ -27,12 +27,6 @@ namespace SALT.Config
             return attribute != null;
         }
 
-        public override void SetValue<T>(T value)
-        {
-            if (value is int) value = (T)Options.Range.GetValue(value);
-            base.SetValue(value);
-        }
-
         public static ConfigElementOptions GenerateAttributesOptions(FieldInfo field)
         {
 
@@ -42,15 +36,13 @@ namespace SALT.Config
                 Comment = GetAttributeOfType<ConfigCommentAttribute>(field, out var comment) ? comment.Comment : null,
                 Name = GetAttributeOfType<ConfigNameAttribute>(field, out var name) ? name.Name : field.Name,
                 Parser = GetAttributeOfType<ConfigParserAttribute>(field, out var parser) ? parser.Parser : ParserRegistry.TryGetParser(field.FieldType, out var backupParser) ? backupParser : null,
-                ReloadMode = GetAttributeOfType<ConfigReloadAttribute>(field, out var reload) ? reload.Mode : ReloadMode.NORMAL,
-                Range = GetAttributeOfType<ConfigRangeAttribute>(field, out var range) ? new DoubleConstrainedInt(0, range.min, range.max) : DoubleConstrainedInt.zero
+                ReloadMode = GetAttributeOfType<ConfigReloadAttribute>(field, out var reload) ? reload.Mode : ReloadMode.NORMAL
             };
         }
 
         public FieldBackedConfigElement(FieldInfo field) : base(GenerateAttributesOptions(field))
         {
             this.field = field;
-            if (Value is int) Value = Options.Range.GetValue((int)Value);
             Options.DefaultValue = Value;
             if (Value is IStringParserProvider val) Options.Parser = val.GetParser();
             if (Options.Parser == null) throw new Exception(field.FieldType.ToString());
@@ -132,7 +124,6 @@ namespace SALT.Config
         public string Comment { get; internal set; }
         public object DefaultValue { get; internal set; }
         public string Name { get; internal set; }
-        public DoubleConstrainedInt Range { get; internal set; }
         public ReloadMode ReloadMode { get; internal set; }
     }
 

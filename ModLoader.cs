@@ -103,8 +103,6 @@ namespace SALT
 
         internal static ICollection<Mod> GetMods() => (ICollection<Mod>)Mods.Values;
 
-        internal static bool AllowSaves => GetMods().All(mod => mod.ModInfo.AllowSaves == true);
-
         private static Mod AddMod(ProtoMod modInfo, Type entryType)
         {
             IModEntryPoint instance = (IModEntryPoint)Activator.CreateInstance(entryType);
@@ -212,8 +210,6 @@ namespace SALT
             [JsonInclude]
             public string description;
             [JsonInclude]
-            public bool nosave;
-            [JsonInclude]
             public string[] dependencies;
             [JsonInclude]
             public string[] load_after;
@@ -228,7 +224,6 @@ namespace SALT
                 info.author = mod.author;
                 info.version = mod.version;
                 info.description = mod.description;
-                info.nosave = mod.nosave;
                 info.dependencies = mod.dependencies;
                 info.load_after = mod.load_after;
                 info.load_before = mod.load_before;
@@ -243,7 +238,6 @@ namespace SALT
                 mod.author = info.author;
                 mod.version = info.version;
                 mod.description = info.description;
-                mod.nosave = info.nosave;
                 mod.dependencies = info.dependencies;
                 mod.load_after = info.load_after;
                 mod.load_before = info.load_before;
@@ -264,8 +258,6 @@ namespace SALT
             public string version;
             [JsonInclude]
             public string description;
-            [JsonInclude]
-            public bool nosave;
             public string path;
             [JsonInclude]
             public string[] dependencies;
@@ -323,7 +315,7 @@ namespace SALT
                 this.load_before = this.load_before ?? new string[0];
             }
 
-            public ModInfo ToModInfo() => new ModInfo(this.id, this.name, this.author, ModInfo.ModVersion.Parse(this.version), this.description, this.nosave);
+            public ModInfo ToModInfo() => new ModInfo(this.id, this.name, this.author, ModInfo.ModVersion.Parse(this.version), this.description);
 
             public override int GetHashCode() => 1877310944 + EqualityComparer<string>.Default.GetHashCode(this.id);
 

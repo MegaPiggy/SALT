@@ -31,7 +31,6 @@ namespace SALT.Console.Commands
 					float result3;
 					if (float.TryParse(args[1], out result1) & float.TryParse(args[2], out result2) & float.TryParse(args[3], out result3))
 					{
-						Main.StopSave();
 						PlayerScript.player.transform.position = new UnityEngine.Vector3(result1, result2, result3);
 						return true;
 					}

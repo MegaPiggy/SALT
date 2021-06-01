@@ -166,7 +166,7 @@ namespace SALT.Console
 
 
             // FORCES WINDOW TO CLOSE IF THE GAME IS LOADING
-            if (Levels.isTitleScreen() && showWindow)
+            if (MainScript.loading && showWindow)
             {
                 SetWindowOff();
             }
@@ -176,7 +176,7 @@ namespace SALT.Console
             if (Event.current.isKey && Event.current.type == EventType.KeyDown)
             {
                 // TOGGLES THE WINDOW
-                if ((Event.current.modifiers == EventModifiers.Control || Event.current.modifiers == EventModifiers.Command) && Event.current.keyCode == KeyCode.Tab && !Levels.isTitleScreen())
+                if ((Event.current.modifiers == EventModifiers.Control || Event.current.modifiers == EventModifiers.Command) && Event.current.keyCode == KeyCode.Tab && !MainScript.loading)
                 {
                     ToggleWindow();
                 }

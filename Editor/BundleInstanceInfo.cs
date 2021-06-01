@@ -2,15 +2,17 @@
 
 namespace SALT.Editor
 {
-    public struct BundleInstanceInfo : IInstanceInfo
+    public struct BundleInstanceInfo : IInstanceInfo, System.IEquatable<BundleInstanceInfo>
     {
         [SerializeField]
-        public IDType idtype;
+        internal IDType idtype;
         [SerializeField]
-        public int id;
+        internal int id;
 
         public IDType idType => this.idtype;
 
         public int ID => this.id;
+
+        public bool Equals(BundleInstanceInfo other) => other.ID == this.ID && other.idType == this.idType;
     }
 }

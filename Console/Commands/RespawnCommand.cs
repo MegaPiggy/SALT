@@ -18,7 +18,6 @@ namespace SALT.Console.Commands
                 Console.LogError("Respawn failed");
                 return false;
             }
-            Main.StopSave();
             player.Kill();//InvokePrivateMethod("Kill");
             Console.LogSuccess("Successfully Respawned");
             return true;

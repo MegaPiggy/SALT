@@ -16,13 +16,12 @@ namespace SALT
         {
             isPaused = torf;
             UserInputService.MouseVisible = affectCursor ? torf : false;
-            if (!MainScript.paused)
-                Time.timeScale = torf ? 0 : 1;
+            Time.timeScale = torf ? 0 : 1;
         }
 
         public static bool HasPauser() => isPaused;
 
-        public static bool IsPaused() => isPaused || MainScript.paused;
+        public static bool IsPaused() => isPaused;
     }
 
     [HarmonyPatch(typeof(PlayerScript))]

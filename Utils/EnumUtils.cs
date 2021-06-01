@@ -18,9 +18,6 @@ public static class EnumUtils
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
 
-        if (typeof(T) == typeof(SALT.Character))
-            return (T)(object)SALT.Registries.CharacterRegistry.Parse(value);
-
         try
         {
             return (T)Enum.Parse(typeof(T), value);
@@ -43,9 +40,6 @@ public static class EnumUtils
     {
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
-
-        if (typeof(T) == typeof(SALT.Character))
-            return (T)(object)SALT.Registries.CharacterRegistry.Parse(value);
 
         try
         {
@@ -81,9 +75,6 @@ public static class EnumUtils
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
 
-        if (typeof(T) == typeof(SALT.Character))
-            return SALT.Registries.CharacterRegistry.GetNames();
-
         return Enum.GetNames(typeof(T));
     }
 
@@ -115,9 +106,6 @@ public static class EnumUtils
     {
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
-
-        if (typeof(T) == typeof(SALT.Character))
-            return SALT.Registries.CharacterRegistry.IsDefined(value);
 
         try
         {
@@ -161,9 +149,6 @@ public static class EnumUtils
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
 
-        if (typeof(T) == typeof(SALT.Character))
-            return (T)(object)SALT.Character.AMELIA;
-
         if (typeof(T) == typeof(SALT.Level))
             return (T)(object)SALT.Level.MAIN_MENU;
 
@@ -193,9 +178,6 @@ public static class EnumUtils
     {
         if (!typeof(T).IsEnum)
             throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
-
-        if (typeof(T) == typeof(SALT.Level))
-            return (T)(object)SALT.Level.INASCAPABLE_MADNESS;
 
         T highest = default;
         object hval = Convert.ChangeType(highest, highest.GetTypeCode());

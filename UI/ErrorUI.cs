@@ -21,7 +21,6 @@ namespace SALT.UI
         } 
         internal static void CreateError(string message, bool doAbort = true)
         {
-            MainScript.paused = true;
             GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
             GameObject errorUI = versionObject.CloneInstance();
             errorUI.name = "errorUI";
