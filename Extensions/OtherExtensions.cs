@@ -528,6 +528,9 @@ namespace SALT.Extensions
         public static void AddMethod(this PauseOption pauseOption, UnityAction state) => pauseOption.methods.AddListener(state);
         public static void RemoveAllMethods(this PauseOption pauseOption) => pauseOption.methods.RemoveAllListeners();
 
+        public static void AddMethod(this GenericButtonScript genericButton, UnityAction state) => genericButton.methods.AddListener(state);
+        public static void RemoveAllMethods(this GenericButtonScript genericButton) => genericButton.methods.RemoveAllListeners(); 
+
 
         public static void SetText(this TranslationCollection translationCollection, Language language, string text) => translationCollection.translations[translationCollection.translations.IndexOf(translationCollection.translations.FirstOrDefault(translation => translation.language == language))] = new Translation { language = language, text = text };
         public static string GetEnglishText(this TranslationCollection translationCollection) => translationCollection.GetText(Language.English);
