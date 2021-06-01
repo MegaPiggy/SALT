@@ -38,7 +38,7 @@ namespace SALT.Console.Commands
             if (name.StartsWith(UnknownStart))
             {
                 int characterNumber = name.Replace(UnknownStart, "").ToInt() + ((player.characterPacks.Count+1) - 1);
-                Main.ChangeCharacter(characterNumber);
+                Main.SetCharacter(characterNumber);
                 Console.LogSuccess("Successfully changed character");
                 return true;
             }
@@ -48,7 +48,7 @@ namespace SALT.Console.Commands
             //    Console.LogError("Character change failed");
             //    return false;
             //}
-            Main.ChangeCharacter((int)character);
+            Main.SetCharacter((int)character);
             Console.LogSuccess("Successfully changed character");
             return true;
         }

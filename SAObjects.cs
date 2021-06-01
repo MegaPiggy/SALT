@@ -11,6 +11,8 @@ namespace SALT
 	/// </summary>
 	public static class SAObjects
 	{
+		public static GameObject OptionPrefab;
+
 
 		// Static Constructors to load the base objects
 		static SAObjects()

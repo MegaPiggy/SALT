@@ -11,6 +11,8 @@
         TO_THE_MOON,
         NOTHING,
         MOGU_MOGU,
-        INUMORE
+        INUMORE,
+        RUSHIA,
+        INASCAPABLE_MADNESS
     }
 }

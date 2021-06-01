@@ -28,7 +28,6 @@ namespace SALT.Console.Commands
                 var potClose = Object.FindObjectOfType<PotCloseTrigger>();
                 if (potClose != null)
                 {
-                    SAObjects.GetRootGameObject("PotTrap").SetActiveRecursivelyExt(true);
                     Patches.PotClosedPatch.OnPotClosed += CompleteRedHeart;
                     potClose.OnTriggerEnter2D(Main.CreatePlayerCollider());
                     return true;
@@ -41,6 +40,7 @@ namespace SALT.Console.Commands
 
         private static void CompleteRedHeart()
         {
+            SAObjects.GetRootGameObject("PotTrap").SetChildActive("LevelClearEmpty", true);
             CompleteLevel();
             Patches.PotClosedPatch.OnPotClosed -= CompleteRedHeart;
         }

@@ -18,7 +18,7 @@ namespace SALT.Console.Commands
         public static int Increment()
         {
             i += 1;
-            if (i > 9)
+            if (i > (int)EnumUtils.GetHighestValue<Level>())
                 i = 0;
             return i;
         }

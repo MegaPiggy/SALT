@@ -164,6 +164,9 @@ public static class EnumUtils
         if (typeof(T) == typeof(SALT.Character))
             return (T)(object)SALT.Character.AMELIA;
 
+        if (typeof(T) == typeof(SALT.Level))
+            return (T)(object)SALT.Level.MAIN_MENU;
+
         T lowest = default;
         object lval = Convert.ChangeType(lowest, lowest.GetTypeCode());
         int lnum = (int)lval;
@@ -179,5 +182,35 @@ public static class EnumUtils
         }
 
         return lowest;
+    }
+
+    /// <summary>
+    /// Checks all values in an enum to get the highest.
+    /// </summary>
+    /// <typeparam name="T">Type of the enum</typeparam>
+    /// <returns>enum with the highest value attached to it.</returns>
+    public static T GetHighestValue<T>() where T : Enum
+    {
+        if (!typeof(T).IsEnum)
+            throw new Exception($"The given type isn't an enum ({typeof(T).Name} isn't an Enum)");
+
+        if (typeof(T) == typeof(SALT.Level))
+            return (T)(object)SALT.Level.INASCAPABLE_MADNESS;
+
+        T highest = default;
+        object hval = Convert.ChangeType(highest, highest.GetTypeCode());
+        int hnum = (int)hval;
+
+        foreach (T value in GetAll<T>())
+        {
+            object val = Convert.ChangeType(value, value.GetTypeCode());
+            int number = (int)val;
+            if (number > hnum)
+            {
+                highest = value;
+            }
+        }
+
+        return highest;
     }
 }

@@ -16,7 +16,8 @@ namespace SALT
         {
             isPaused = torf;
             UserInputService.MouseVisible = affectCursor ? torf : false;
-            //Time.timeScale = torf ? 0 : 1;
+            if (!MainScript.paused)
+                Time.timeScale = torf ? 0 : 1;
         }
 
         public static bool HasPauser() => isPaused;

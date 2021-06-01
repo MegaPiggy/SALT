@@ -296,6 +296,8 @@ namespace SALT.Extensions
 
         public static void RemoveComponent<T>(this GameObject go) where T : Component => UnityEngine.Object.Destroy(go.GetComponent<T>());
 
+        public static void RemoveComponentImmediate<T>(this GameObject go) where T : Component => UnityEngine.Object.DestroyImmediate(go.GetComponent<T>());
+
         public static T AddComponent<T>(this GameObject go, T toAdd) where T : Component => go.AddComponent<T>().GetCopyOf<T>(toAdd);
 
         public static void AddChild(this GameObject obj, GameObject child)

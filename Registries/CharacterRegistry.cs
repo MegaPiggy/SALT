@@ -237,20 +237,12 @@ namespace SALT.Registries
                     AddSprite(id, spr);
                     break;
                 default:
-                    spritesToPatch.Add(id, spr);
+                    if (!spritesToPatch.ContainsKey(id))
+                        spritesToPatch.Add(id, spr);
+                    else
+                        spritesToPatch[id] = spr;
                     int idnt = (int)id;
-                    try { if (Main.options.charSprites[idnt]) Main.options.charSprites[idnt] = spr; }
-                    catch
-                    {
-                        for (int i = 0; i < (idnt + 1); i++)
-                        {
-                            if (Main.options.charSprites.Count < i)
-                            {
-                                Main.options.charSprites.Add(null);
-                            }
-                        }
-                        Main.options.charSprites.Add(spr);
-                    }
+                    Main.characterOption.charIcons[idnt] = spr;
                     AddSprite(id, spr);
                     break;
             }

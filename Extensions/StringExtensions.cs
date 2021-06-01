@@ -211,33 +211,33 @@ namespace SALT.Extensions
         /// Surround string with "i" tag
         /// </summary>
         public static string Italics(this string message) => $"<i>{message}</i>";
-        
-        /// <summary>
-        /// Checks to see if a string that came from translation is a comment.
-        /// </summary>
-        public static bool IsTranslationComment(this string line)
-        {
-            return (line.StartsWith("#") || line.Equals(string.Empty) || !line.Contains(":"));
-        }
 
-        public static Tuple<string, string> ToTranslation(this string line)
-        {
-            string key = line.Substring(0, line.IndexOf(':'));
-            string value = line.Replace($"{key}:", string.Empty);
-            return new Tuple<string, string>(key.Trim('"'), value.FixTranslatedString());
-        }
+        // /// <summary>
+        // /// Checks to see if a string that came from translation is a comment.
+        // /// </summary>
+        // public static bool IsTranslationComment(this string line)
+        // {
+        //      return (line.StartsWith("#") || line.Equals(string.Empty) || !line.Contains(":"));
+        // }
 
-        /// <summary>
-        /// Fixes the string that came from translation
-        /// </summary>
-        public static string FixTranslatedString(this string toFix)
-        {
-            return toFix.TrimStart()
-                        .TrimStart('"')
-                        .TrimEnd('"')
-                        .Replace("\\n", "\n")
-                        .Replace("\\\"", "\"");
-        }
+        //public static Tuple<string, string> ToTranslation(this string line)
+        //{
+        //    string key = line.Substring(0, line.IndexOf(':'));
+        //    string value = line.Replace($"{key}:", string.Empty);
+        //    return new Tuple<string, string>(key.Trim('"'), value.FixTranslatedString());
+        //}
+
+        // /// <summary>
+        // /// Fixes the string that came from translation
+        // /// </summary>
+        // public static string FixTranslatedString(this string toFix)
+        // {
+        //      return toFix.TrimStart()
+        //                 .TrimStart('"')
+        //                 .TrimEnd('"')
+        //                 .Replace("\\n", "\n")
+        //                 .Replace("\\\"", "\"");
+        //}
 
         internal static string ToQuotedString(this string str)
         {
@@ -277,6 +277,25 @@ namespace SALT.Extensions
                 }
             }
             return str1;
+        }
+
+        public static string ToYesOrNo(this bool torf) => torf ? "Yes" : "No";
+        public static string ToOnOff(this bool torf, bool japanese = false) => japanese ? (torf ? "オン" : "オフ") : (torf ? "On" : "Off");
+
+        public static string ReplaceWithJapanese(this string str)
+        {
+            string amelia = str.Replace("Amelia", "アメリア").Replace("amelia", "アメリア");
+            string watson = amelia.Replace("Watson", "ワトソン");
+            string smol = watson.Replace("Smol", "スモール").Replace("SMOL", "スモール");
+            string ame = smol.Replace("Ame", "アメ").Replace("AME", "アメ");
+            string beeg = ame;//.Replace("Beeg", "ビーグ");
+            string infinity = beeg.Replace("Infinite ", "無限");
+            string increased = infinity;//.Replace("Increased ", "倍");
+            string jump = increased.Replace("Jump", "ジャンプ");
+            string speed = jump;//.Replace("Speed", "速度");//スピード");
+            string slower = speed;//.Replace("Slower ", "ゆっくりと");//遅い");
+            string groundpound = slower.Replace("Ground Pound", "グラウンドパウンド");
+            return groundpound;
         }
     }
 

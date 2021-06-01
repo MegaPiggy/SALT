@@ -27,7 +27,13 @@ namespace SALT.UI
 
         public void AddModInfo(ModInfo info)
         {
-            modArea.Edit(modArea.text.text + ModString(info.Name, info.Description, info.Version, info.Author));
+            string originalText = modArea.GetEnglishText();
+            string originalJapaneseText = modArea.GetJapaneseText();
+            string jaName = info.Name.ReplaceWithJapanese();
+            string jaDesc = info.Description.ReplaceWithJapanese();
+            string enText = originalText + ModString(info.Name, info.Description, info.Version, info.Author);
+            string jaText = originalJapaneseText + ModString(jaName, jaDesc, info.Version, info.Author);
+            modArea.Edit(enText, jaText);
         }
     }
 }

@@ -40,8 +40,16 @@ namespace SALT
         /// </summary>
         KEVIN,
         /// <summary>
+        /// Subaru as a duck. Popularized in a meme during May 2021.
+        /// </summary>
+        SHUBA,
+        /// <summary>
+        /// A cow that is supposed to the be the game creator Kevin.
+        /// </summary>
+        GURA_CAT,
+        /// <summary>
         /// A character with nothing attached.
         /// </summary>
-        NONE
+        NONE// = -1,
     }
 }

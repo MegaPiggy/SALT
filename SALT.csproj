@@ -162,6 +162,8 @@
     <Compile Include="Console\Commands\ClearCommand.cs" />
     <Compile Include="Console\Commands\CompleteLevelCommand.cs" />
     <Compile Include="Console\Commands\ConfigCommand.cs" />
+    <Compile Include="Patches\VFXPatches.cs" />
+    <Compile Include="VFXOption.cs" />
     <None Include=".editorconfig" />
     <None Include="Console\Commands\OldDumpCommand.cs" />
     <Compile Include="Console\Commands\DumpCommand.cs" />
@@ -226,6 +228,7 @@
     <Compile Include="Patches\GPtutPatch.cs" />
     <Compile Include="Patches\MainPatches.cs" />
     <Compile Include="Patches\OptionPatches.cs" />
+    <Compile Include="Patches\PausePatches.cs" />
     <Compile Include="Patches\PlayerPatches.cs" />
     <Compile Include="Patches\PotPatches.cs" />
     <Compile Include="Patches\SaveFilePatches.cs" />

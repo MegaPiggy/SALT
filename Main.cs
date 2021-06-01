@@ -15,7 +15,7 @@ namespace SALT
 {
     public class Main
     {
-        public const string Version = "1.1";
+        public const string Version = "1.1b";
         private static string NewLine { get => System.Environment.NewLine + "  "; }
 
         private static bool isPreInitialized;
@@ -24,7 +24,10 @@ namespace SALT
 
         public static GameObject context { get; internal set; }
         public static MainScript mainScript => MainScript.main != null ? MainScript.main : (Main.context != null ? Main.context.GetComponent<MainScript>() : null);
+        
+        [Obsolete("Please use characterOption instead.")]
         public static OptionsScript options { get; internal set; }
+        public static CharacterOption characterOption { get; internal set; }
 
         public static GameObject player { get; internal set; }
         public static PlayerScript actualPlayer => PlayerScript.player != null ? PlayerScript.player : (Main.player != null ? Main.player.GetComponent<PlayerScript>() : null);
@@ -32,16 +35,30 @@ namespace SALT
         internal static void NextCharacter()
         {
             int num = (MainScript.currentCharacter + 1) % actualPlayer.characterPacks.Count;
-            ChangeCharacter(num);
+            SetCharacter(num);
         }
 
-        internal static void ChangeCharacter(int num)
+        internal static void LastCharacter()
+        {
+            int num = MainScript.currentCharacter;
+            --num;
+            if (num < 0)
+                num = actualPlayer.characterPacks.Count - 1;
+            SetCharacter(num);
+        }
+
+        internal static void SetCharacter(int num)
         {
             MainScript.currentCharacter = num;
             PlayerPrefs.SetInt("character", num);
             actualPlayer.currentCharacter = num;
-            if (Main.options != null)
-                Main.options.charSpriteRend.sprite = Main.options.charSprites[MainScript.currentCharacter];
+            if (characterOption != null)
+            {
+                characterOption.po.currentSelection = MainScript.currentCharacter;
+                characterOption.charSprite.sprite = characterOption.charIcons[MainScript.currentCharacter];
+            }
+            //if (Main.options != null)
+            //    Main.options.charSpriteRend.sprite = Main.options.charSprites[MainScript.currentCharacter];
             //if (actualPlayer.GetComponent<Rigidbody2D>().velocity.magnitude <= 0.25f)
             //    actualPlayer.SpawnCharacter(num);
         }
@@ -208,7 +225,7 @@ namespace SALT
                 tmrRT.offsetMax = vRT.offsetMax;
                 tmrRT.anchoredPosition3D = vRT.anchoredPosition3D;
                 tmrRT.SetSiblingIndex(vRT.GetSiblingIndex() + 2);
-                tmrRT.localPosition = tmrRT.localPosition.SetY((-vRT.localPosition.y) + 20);
+                tmrRT.localPosition = tmrRT.localPosition.SetY((-vRT.localPosition.y) + 4.5f);
                 var txt = timerObject.GetComponent<TextMeshProUGUI>();
                 txt.text = UI.TimerUI.defaultTime;
                 //txt.alignment = TextAlignmentOptions.TopRight;
@@ -238,16 +255,22 @@ namespace SALT
             modUI.name = "Mods";
             GameObject modsTitle = modUI.FindChild("Text (TMP)", true);
             modsTitle.name = "modsTitle";
-            modsTitle.GetComponent<TextMeshProUGUI>().text = modsTitle.GetComponent<TextMeshProUGUI>().text.Replace("Credits", "SALT (Smol Ame Loader Thing)");
+            TextLanguageScript textLanguageScript = modsTitle.GetComponent<TextLanguageScript>();
+            textLanguageScript.Edit(textLanguageScript.GetEnglishText().Replace("Credits", "SALT (Smol Ame Loader Thing)"), textLanguageScript.GetEnglishText().Replace("Credits", "SALT (スモール アメ ローダー シング)"));
             GameObject loaderCreator = modUI.FindChild("Text (TMP) (1)", true);
             loaderCreator.name = "LoaderCreator";
-            loaderCreator.GetComponent<TextMeshProUGUI>().text = loaderCreator.GetComponent<TextMeshProUGUI>().text.Replace("Game by Kevin Stevens", "Mod Loader by MegaPiggy");
+            string oldText = loaderCreator.GetComponent<TextMeshProUGUI>().text;
+            string enText = oldText.Replace("Game by Kevin Stevens", "Mod Loader by MegaPiggy");
+            string jaText = oldText.Replace("Game by Kevin Stevens", "Modローダー by MegaPiggy");//"MegaPiggyによるModローダー");
+            loaderCreator.GetComponent<TextMeshProUGUI>().text = enText;
+            loaderCreator.AddComponent<TextLanguageScript>().Edit(enText, jaText);
             GameObject modList = desk.FindChild(creditsObject.name, true);
             modList.name = "ModsEmpty";
             modList.AddComponent<UI.ModListUI>();
             TextArea modsArea = modList.GetComponentInChildren<TextArea>();
             string modText = $"<size=25>Press Ctrl+Tab to open up the command console.</size><size=5>{System.Environment.NewLine}{System.Environment.NewLine}</size><size=40>Mods:</size><size=10>{System.Environment.NewLine}{System.Environment.NewLine}</size>";
-            modsArea.Edit(modText);
+            string modJaText = $"<size=25>CTRL+TABを押し: オープンcommand console</size><size=5>{System.Environment.NewLine}{System.Environment.NewLine}</size><size=40>Mods:</size><size=10>{System.Environment.NewLine}{System.Environment.NewLine}</size>";
+            modsArea.Edit(modText, modJaText);
 
             GameObject bookObject = UnityEngine.Object.FindObjectsOfType<BookRandomColor>().FirstOrDefault(b => b.GetComponent<BouncyScript>().bounceFactor == 1.5f).gameObject;
             GameObject book = bookObject.CloneInstance();
