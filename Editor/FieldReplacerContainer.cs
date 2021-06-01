@@ -4,6 +4,6 @@ namespace SALT.Editor
 {
     public class FieldReplacerContainer : MonoBehaviour
     {
-        public BundleFieldReplacer Replacer;
+        internal BundleFieldReplacer Replacer;
     }
 }

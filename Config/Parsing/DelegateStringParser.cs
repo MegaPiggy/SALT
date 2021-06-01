@@ -19,6 +19,6 @@
 
         public delegate string EncodeGenericDelegate<in T>(T obj);
 
-        public delegate T ParseGenericDelegate<T>(string str);
+        public delegate T ParseGenericDelegate<out T>(string str);
     }
 }

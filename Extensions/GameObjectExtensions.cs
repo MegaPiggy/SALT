@@ -120,7 +120,7 @@ namespace SALT.Extensions
                 if (transform.childCount > 0 && !noDive)
                 {
                     gameObject = transform.gameObject.FindChildWithPartialName(name);
-                    if ((UnityEngine.Object)gameObject != (UnityEngine.Object)null)
+                    if (gameObject != null)
                         break;
                 }
             }
@@ -132,16 +132,14 @@ namespace SALT.Extensions
             if (!dive)
             {
                 Transform found = obj.transform.Find(name);
-                if (!((UnityEngine.Object)found == (UnityEngine.Object)null))
-                {
+                if (found != null)
                     return found.gameObject;
-                }
                 return null;
             }
-            GameObject gameObject = (GameObject)null;
+            GameObject gameObject = null;
             foreach (Transform transform in obj?.transform)
             {
-                if (!((UnityEngine.Object)transform == (UnityEngine.Object)null))
+                if (transform != null)
                 {
                     if (transform.name.Equals(name))
                     {
@@ -151,7 +149,7 @@ namespace SALT.Extensions
                     if (transform.childCount > 0)
                     {
                         gameObject = transform.gameObject.FindChild(name, dive);
-                        if ((UnityEngine.Object)gameObject != (UnityEngine.Object)null)
+                        if (gameObject != null)
                             break;
                     }
                 }
