@@ -44,9 +44,13 @@ namespace SALT
         /// </summary>
         SHUBA,
         /// <summary>
-        /// A cow that is supposed to the be the game creator Kevin.
+        /// Cat version of gura.
         /// </summary>
         GURA_CAT,
+        /// <summary>
+        /// A dragon vtuber.
+        /// </summary>
+        COCO,
         /// <summary>
         /// A character with nothing attached.
         /// </summary>
