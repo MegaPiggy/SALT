@@ -39,4 +39,6 @@ public static class Levels
     public static bool isNothing() => SceneManager.GetActiveScene().buildIndex == 7;
     public static bool isMoguMogu() => SceneManager.GetActiveScene().buildIndex == 8;
     public static bool isInumore() => SceneManager.GetActiveScene().buildIndex == 9;
+    public static bool isRushia() => SceneManager.GetActiveScene().buildIndex == 10;
+    public static bool isInascapableMadness() => SceneManager.GetActiveScene().buildIndex == 11;
 }
