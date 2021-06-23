@@ -21,6 +21,8 @@ public static class Levels
         newScene = next;
         SALT.Callbacks.OnSceneLoaded();
     }
+    
+	public static Level CurrentLevel => (Level)Enum.ToObject(typeof(Level), SceneManager.GetActiveScene().buildIndex);
 
     public static string LevelName => LevelLoader.levelName;
 
