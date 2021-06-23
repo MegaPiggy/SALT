@@ -8,6 +8,26 @@ namespace SALT.Extensions
     public static class CollectionExtensions
     {
         /// <summary>
+        /// Reverses a array
+        /// </summary>
+        public static T[] Reverse<T>(this T[] array)
+        {
+            Array.Reverse(array);
+            return array;
+        }
+        
+        /// <summary>
+        /// Swap two elements in array
+        /// </summary>
+        public static T[] Swap<T>(this T[] array, int a, int b)
+        {
+            T x = array[a];
+            array[a] = array[b];
+            array[b] = x;
+            return array;
+        }
+        
+        /// <summary>
         /// Swap two elements in array
         /// </summary>
         public static void Swap<T>(this T[] array, int a, int b)
