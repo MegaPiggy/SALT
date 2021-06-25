@@ -12,6 +12,10 @@ namespace SALT
         void Load();
 
         void PostLoad();
+        
+        void UnLoad();
+        
+        void Update();
     }
 
     public abstract class ModEntryPoint : IModEntryPoint
@@ -66,6 +70,14 @@ namespace SALT
         }
 
         public virtual void PreLoad()
+        {
+        }
+
+        public virtual void UnLoad()
+        {
+        }
+
+        public virtual void Update()
         {
         }
     }
