@@ -122,7 +122,8 @@ namespace SALT
             Main.isInitialized = true;
             PrefabUtils.ProcessReplacements();
             Console.KeyBindManager.ReadBinds();
-            mainScript.AddComponent<UserInputService>(); 
+            mainScript.AddComponent<UserInputService>();
+            mainScript.AddComponent<ModManager>(); 
             mainScript.AddComponent<Console.KeyBindManager.ProcessAllBindings>();
             try
             {
