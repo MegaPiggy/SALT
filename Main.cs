@@ -156,6 +156,19 @@ namespace SALT
             GC.Collect();
         }
 
+        internal static void UnLoad()
+        {
+            try
+            {
+                ModLoader.UnLoad();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError((object)ex);
+                UI.ErrorUI.CreateError(ex.GetType().Name + ": " + ex.Message);
+            }
+        }
+
         internal static Collider2D CreatePlayerCollider()
         {
             var fakePlayer = new GameObject("fakePlayer");
