@@ -126,7 +126,7 @@ namespace SALT
 
         internal static void PreLoadMods()
         {
-            Console.Console.Reload += ReLoadMods;
+            Console.Console.Reload += (Console.Console.ReloadAction)ReLoadMods;
             foreach (string key in loadOrder)
             {
                 Mod mod = Mods[key];
