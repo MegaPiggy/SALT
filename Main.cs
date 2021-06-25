@@ -1,4 +1,4 @@
-﻿using SALT.Editor;
+using SALT.Editor;
 using SALT.Extensions;
 using SALT.Utils;
 using HarmonyLib;
@@ -160,7 +160,7 @@ namespace SALT
         {
             try
             {
-                ModLoader.UnLoad();
+                ModLoader.UnLoadMods();
             }
             catch (Exception ex)
             {
