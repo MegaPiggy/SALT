@@ -13,6 +13,8 @@ namespace SALT
 
         void PostLoad();
         
+        void ReLoad();
+        
         void UnLoad();
         
         void Update();
@@ -70,6 +72,10 @@ namespace SALT
         }
 
         public virtual void PreLoad()
+        {
+        }
+
+        public virtual void ReLoad()
         {
         }
 
