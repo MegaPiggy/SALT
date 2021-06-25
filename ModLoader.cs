@@ -1,4 +1,5 @@
-﻿using SALT.Config;
+using SALT.Config;
+using SALT.Extensions;
 using SALT.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,15 @@ using System.Text.Json.Serialization;
 
 namespace SALT
 {
+    public class ModManager : MonoBehaviour
+    {
+        void OnApplicationQuit()
+        {
+            Main.UnLoad();
+            Debug.Log("Application ending after " + Time.time + " seconds");
+        }
+    }
+    
     public static class ModLoader
     {
         internal const string ModJson = "modinfo.json";
@@ -172,6 +182,40 @@ namespace SALT
             CurrentLoadingStep = LoadingStep.FINISHED;
         }
 
+        internal static void UnLoadMods()
+        {
+            CurrentLoadingStep = LoadingStep.UNLOAD;
+            foreach (string key in loadOrder.ToList().Reverse())
+            {
+                Mod mod = Mods[key];
+                try
+                {
+                    mod.UnLoad();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("Error unloading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                }
+            }
+        }
+
+        internal static void UpdateMods()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (string key in loadOrder)
+            {
+                Mod mod = Mods[key];
+                try
+                {
+                    mod.Update();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("Error updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                }
+            }
+        }
+
         internal class AssemblyInfo
         {
             public AssemblyName AssemblyName;
@@ -197,6 +241,7 @@ namespace SALT
             LOAD,
             POSTLOAD,
             FINISHED,
+            UNLOAD,
         }
 
         internal class ProtoInfo
