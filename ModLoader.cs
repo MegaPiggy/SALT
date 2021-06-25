@@ -125,6 +125,7 @@ namespace SALT
 
         internal static void PreLoadMods()
         {
+            Console.Console.Reload += ReLoadMods;
             foreach (string key in loadOrder)
             {
                 Mod mod = Mods[key];
@@ -132,13 +133,13 @@ namespace SALT
                 {
                     ConfigManager.PopulateConfigs(mod);
                     mod.PreLoad();
-                    Console.Console.Reload += (Console.Console.ReloadAction)(() =>
-                    {
-                        Mod.ForceModContext(mod);
-                        foreach (ConfigFile config in mod.Configs)
-                            config.TryLoadFromFile();
-                        Mod.ClearModContext();
-                    });
+                    //Console.Console.Reload += (Console.Console.ReloadAction)(() =>
+                    //{
+                    //    Mod.ForceModContext(mod);
+                    //    foreach (ConfigFile config in mod.Configs)
+                    //        config.TryLoadFromFile();
+                    //    Mod.ClearModContext();
+                    //});
                 }
                 catch (Exception ex)
                 {
@@ -177,6 +178,28 @@ namespace SALT
                 catch (Exception ex)
                 {
                     throw new Exception(string.Format("Error post-loading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                }
+            }
+            CurrentLoadingStep = LoadingStep.FINISHED;
+        }
+
+        internal static void ReLoadMods()
+        {
+            CurrentLoadingStep = LoadingStep.RELOAD;
+            foreach (string key in loadOrder)
+            {
+                Mod mod = Mods[key];
+                try
+                {
+                    Mod.ForceModContext(mod);
+                    foreach (ConfigFile config in mod.Configs)
+                        config.TryLoadFromFile();
+                    mod.ReLoad();
+                    Mod.ClearModContext();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("Error reloading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
                 }
             }
             CurrentLoadingStep = LoadingStep.FINISHED;
@@ -240,6 +263,7 @@ namespace SALT
             PRELOAD,
             LOAD,
             POSTLOAD,
+            RELOAD,
             FINISHED,
             UNLOAD,
         }
