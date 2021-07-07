@@ -58,5 +58,11 @@ namespace SALT
         public void Load() => this.entryPoint.Load();
 
         public void PostLoad() => this.entryPoint.PostLoad();
+
+        public void ReLoad() => this.entryPoint.ReLoad();
+
+        public void UnLoad() => this.entryPoint.UnLoad();
+
+        public void Update() => this.entryPoint.Update();
     }
 }

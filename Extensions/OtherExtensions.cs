@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -421,6 +422,68 @@ namespace SALT.Extensions
             return !m_TypeAliases.TryGetValue(type, out string str) ? type.ToString() : str;
         }
 
+        /// <summary>
+        /// Converts unix timestamp to <see cref="DateTime"/> with high precision.
+        /// </summary>
+        /// <param name="unixTime">Unix timestamp.</param>
+        /// <returns>DateTime object that represents the same moment in time as provided Unix time.</returns>
+        public static DateTime UnixTimestampToDateTime(double unixTime)
+        {
+            var unixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            var unixTimeStampInTicks = (long)(unixTime * TimeSpan.TicksPerSecond);
+            return new DateTime(unixStart.Ticks + unixTimeStampInTicks, System.DateTimeKind.Utc);
+        }
+
+        /// <summary>
+        /// Converts <see cref="DateTime"/> to unix timestamp with high precision
+        /// </summary>
+        /// <param name="dateTime">DateTime date representation.</param>
+        /// <returns>unix timestamp that represents the same moment in time as provided DateTime object.</returns>
+        public static double DateTimeToUnixTimestamp(DateTime dateTime)
+        {
+            var unixStart = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            var unixTimeStampInTicks = (dateTime.ToUniversalTime() - unixStart).Ticks;
+            return (double)unixTimeStampInTicks / TimeSpan.TicksPerSecond;
+        }
+
+
+        /// <summary>
+        /// Methods to check if renderer is visible from a certain point.
+        /// </summary>
+        /// <param name="renderer">Renderer to operate with.</param>
+        /// <param name="camera">Camera instance tha will be used for calculation.</param>
+        /// <returns></returns>
+        public static bool IsVisibleFrom(this Renderer renderer, Camera camera)
+        {
+            var planes = GeometryUtility.CalculateFrustumPlanes(camera);
+            return GeometryUtility.TestPlanesAABB(planes, renderer.bounds);
+        }
+
+        /// <summary>
+        /// Renderer Bounds of the renderer. Method also take children in consideration.
+        /// </summary>
+        /// <param name="renderer">Renderer to operate with.</param>
+        /// <returns>Calculated renderer bounds.</returns>
+        public static Bounds GetRendererBounds(this Renderer renderer)
+        {
+            return renderer.gameObject.GetRendererBounds();
+        }
+
+        /// <summary>
+        /// Clones the Scriptable Object
+        /// </summary>
+        public static T Clone<T>(this T obj) where T : ScriptableObject
+        {
+            T newObj = ScriptableObject.CreateInstance<T>();
+            foreach (FieldInfo field in typeof(T).GetFields(BindingFlags.NonPublic | BindingFlags.Instance |
+                                                            BindingFlags.Public))
+            {
+                field.SetValue(newObj, field.GetValue(obj));
+            }
+
+            return newObj;
+        }
+
         public static List<TextAssetTranslation> ToAssetTranslations(this string text)
         {
             return new List<TextAssetTranslation>
@@ -529,7 +592,8 @@ namespace SALT.Extensions
         public static void RemoveAllMethods(this PauseOption pauseOption) => pauseOption.methods.RemoveAllListeners();
 
         public static void AddMethod(this GenericButtonScript genericButton, UnityAction state) => genericButton.methods.AddListener(state);
-        public static void RemoveAllMethods(this GenericButtonScript genericButton) => genericButton.methods.RemoveAllListeners(); 
+        public static void RemoveMethod(this GenericButtonScript genericButton, UnityAction state) => genericButton.methods.RemoveListener(state);
+        public static void RemoveAllMethods(this GenericButtonScript genericButton) => genericButton.methods.RemoveAllListeners();
 
 
         public static void SetText(this TranslationCollection translationCollection, Language language, string text) => translationCollection.translations[translationCollection.translations.IndexOf(translationCollection.translations.FirstOrDefault(translation => translation.language == language))] = new Translation { language = language, text = text };

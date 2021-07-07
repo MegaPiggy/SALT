@@ -120,10 +120,18 @@ namespace SALT.Registries
             return false;
         }
 
+        /// <summary>
+        /// Creates a new enum id with a name you specify.
+        /// </summary>
+        /// <param name="name">The name of the character. Will be capitalized and spaces will be replaced with _</param>
+        /// <returns>A new character enum</returns>
+        /// <exception cref="LoadingStepException">
+        /// Happens if you call this method after <see cref="LoadingStep.PRELOAD"/>
+        /// </exception>
         public static Character CreateCharacterId(string name)
         {
-            if (ModLoader.CurrentLoadingStep > ModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't register identifiables outside of the PreLoad step");
+            if (ModLoader.CurrentLoadingStep > LoadingStep.PRELOAD)
+                throw new LoadingStepException("Can't register identifiables outside of the PreLoad step");
             return RegisterValueWithEnum(name.ToUpper().Replace(" ","_"));
         }
 
@@ -248,17 +256,33 @@ namespace SALT.Registries
             }
         }
 
+        /// <summary>
+        /// Gets a character pack with the id you specify.
+        /// </summary>
+        /// <param name="id">Character id to get the prefab for</param>
+        /// <returns>The prefab that matchs the <paramref name="id"/></returns>
+        /// <exception cref="LoadingStepException">
+        /// Happens if you call this method during <see cref="LoadingStep.PRELOAD"/>
+        /// </exception>
         public static GameObject GetCharacter(Character id)
         {
-            if (ModLoader.CurrentLoadingStep == ModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't get character prefab during preload");
+            if (ModLoader.CurrentLoadingStep == LoadingStep.PRELOAD)
+                throw new LoadingStepException("Can't get character prefab during preload");
             return Main.actualPlayer.characterPacks.FirstOrDefault(c => CharacterIdentifiable.GetId(c) == id);
         }
 
+        /// <summary>
+        /// Gets a character icon with the id you specify.
+        /// </summary>
+        /// <param name="id">Character id to get the sprite for</param>
+        /// <returns>The sprite that matchs the <paramref name="id"/></returns>
+        /// <exception cref="LoadingStepException">
+        /// Happens if you call this method during <see cref="LoadingStep.PRELOAD"/>
+        /// </exception>
         public static Sprite GetIcon(Character id)
         {
-            if (ModLoader.CurrentLoadingStep == ModLoader.LoadingStep.PRELOAD)
-                throw new Exception("Can't get character icon during preload");
+            if (ModLoader.CurrentLoadingStep == LoadingStep.PRELOAD)
+                throw new LoadingStepException("Can't get character icon during preload");
             return allSprites.ContainsKey(id) ? allSprites[id] : null;
         }
 

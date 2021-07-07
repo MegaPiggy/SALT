@@ -83,6 +83,122 @@ namespace SALT.Extensions
         //    transform.rotation = cframe;
         //}
 
+        /// <summary>
+        /// Resets `anchorMin`, `anchorMax`, `offsetMin`, `offsetMax` to `Vector2.zero`.
+        /// </summary>
+        /// <param name="rectTransform">RectTransform to operate with.</param>
+        public static void Reset(this RectTransform rectTransform)
+        {
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
+        }
+
+        /// <summary>
+        /// Get's the screen rect of provided RectTransform.
+        /// </summary>
+        /// <param name="rectTransform">RectTransform to operate with.</param>
+        /// <returns>Screen rect.</returns>
+        public static Rect GetScreenRect(this RectTransform rectTransform)
+        {
+            var rtCorners = new Vector3[4];
+            rectTransform.GetWorldCorners(rtCorners);
+            var rtRect = new Rect(new Vector2(rtCorners[0].x, rtCorners[0].y), new Vector2(rtCorners[3].x - rtCorners[0].x, rtCorners[1].y - rtCorners[0].y));
+
+            var canvas = rectTransform.GetComponentInParent<Canvas>();
+            var canvasCorners = new Vector3[4];
+            canvas.GetComponent<RectTransform>().GetWorldCorners(canvasCorners);
+            var cRect = new Rect(new Vector2(canvasCorners[0].x, canvasCorners[0].y), new Vector2(canvasCorners[3].x - canvasCorners[0].x, canvasCorners[1].y - canvasCorners[0].y));
+
+            var screenWidth = Screen.width;
+            var screenHeight = Screen.height;
+
+            var size = new Vector2(screenWidth / cRect.size.x * rtRect.size.x, screenHeight / cRect.size.y * rtRect.size.y);
+            var rect = new Rect(screenWidth * ((rtRect.x - cRect.x) / cRect.size.x), screenHeight * ((-cRect.y + rtRect.y) / cRect.size.y), size.x, size.y);
+            return rect;
+        }
+
+        /// <summary>
+        /// Method to get Rect related to ScreenSpace, from given RectTransform.
+        /// This will give the real position of this Rect on screen.
+        /// </summary>
+        /// <param name="transform">Original RectTransform of some object</param>
+        /// <returns>New Rect instance.</returns>
+        public static Rect ToScreenSpace(this RectTransform transform)
+        {
+            Vector2 size = Vector2.Scale(transform.rect.size, transform.lossyScale);
+            Rect rect = new Rect(transform.position.x, Screen.height - transform.position.y, size.x, size.y);
+            rect.x -= (transform.pivot.x * size.x);
+            rect.y -= ((1.0f - transform.pivot.y) * size.y);
+            return rect;
+        }
+
+
+        /// <summary>
+        /// Sets <see cref="Transform.lossyScale"/> value.
+        /// </summary>
+        /// <param name="transform">Transform component.</param>
+        /// <param name="lossyScale">New lossyScale value.</param>
+        public static void SetLossyScale(this Transform transform, Vector3 lossyScale)
+        {
+            transform.localScale = Vector3.one;
+            var currentLossyScale = transform.lossyScale;
+            transform.localScale = new Vector3(lossyScale.x / currentLossyScale.x, lossyScale.y / currentLossyScale.y, lossyScale.z / currentLossyScale.z);
+        }
+
+        /// <summary>
+        /// Reset <see cref="Transform"/> component position, scale and rotation.
+        /// </summary>
+        /// <param name="transform">Transform component.</param>
+        public static void Reset(this Transform transform)
+        {
+            transform.localScale = Vector3.one;
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+        }
+
+        /// <summary>
+        /// Removes all transform children.
+        /// </summary>
+        /// <param name="transform">Transform component.</param>
+        /// <param name="activeOnly">Will ignore disabled game-objects when set to <c>true</c>. </param>
+        /// <returns></returns>
+        public static Transform Clear(this Transform transform, bool activeOnly = false)
+        {
+            if (transform.childCount == 0)
+                return transform;
+
+
+            var children = transform.GetComponentsInChildren<Transform>();
+
+            foreach (var child in children)
+            {
+                if (child == transform || child == null) continue;
+                if (activeOnly && !child.gameObject.activeSelf) continue;
+                UnityEngine.Object.DestroyImmediate(child.gameObject);
+            }
+            return transform;
+        }
+
+        /// <summary>
+        /// Find or create child with name.
+        /// </summary>
+        /// <param name="transform">Transform component.</param>
+        /// <param name="name">Child name.</param>
+        /// <returns>Child <see cref="Transform"/> component instance.</returns>
+        public static Transform FindOrCreateChild(this Transform transform, string name)
+        {
+            var part = transform.Find(name);
+            if (part == null)
+            {
+                part = new GameObject(name).transform;
+                part.parent = transform;
+                part.Reset();
+            }
+            return part;
+        }
+
         public static string GetHierarchyString(this Transform transform) => string.Join("/", transform.GetHierarchy().Select<Transform, string>((Func<Transform, string>)(it => it.name)).ToArray<string>());
 
         public static IEnumerable<Transform> GetHierarchy(this Transform transform) => transform.GetAscendants().Reverse<Transform>();

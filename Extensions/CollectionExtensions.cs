@@ -7,6 +7,29 @@ namespace SALT.Extensions
 {
     public static class CollectionExtensions
     {
+        public static void AddIfDoesNotContain<T>(this List<T> list, T item)
+        {
+            if (!list.Contains(item))
+                list.Add(item);
+        }
+
+        public static void AddOrChange<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary.ContainsKey(key))
+                dictionary[key] = value;
+            else
+                dictionary.Add(key, value);
+        }
+
+        /// <summary>
+        /// Reverses the order of the elements in the entire <see cref="List{T}"/>.
+        /// </summary>
+        public static List<T> Reverse<T>(this List<T> list)
+        {
+            list.Reverse();
+            return list;
+        }
+
         /// <summary>
         /// Reverses a array
         /// </summary>
@@ -15,7 +38,7 @@ namespace SALT.Extensions
             Array.Reverse(array);
             return array;
         }
-        
+
         /// <summary>
         /// Swap two elements in array
         /// </summary>
@@ -25,16 +48,6 @@ namespace SALT.Extensions
             array[a] = array[b];
             array[b] = x;
             return array;
-        }
-        
-        /// <summary>
-        /// Swap two elements in array
-        /// </summary>
-        public static void Swap<T>(this T[] array, int a, int b)
-        {
-            T x = array[a];
-            array[a] = array[b];
-            array[b] = x;
         }
 
         /// <summary>

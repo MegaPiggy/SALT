@@ -289,8 +289,9 @@ namespace SALT.Extensions
                 Debug.Log(gameObject.name + "'s component: " + (component.GetType()).ToString());
             }
         }
-
+        public static void Prefabitize(this GameObject go) => GameObjectUtils.Prefabitize(go);
         public static void Destroy(this GameObject go) => UnityEngine.Object.Destroy(go);
+        public static void DestroyImmediate(this GameObject go) => UnityEngine.Object.DestroyImmediate(go);
 
         public static void RemoveComponent<T>(this GameObject go) where T : Component => UnityEngine.Object.Destroy(go.GetComponent<T>());
 
@@ -325,6 +326,69 @@ namespace SALT.Extensions
         public static void Deactivate(this GameObject obj) => obj.Activate(false);
 
         public static bool IsActive(this GameObject obj) => obj.activeSelf;
+
+        /// <summary>
+        /// Set layer to all GameObject children, including inactive.
+        /// </summary>
+        /// <param name="gameObject">Target GameObject.</param>
+        /// <param name="layerNumber">Layer number.</param>
+        public static void SetLayerRecursively(this GameObject gameObject, int layerNumber)
+        {
+            foreach (var trans in gameObject.GetComponentsInChildren<Transform>(true))
+                trans.gameObject.layer = layerNumber;
+        }
+
+        /// <summary>
+        /// Set layer to all GameObject children, including inactive.
+        /// </summary>
+        /// <param name="gameObject">Target GameObject.</param>
+        /// <param name="layerName">Layer name.</param>
+        public static void SetLayerRecursively(this GameObject gameObject, string layerName)
+        {
+            int layerNumber = LayerMask.NameToLayer(layerName);
+            foreach (var trans in gameObject.GetComponentsInChildren<Transform>(true))
+                trans.gameObject.layer = layerNumber;
+        }
+
+        /// <summary>
+        /// Renderer Bounds of the game object.
+        /// </summary>
+        /// <param name="go">GameObject you want calculate bounds for.</param>
+        /// <returns>Calculated game object bounds.</returns>
+        public static Bounds GetRendererBounds(this GameObject go)
+        {
+            var hasBounds = false;
+            var bounds = new Bounds(Vector3.zero, Vector3.zero);
+            var childrenRenderer = go.GetComponentsInChildren<Renderer>();
+
+
+            var rnd = go.GetComponent<Renderer>();
+            if (rnd != null)
+            {
+                bounds = rnd.bounds;
+                hasBounds = true;
+            }
+
+            foreach (var child in childrenRenderer)
+                if (!hasBounds)
+                {
+                    bounds = child.bounds;
+                    hasBounds = true;
+                }
+                else
+                {
+                    bounds.Encapsulate(child.bounds);
+                }
+
+            return bounds;
+        }
+
+        /// <summary>
+        /// Renderer Bounds of the game object.
+        /// </summary>
+        /// <param name="go">GameObject you want calculate bounds for.</param>
+        /// <returns>Calculated game object bounds.</returns>
+        public static Bounds CalculateBounds(this GameObject go) => go.GetRendererBounds();
     }
 
 }

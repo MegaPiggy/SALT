@@ -13,6 +13,28 @@ namespace SALT.Extensions
     /// </summary>
     public static class ObjectExtensions
     {
+        /// <summary>
+        /// Performs a TRUE null-check.
+        /// See http://answers.unity.com/answers/1224404/view.html
+        /// </summary>
+        /// <param name="obj">An object to check.</param>
+        /// <returns>Returns <c>true</c> if object is null, <c>false</c> otherwise.</returns>
+        public static bool IsNull(this Object obj)
+        {
+            return (object)obj == null;
+        }
+
+        /// <summary>
+        /// Performs a TRUE null-check.
+        /// See http://answers.unity.com/answers/1224404/view.html
+        /// </summary>
+        /// <param name="obj">An object to check.</param>
+        /// <returns>Returns <c>false</c> if object is null, <c>true</c> otherwise.</returns>
+        public static bool IsNotNull(this Object obj)
+        {
+            return !IsNull(obj);
+        }
+
         public static Dictionary<T, GameObject> Find<T>()
         {
             Dictionary<T, GameObject> interfaces = new Dictionary<T, GameObject>();
@@ -344,6 +366,16 @@ namespace SALT.Extensions
         public static T CloneInstance<T>(this T obj) where T : Object
         {
             return Object.Instantiate(obj);
+        }
+
+        /// <summary>
+        /// Clones the game object
+        /// </summary>
+        public static GameObject Clone(this GameObject obj)
+        {
+            GameObject cObj = obj.CloneInstance();
+            cObj.name = obj.name;
+            return cObj;
         }
 
         /// <summary>

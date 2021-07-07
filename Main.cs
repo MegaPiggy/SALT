@@ -10,17 +10,19 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SALT
 {
     public static class Main
     {
-        public const string Version = "1.1b";
+        public const string Version = "1.1c";
         private static string NewLine { get => System.Environment.NewLine + "  "; }
 
         private static bool isPreInitialized;
         private static bool isInitialized;
         private static bool isPostInitialized;
+        internal static Assembly execAssembly => Assembly.GetExecutingAssembly();
 
         public static GameObject context { get; internal set; }
         public static MainScript mainScript => MainScript.main != null ? MainScript.main : (Main.context != null ? Main.context.GetComponent<MainScript>() : null);
@@ -71,7 +73,7 @@ namespace SALT
 
         private static Dictionary<int, string> layerNames = new Dictionary<int, string>();
         public static Dictionary<int, string> LayerNames => layerNames;
-
+        internal static Dictionary<int, string> sceneNames = new Dictionary<int, string>();
         public static void PreLoad()
         {
             if (Main.isPreInitialized)
@@ -80,6 +82,8 @@ namespace SALT
             Debug.Log((object)"SALT has successfully invaded the game!");
             for (int i = 0; i < 32; i++)
                 layerNames.Add(i, LayerMask.LayerToName(i));
+            for (int i = 0; i < SceneManager.sceneCountInBuildSettings; ++i)
+                sceneNames.Add(i, SceneManager.GetSceneByBuildIndex(i).name);
             foreach (System.Type type in Assembly.GetExecutingAssembly().GetTypes())
                 RuntimeHelpers.RunClassConstructor(type.TypeHandle);
             HarmonyPatcher.PatchAll();
@@ -155,6 +159,19 @@ namespace SALT
 
             // Clears all the temporary memory
             GC.Collect();
+        }
+
+        internal static void ReLoad()
+        {
+            try
+            {
+                ModLoader.ReLoadMods();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError((object)ex);
+                UI.ErrorUI.CreateError(ex.GetType().Name + ": " + ex.Message);
+            }
         }
 
         internal static void UnLoad()
@@ -293,6 +310,10 @@ namespace SALT
             book.transform.localScale = bookObject.transform.localScale;
             book.AddComponent<NoRotation>();
             book.GetComponent<BouncyScript>().bounceFactor = 1.8f;
+
+            //GameObject cheese = SAObjects.Cheese.Clone();
+            //cheese.SetActive(true);
+            //cheese.transform.position = new Vector3(10, 5);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using SALT.Extensions;
+using SALT.Utils;
 
 namespace SALT.Console.Commands
 {
@@ -19,7 +20,7 @@ namespace SALT.Console.Commands
         public static int Increment()
         {
             i += 1;
-            if (i >= SceneManager.sceneCountInBuildSettings)
+            if (i >= SceneUtils.SceneBuildLength)
                 i = 0;
             return i;
         }
@@ -52,7 +53,7 @@ namespace SALT.Console.Commands
                 int index = 1;
                 foreach (Level lvl in levels)
                 {
-                    if (index > SceneManager.sceneCountInBuildSettings)
+                    if (index > SceneUtils.SceneBuildLength)
                         break;
                     realLevels.Add(lvl);
                     index++;

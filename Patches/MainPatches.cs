@@ -6,12 +6,18 @@ namespace SALT.Patches
     [HarmonyPatch("Awake")]
     internal static class AwakePatch
     {
+        internal static bool done = false;
+
         [HarmonyPriority(Priority.First)]
         public static void Postfix(MainScript __instance)
         {
             if (Main.context == null)
                 Main.context = __instance.gameObject;
-            Callbacks.OnSceneLoaded();
+            if (!done)
+            {
+                done = true;
+                Callbacks.OnSceneLoaded();
+            }
         }
     }
 

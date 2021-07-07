@@ -24,64 +24,40 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Debug\SALT.xml</DocumentationFile>
+    <NoWarn>NU5128,NU5131</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>bin\Release\SALT.xml</DocumentationFile>
+    <NoWarn>NU5128,NU5131</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>E:\Games\SmolAme\AmeLoader\Libs\0Harmony.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SALTInstaller\packages\Lib.Harmony.2.0.4\lib\net48\0Harmony.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
-      <HintPath>E:\Games\SmolAme\AmeLoader\Libs\INIFileParser.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="INIFileParser">
+      <HintPath>E:\Games\SmolAme\SALT\Libs\INIFileParser.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Json.Net.Unity3D.9.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Text.Encodings.Web.5.0.1\lib\net461\System.Text.Encodings.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Json, Version=5.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Text.Json.5.0.2\lib\net461\System.Text.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
     <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\Unity.TextMeshPro.dll</HintPath>
@@ -96,6 +72,9 @@
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
       <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -162,8 +141,20 @@
     <Compile Include="Console\Commands\ClearCommand.cs" />
     <Compile Include="Console\Commands\CompleteLevelCommand.cs" />
     <Compile Include="Console\Commands\ConfigCommand.cs" />
+    <None Include="Console\Commands\LoadSceneCommand.cs" />
+    <Compile Include="Extensions\SceneExtensions.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="ObjImporter.cs" />
+    <Compile Include="OperatingSystem\FilesBrowser.cs" />
+    <Compile Include="Patches\HUDPatch.cs" />
     <Compile Include="Patches\VFXPatches.cs" />
     <Compile Include="Registries\LevelRegistry.cs" />
+    <Compile Include="Utils\ColorHelper.cs" />
+    <Compile Include="Utils\IdFactory.cs" />
+    <Compile Include="Utils\ListUtils.cs" />
+    <Compile Include="Utils\SceneUtils.cs" />
+    <Compile Include="Utils\TextureUtils.cs" />
+    <Compile Include="Utils\TimeUtils.cs" />
     <Compile Include="VFXOption.cs" />
     <None Include=".editorconfig" />
     <None Include="Console\Commands\OldDumpCommand.cs" />
@@ -256,9 +247,49 @@
     <Compile Include="Utils\RaycastUtils.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Vector3Surrogate.cs" />
+    <None Include="Meshes\Cheese.mtl" />
+    <None Include="Meshes\Cheese.obj" />
+    <None Include="nupkg.ps1" />
+    <None Include="packages.config" />
+    <None Include="SALT.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\Debug\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\skybk.png" />
+    <None Include="Images\skydnOld.png" />
+    <None Include="Images\skydn.png" />
+    <None Include="Images\skyft.png" />
+    <None Include="Images\skylf.png" />
+    <None Include="Images\skyrt.png" />
+    <None Include="Images\skyupOld.png" />
+    <None Include="Images\skyup.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\skybox_Back.png" />
+    <None Include="Images\skybox_Bottom.png" />
+    <None Include="Images\skybox_Front.png" />
+    <None Include="Images\skybox_Left.png" />
+    <None Include="Images\skybox_Right.png" />
+    <None Include="Images\skybox_Top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="INI.dll" Pack="true" PackagePath="" />
+    <None Include="README.md" Pack="true" PackagePath="">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="LICENSE" Pack="true" PackagePath="">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="SmolAmeLoaderThing.1.1.5.nupkg" />
+    <None Include="WatsonAmeliaPortraitMini.png" Pack="true" PackagePath="">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "E:\Games\SmolAme\Smol Ame_Data\Managed\$(TargetName).dll"
+copy /Y "$(TargetDir)$(TargetName).xml" "E:\Games\SmolAme\Smol Ame_Data\Managed\$(TargetName).xml"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

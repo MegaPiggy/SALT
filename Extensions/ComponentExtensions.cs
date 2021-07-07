@@ -81,11 +81,41 @@ namespace SALT.Extensions
             return component.gameObject.GetRequiredComponentInChildren<T>(includeInactive);
         }
 
+        /// <summary>
+        /// Creates a copy of a material
+        /// </summary>
+        /// <param name="mat">The material to copy</param>
+        /// <param name="copyProps">Should the properties get deep copied? Some might require a deep copy</param>
+        public static Material Copy(this Material mat, bool copyProps = false)
+        {
+            Material copy = Object.Instantiate(mat);
+
+            if (copyProps)
+                copy.CopyPropertiesFromMaterial(mat);
+
+            return copy;
+        }
+
         public static Material SetInfo(this Material mat, Color color, string name)
         {
             mat.SetColor("_Color", color);
             mat.name = name;
             return mat;
+        }
+
+        /// <summary>
+        /// Set's alpha channel for the Material `_Color` property
+        /// </summary>
+        /// <param name="material">Material to operate with.</param>
+        /// <param name="value">Alpha channel value.</param>
+        public static void SetAlpha(this Material material, float value)
+        {
+            if (material.HasProperty("_Color"))
+            {
+                var color = material.color;
+                color.a = value;
+                material.color = color;
+            }
         }
 
         public static T[] Group<T>(this T obj) where T : Object => new T[1]

@@ -6,21 +6,45 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using UnityEngine;
 
 namespace SALT
 {
     public class ModManager : MonoBehaviour
     {
+        void Update() => ModLoader.UpdateMods();
+
         void OnApplicationQuit()
         {
             Main.UnLoad();
             Debug.Log("Application ending after " + Time.time + " seconds");
         }
     }
-    
+
+    public enum LoadingStep
+    {
+        PRELOAD,
+        LOAD,
+        POSTLOAD,
+        RELOAD,
+        FINISHED,
+        UNLOAD,
+    }
+
+    public class LoadingStepException : Exception
+    {
+        /// <summary>
+        /// The loading step when the execption was created.
+        /// </summary>
+        public LoadingStep Step { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoadingStepException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes that error.</param>
+        public LoadingStepException(string message) : base(message) => Step = ModLoader.CurrentLoadingStep;
+    }
+
     public static class ModLoader
     {
         internal const string ModJson = "modinfo.json";
@@ -29,7 +53,7 @@ namespace SALT
 
         public static IEnumerable<ModInfo> LoadedMods => Mods.Select<KeyValuePair<string, Mod>, ModInfo>((Func<KeyValuePair<string, Mod>, ModInfo>)(x => x.Value.ModInfo));
 
-        internal static LoadingStep CurrentLoadingStep { get; private set; }
+        public static LoadingStep CurrentLoadingStep { get; private set; }
 
         internal static void InitializeMods()
         {
@@ -126,7 +150,7 @@ namespace SALT
 
         internal static void PreLoadMods()
         {
-            Console.Console.Reload += (Console.Console.ReloadAction)ReLoadMods;
+            Console.Console.Reload += (Console.Console.ReloadAction)Main.ReLoad;
             foreach (string key in loadOrder)
             {
                 Mod mod = Mods[key];
@@ -209,7 +233,7 @@ namespace SALT
         internal static void UnLoadMods()
         {
             CurrentLoadingStep = LoadingStep.UNLOAD;
-            foreach (string key in loadOrder.ToList().Reverse())
+            foreach (string key in loadOrder.ToList().Reverse<string>())
             {
                 Mod mod = Mods[key];
                 try
@@ -259,35 +283,16 @@ namespace SALT
             public Assembly LoadAssembly() => Assembly.LoadFrom(this.Path);
         }
 
-        internal enum LoadingStep
-        {
-            PRELOAD,
-            LOAD,
-            POSTLOAD,
-            RELOAD,
-            FINISHED,
-            UNLOAD,
-        }
-
         internal class ProtoInfo
         {
-            [JsonInclude]
             public string id;
-            [JsonInclude]
             public string name;
-            [JsonInclude]
             public string author;
-            [JsonInclude]
             public string version;
-            [JsonInclude]
             public string description;
-            [JsonInclude]
             public bool nosave;
-            [JsonInclude]
             public string[] dependencies;
-            [JsonInclude]
             public string[] load_after;
-            [JsonInclude]
             public string[] load_before;
 
             public static implicit operator ProtoInfo(ProtoMod mod)
@@ -324,24 +329,15 @@ namespace SALT
         internal class ProtoMod
         {
 #pragma warning disable 0649
-            [JsonInclude]
             public string id;
-            [JsonInclude]
             public string name;
-            [JsonInclude]
             public string author;
-            [JsonInclude]
             public string version;
-            [JsonInclude]
             public string description;
-            [JsonInclude]
             public bool nosave;
             public string path;
-            [JsonInclude]
             public string[] dependencies;
-            [JsonInclude]
             public string[] load_after;
-            [JsonInclude]
             public string[] load_before;
             public bool isFromJSON = true;
             public string entryFile;

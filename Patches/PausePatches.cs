@@ -174,7 +174,7 @@ namespace SALT.Patches
             vpo.AddMethod(vfx.SetVFX);
             vpo.SetLabelText(false);
             vfxOption.SetActive(true);
-            Utils.DumpUtils.DumpObject(__instance.transform.parent.gameObject);
+            //Utils.DumpUtils.DumpObject(__instance.transform.parent.gameObject);
             __instance.po = __instance.GetComponent<PauseOption>();
             __instance.po.EditLabels("Framerate Cap", "フレームレート制限");
         }

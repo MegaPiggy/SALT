@@ -90,7 +90,8 @@ namespace SALT.Console
             RegisterCommand(new Commands.SwitchCharacterCommand());
             RegisterCommand(new Commands.CompleteLevelCommand());
             RegisterCommand(new Commands.CoordinatesCommand());
-            RegisterCommand(new Commands.LoadLevelCommand()); 
+            RegisterCommand(new Commands.LoadLevelCommand());
+            //RegisterCommand(new Commands.LoadSceneCommand());
 
             RegisterButton("clear", new ConsoleButton("Clear Console", "clear"));
             RegisterButton("help", new ConsoleButton("Show Help", "help"));
