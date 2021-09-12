@@ -64,5 +64,9 @@ namespace SALT
         public void UnLoad() => this.entryPoint.UnLoad();
 
         public void Update() => this.entryPoint.Update();
+
+        public void FixedUpdate() => this.entryPoint.FixedUpdate();
+
+        public void LateUpdate() => this.entryPoint.LateUpdate();
     }
 }

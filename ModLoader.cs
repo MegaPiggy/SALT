@@ -12,7 +12,16 @@ namespace SALT
 {
     public class ModManager : MonoBehaviour
     {
-        void Update() => ModLoader.UpdateMods();
+        private static ModManager _instance;
+        public static ModManager Instance => _instance;
+
+        ModManager() => _instance = this;
+
+        void Update() => Main.Update();
+
+        void FixedUpdate() => Main.FixedUpdate();
+
+        void LateUpdate() => Main.LateUpdate();
 
         void OnApplicationQuit()
         {
@@ -219,8 +228,8 @@ namespace SALT
                     Mod.ForceModContext(mod);
                     foreach (ConfigFile config in mod.Configs)
                         config.TryLoadFromFile();
-                    mod.ReLoad();
                     Mod.ClearModContext();
+                    mod.ReLoad();
                 }
                 catch (Exception ex)
                 {
@@ -246,7 +255,7 @@ namespace SALT
                 }
             }
         }
-
+        
         internal static void UpdateMods()
         {
             if (CurrentLoadingStep != LoadingStep.FINISHED) return;
@@ -260,6 +269,40 @@ namespace SALT
                 catch (Exception ex)
                 {
                     throw new Exception(string.Format("Error updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                }
+            }
+        }
+
+        internal static void UpdateModsFixed()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (string key in loadOrder)
+            {
+                Mod mod = Mods[key];
+                try
+                {
+                    mod.FixedUpdate();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("Error fixed updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                }
+            }
+        }
+
+        internal static void UpdateModsLate()
+        {
+            if (CurrentLoadingStep != LoadingStep.FINISHED) return;
+            foreach (string key in loadOrder)
+            {
+                Mod mod = Mods[key];
+                try
+                {
+                    mod.LateUpdate();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(string.Format("Error late updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
                 }
             }
         }

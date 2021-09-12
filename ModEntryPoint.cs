@@ -5,22 +5,27 @@ using UnityEngine;
 
 namespace SALT
 {
+    /// <summary>
+    /// Every mod needs an entry point, which is where your mods code execution starts.<br/>
+    /// Every mod assembly needs exactly one class extending <see cref="IModEntryPoint"/> or the abstract class <see cref="ModEntryPoint"/><br/>
+    /// Every mod has 3 loading steps available to it, PreLoad, Load, and PostLoad<br/>
+    /// </summary>
     public interface IModEntryPoint
     {
         /// <summary>
-        /// Called before MainScript.Awake<br/>
+        /// Called before <see cref="MainScript.Awake"/><br/>
         /// You want to register new things and enum values here, as well as do all your harmony patching
         /// </summary>
         void PreLoad();
 
         /// <summary>
-        /// Called before MainScript.Start<br/>
-        /// Used for registering things that require a loaded gamecontext
+        /// Called before <see cref="MainScript.Start"/><br/>
+        /// Used for registering things that require a loaded mainscript
         /// </summary>
         void Load();
 
         /// <summary>
-        /// Called after all mods Load's have been called<br/>
+        /// Called after all mods' Load functions have been called<br/>
         /// Used for editing existing assets in the game, not a registry step
         /// </summary>
         void PostLoad();
@@ -40,10 +45,28 @@ namespace SALT
         /// Called every frame, if <see cref="ModLoader.CurrentLoadingStep"/> equals <see cref="LoadingStep.FINISHED"/>
         /// </summary>
         void Update();
+
+        /// <summary>
+        /// Called every fixed frame-rate frame, if <see cref="ModLoader.CurrentLoadingStep"/> equals <see cref="LoadingStep.FINISHED"/>
+        /// </summary>
+        void FixedUpdate();
+
+        /// <summary>
+        /// Called every frame after all mods' Update functions have been called, if <see cref="ModLoader.CurrentLoadingStep"/> equals <see cref="LoadingStep.FINISHED"/>
+        /// </summary>
+        void LateUpdate();
     }
 
+    /// <summary>
+    /// Every mod needs an entry point, which is where your mods code execution starts.<br/>
+    /// Every mod assembly needs exactly one class extending <see cref="IModEntryPoint"/> or the abstract class <see cref="ModEntryPoint"/><br/>
+    /// Every mod has 3 loading steps available to it, PreLoad, Load, and PostLoad<br/>
+    /// </summary>
     public abstract class ModEntryPoint : IModEntryPoint
     {
+        /// <summary>
+        /// The mod's harmony instance. Use <see cref="Harmony.PatchAll(Assembly)"/> in PreLoad to make your patches work.
+        /// </summary>
         public Harmony HarmonyInstance => HarmonyPatcher.GetInstance();
 
         #region Stuff
@@ -106,6 +129,14 @@ namespace SALT
         }
 
         public virtual void Update()
+        {
+        }
+
+        public virtual void FixedUpdate()
+        {
+        }
+
+        public virtual void LateUpdate()
         {
         }
     }
