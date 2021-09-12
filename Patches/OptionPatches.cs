@@ -81,14 +81,14 @@ namespace SALT.Patches
     //    }
     //}
 
-    [HarmonyPatch(typeof(OptionsScript), "DeleteSave")]
-    internal static class OptionsDeleteSavePatch
-    {
-        internal static void Prefix(OptionsScript __instance)
-        {
-            //__instance.deleteText.text.CopyToClipboard();
-        }
-    }
+    //[HarmonyPatch(typeof(OptionsScript), "DeleteSave")]
+    //internal static class OptionsDeleteSavePatch
+    //{
+    //    internal static void Prefix(OptionsScript __instance)
+    //    {
+    //        __instance.deleteText.text.CopyToClipboard();
+    //    }
+    //}
 
     //[HarmonyPatch(typeof(OptionsScript))]
     //[HarmonyPatch("OnDestroy")]
@@ -107,14 +107,14 @@ namespace SALT.Patches
     //    }
     //}
 
-    [HarmonyPatch(typeof(AltMusicScript))]
-    [HarmonyPatch("Start")]
-    internal static class AltMusicPatch
-    {
-        [HarmonyPriority(Priority.First)]
-        public static void Prefix(AltMusicScript __instance)
-        {
-            //Console.Console.LogError("probability = " + __instance.probability);
-        }
-    }
+    //[HarmonyPatch(typeof(AltMusicScript))]
+    //[HarmonyPatch("Start")]
+    //internal static class AltMusicPatch
+    //{
+    //    [HarmonyPriority(Priority.First)]
+    //    public static void Prefix(AltMusicScript __instance)
+    //    {
+    //        Console.Console.LogError("probability = " + __instance.probability);
+    //    }
+    //}
 }
