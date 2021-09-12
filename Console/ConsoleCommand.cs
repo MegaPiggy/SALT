@@ -25,6 +25,11 @@ namespace SALT.Console
 		public abstract string Description { get; }
 
 		/// <summary>
+		/// Whether to allow spaces in the auto complete
+		/// </summary>
+		public virtual bool AllowSpaces => false;
+
+		/// <summary>
 		/// The extended description of this command, with a description of each argument to
 		/// display when you use help command on this command (Multiline is supported)
 		/// </summary>

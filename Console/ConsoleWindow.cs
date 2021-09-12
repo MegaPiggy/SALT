@@ -574,7 +574,9 @@ namespace SALT.Console
                 if (Console.commands.ContainsKey(command))
                 {
                     List<string> autoC = Console.commands[command].GetAutoComplete(count - 1, lastArg);
-                    autoC?.RemoveAll(s => s.Contains(" "));
+
+                    if (!Console.commands[command].AllowSpaces)
+                        autoC?.RemoveAll(s => s.Contains(" "));
 
                     if (autoC == null || autoC.Count == 0 || Regex.Matches(cmdText, "\"").Count % 2 != 0)
                         autoComplete = false;
