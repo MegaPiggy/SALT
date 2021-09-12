@@ -13,6 +13,9 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <GameDir>E:\Games\SmolAme\</GameDir>
+    <GameDir8>D:\Stuff\SmolAme_v210831.1\</GameDir8>
+    <ManagedDir>Smol Ame_Data\Managed\</ManagedDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,14 +46,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\SALTInstaller\packages\Lib.Harmony.2.0.4\lib\net48\0Harmony.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Stuff\SmolAme_v210831.1\SALT\Libs\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
-    <Reference Include="INIFileParser">
-      <HintPath>E:\Games\SmolAme\SALT\Libs\INIFileParser.dll</HintPath>
+    <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
+      <HintPath>packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Json.Net.Unity3D.9.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
@@ -58,6 +62,9 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Text.RegularExpressions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.RegularExpressions.4.3.1\lib\net463\System.Text.RegularExpressions.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\Unity.TextMeshPro.dll</HintPath>
@@ -142,19 +149,26 @@
     <Compile Include="Console\Commands\CompleteLevelCommand.cs" />
     <Compile Include="Console\Commands\ConfigCommand.cs" />
     <None Include="Console\Commands\LoadSceneCommand.cs" />
+    <Compile Include="EnumPatcher.cs" />
+    <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\SceneExtensions.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
-    <Compile Include="ObjImporter.cs" />
     <Compile Include="OperatingSystem\FilesBrowser.cs" />
     <Compile Include="Patches\HUDPatch.cs" />
     <Compile Include="Patches\VFXPatches.cs" />
+    <Compile Include="Registries\IDRegistry.cs" />
     <Compile Include="Registries\LevelRegistry.cs" />
+    <Compile Include="Registries\ModdedIDRegistry.cs" />
     <Compile Include="Utils\ColorHelper.cs" />
+    <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
+    <Compile Include="Utils\Enum\EnumHolderResolver.cs" />
     <Compile Include="Utils\IdFactory.cs" />
     <Compile Include="Utils\ListUtils.cs" />
     <Compile Include="Utils\SceneUtils.cs" />
     <Compile Include="Utils\TextureUtils.cs" />
     <Compile Include="Utils\TimeUtils.cs" />
+    <Compile Include="Utils\UnityObjectUtils.cs" />
     <Compile Include="VFXOption.cs" />
     <None Include=".editorconfig" />
     <None Include="Console\Commands\OldDumpCommand.cs" />
@@ -197,8 +211,6 @@
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\ComponentExtensions.cs" />
     <Compile Include="Extensions\GameObjectExtensions.cs" />
-    <Compile Include="Extensions\LinqExtensions.cs" />
-    <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\OtherExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -247,49 +259,32 @@
     <Compile Include="Utils\RaycastUtils.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Vector3Surrogate.cs" />
-    <None Include="Meshes\Cheese.mtl" />
-    <None Include="Meshes\Cheese.obj" />
-    <None Include="nupkg.ps1" />
     <None Include="packages.config" />
-    <None Include="SALT.nuspec" />
+    <EmbeddedResource Include="Resources\notoserifjp" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\Debug\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Images\skybk.png" />
-    <None Include="Images\skydnOld.png" />
-    <None Include="Images\skydn.png" />
-    <None Include="Images\skyft.png" />
-    <None Include="Images\skylf.png" />
-    <None Include="Images\skyrt.png" />
-    <None Include="Images\skyupOld.png" />
-    <None Include="Images\skyup.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Images\skybox_Back.png" />
-    <None Include="Images\skybox_Bottom.png" />
-    <None Include="Images\skybox_Front.png" />
-    <None Include="Images\skybox_Left.png" />
-    <None Include="Images\skybox_Right.png" />
-    <None Include="Images\skybox_Top.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="INI.dll" Pack="true" PackagePath="" />
     <None Include="README.md" Pack="true" PackagePath="">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="LICENSE" Pack="true" PackagePath="">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="SmolAmeLoaderThing.1.1.5.nupkg" />
     <None Include="WatsonAmeliaPortraitMini.png" Pack="true" PackagePath="">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DDML\EnumPatcher\EnumPatcher.csproj">
+      <Project>{14c719e5-4d77-4389-93a3-bea944a53a84}</Project>
+      <Name>EnumPatcher</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "E:\Games\SmolAme\Smol Ame_Data\Managed\$(TargetName).dll"
-copy /Y "$(TargetDir)$(TargetName).xml" "E:\Games\SmolAme\Smol Ame_Data\Managed\$(TargetName).xml"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "$(GameDir8)$(ManagedDir)$(TargetName).dll"
+copy /Y "$(TargetDir)$(TargetName).xml" "$(GameDir8)$(ManagedDir)$(TargetName).xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -11,12 +11,20 @@ using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using System.IO;
 
 namespace SALT
 {
+    /// <summary>
+    /// The entry point for SALT
+    /// </summary>
     public static class Main
     {
-        public const string Version = "1.1c";
+        /// <summary>
+        /// The current version of SALT
+        /// </summary>
+        public const string Version = "1.2";
         private static string NewLine { get => System.Environment.NewLine + "  "; }
 
         private static bool isPreInitialized;
@@ -24,14 +32,32 @@ namespace SALT
         private static bool isPostInitialized;
         internal static Assembly execAssembly => Assembly.GetExecutingAssembly();
 
+        /// <summary>
+        /// The <see cref="MainScript"/>'s object
+        /// </summary>
         public static GameObject context { get; internal set; }
+        /// <summary>
+        /// The <see cref="MainScript"/> for Smol Ame
+        /// </summary>
         public static MainScript mainScript => MainScript.main != null ? MainScript.main : (Main.context != null ? Main.context.GetComponent<MainScript>() : null);
-        
+
+        /// <summary>
+        /// The old options script from before pause menu
+        /// </summary>
         [Obsolete("Please use characterOption instead.")]
         public static OptionsScript options { get; internal set; }
+        /// <summary>
+        /// The character change option in the pause menu
+        /// </summary>
         public static CharacterOption characterOption { get; internal set; }
 
+        /// <summary>
+        /// The current player
+        /// </summary>
         public static GameObject player { get; internal set; }
+        /// <summary>
+        /// The <see cref="PlayerScript"/> for the current player
+        /// </summary>
         public static PlayerScript actualPlayer => PlayerScript.player != null ? PlayerScript.player : (Main.player != null ? Main.player.GetComponent<PlayerScript>() : null);
 
         internal static void NextCharacter()
@@ -72,9 +98,30 @@ namespace SALT
         }
 
         private static Dictionary<int, string> layerNames = new Dictionary<int, string>();
+        /// <summary>
+        /// Every layer name in Smol Ame
+        /// </summary>
         public static Dictionary<int, string> LayerNames => layerNames;
         internal static Dictionary<int, string> sceneNames = new Dictionary<int, string>();
-        public static void PreLoad()
+
+        internal static AssetBundle LoadAssetbundle(string name)
+        {
+            Stream stream = execAssembly.GetManifestResourceStream(typeof(Main), "Resources." + name);
+            if (stream == null)
+                throw new Exception("AssetBundle " + name + " was not found");
+            return AssetBundle.LoadFromStream(stream);
+        }
+
+        //internal static AssetBundle _atwriter = LoadAssetbundle("atwriter");
+        //public static TMP_FontAsset atwriter = _atwriter.LoadAsset<TMP_FontAsset>("atwriter SDF");
+
+        //internal static AssetBundle liberationsans = LoadAssetbundle("liberationsans");
+        //public static TMP_FontAsset LiberationSans = liberationsans.LoadAsset<TMP_FontAsset>("LiberationSans SDF");
+
+        internal static AssetBundle notoserifjp = LoadAssetbundle("notoserifjp");
+        public static TMP_FontAsset NotoSerifJP_Bold = notoserifjp.LoadAsset<TMP_FontAsset>("NotoSerifJP-Bold SDF");
+
+        internal static void PreLoad()
         {
             if (Main.isPreInitialized)
                 return;
@@ -84,7 +131,7 @@ namespace SALT
                 layerNames.Add(i, LayerMask.LayerToName(i));
             for (int i = 0; i < SceneManager.sceneCountInBuildSettings; ++i)
                 sceneNames.Add(i, SceneManager.GetSceneByBuildIndex(i).name);
-            foreach (System.Type type in Assembly.GetExecutingAssembly().GetTypes())
+            foreach (System.Type type in execAssembly.GetTypes())
                 RuntimeHelpers.RunClassConstructor(type.TypeHandle);
             HarmonyPatcher.PatchAll();
             AddCallbacks();
@@ -92,10 +139,10 @@ namespace SALT
             {
                 ModLoader.InitializeMods();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.LogError((object)ex);
-                UI.ErrorUI.CreateError(ex.GetType().Name + ": " + ex.Message);
+                Debug.LogError(e);
+                UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
             FileLogger.Init();
@@ -105,10 +152,10 @@ namespace SALT
             {
                 ModLoader.PreLoadMods();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.LogError((object)ex);
-                UI.ErrorUI.CreateError(ex.Message ?? "");
+                Debug.LogError(e);
+                UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
             ReplacerCache.ClearCache();
@@ -133,10 +180,10 @@ namespace SALT
             {
                 ModLoader.LoadMods();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.LogError((object)ex);
-                UI.ErrorUI.CreateError(ex.GetType().Name + ": " + ex.Message);
+                Debug.LogError(e);
+                UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
             Main.PostLoad();
@@ -151,10 +198,10 @@ namespace SALT
             {
                 ModLoader.PostLoadMods();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.LogError((object)ex);
-                UI.ErrorUI.CreateError(ex.GetType().Name + ": " + ex.Message);
+                Debug.LogError(e);
+                UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
             }
 
             // Clears all the temporary memory
@@ -167,10 +214,9 @@ namespace SALT
             {
                 ModLoader.ReLoadMods();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.LogError((object)ex);
-                UI.ErrorUI.CreateError(ex.GetType().Name + ": " + ex.Message);
+                Debug.LogError(e);
             }
         }
 
@@ -180,13 +226,48 @@ namespace SALT
             {
                 ModLoader.UnLoadMods();
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                Debug.LogError((object)ex);
-                UI.ErrorUI.CreateError(ex.GetType().Name + ": " + ex.Message);
+                Debug.LogError(e);
             }
         }
 
+        internal static void Update()
+        {
+            try
+            {
+                ModLoader.UpdateMods();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void FixedUpdate()
+        {
+            try
+            {
+                ModLoader.UpdateModsFixed();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
+        internal static void LateUpdate()
+        {
+            try
+            {
+                ModLoader.UpdateModsLate();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+        
         internal static Collider2D CreatePlayerCollider()
         {
             var fakePlayer = new GameObject("fakePlayer");
@@ -194,31 +275,382 @@ namespace SALT
             return fakePlayer.AddComponent<BoxCollider2D>();
         }
 
+        /// <summary>
+        /// Whether the player can save thier score when the current level is completed
+        /// </summary>
         public static bool SavesEnabled => ModLoader.AllowSaves && !Patches.SavePatch.stopSave;
 
+        /// <summary>
+        /// Disable saving for the current level
+        /// </summary>
         public static void StopSave()
         {
             Patches.SavePatch.stopSave = true;
+        }
+
+        private static void SetFonts()
+        {
+            TextMeshProUGUI[] textMeshes = UnityEngine.Object.FindObjectsOfType<TextMeshProUGUI>();
+            TMP_SubMeshUI[] subMeshes = UnityEngine.Object.FindObjectsOfType<TMP_SubMeshUI>();
+
+            foreach (TextMeshProUGUI textMesh in textMeshes)
+            {
+                var fallbackTable = textMesh.font.fallbackFontAssetTable ?? textMesh.font.m_FallbackFontAssetTable;
+                if (fallbackTable != null && fallbackTable.Contains(font => font.name.StartsWith("NotoSerifJP")) && fallbackTable.Count == 1)
+                    fallbackTable.Add(NotoSerifJP_Bold);
+                //if (textMesh.font.name.StartsWith("atwriter"))
+                //    textMesh.font = atwriter;
+                //if (textMesh.font.name.StartsWith("LiberationSans"))
+                //    textMesh.font = LiberationSans;
+                if (textMesh.font.name.StartsWith("NotoSerifJP"))
+                    textMesh.font = NotoSerifJP_Bold;
+            }
+            foreach (TMP_SubMeshUI subMesh in subMeshes)
+            {
+                var fallbackTable = subMesh.fontAsset.fallbackFontAssetTable ?? subMesh.fontAsset.m_FallbackFontAssetTable;
+                if (fallbackTable != null && fallbackTable.Contains(font => font.name.StartsWith("NotoSerifJP")) && fallbackTable.Count == 1)
+                    fallbackTable.Add(NotoSerifJP_Bold);
+                //if (subMesh.fontAsset.name.StartsWith("atwriter"))
+                //    subMesh.fontAsset = atwriter;
+                //if (subMesh.fontAsset.name.StartsWith("LiberationSans"))
+                //    subMesh.fontAsset = LiberationSans;
+                if (subMesh.fontAsset.name.StartsWith("NotoSerifJP"))
+                    subMesh.fontAsset = NotoSerifJP_Bold;
+            }
         }
 
         private static void Level()
         {
             Patches.SavePatch.stopSave = false;
 
+            SetFonts();
+
             //var callie = SAObjects.GetRootGameObject("Callie");
             //if (callie != null)
             //    callie.SetActive(true);
         }
 
+        private const string SubMesh = "TMP SubMeshUI [atwriter SDF Material + LiberationSans SDF Atlas]";
+        private const string SubMeshN = "TMP SubMeshUI [atwriter SDF Material + NotoSerifJP-Bold_fallback Atlas]";
+        private const string SubObject = "TMP UI SubObject [atwriter SDF Material]";
+
+
         private static void MainMenu()
         {
             Patches.SavePatch.stopSave = false;
 
+            SetFonts();
+
+            try
+            {
+                GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
+
+                if (watermark == null)
+                {
+                    GameObject rootWatermark = UnityObjectUtils.GetDontDestroyOnLoadRootGameObject("Watermark");
+                    if (rootWatermark != null)
+                    {
+                        watermark = rootWatermark;
+                        goto time;
+                    }
+                    GameObject speedrunWatermark = versionObject.Instantiate();
+                    speedrunWatermark.name = "Watermark";
+                    versionObject.transform.parent.gameObject.AddChild(speedrunWatermark, false);
+                    RectTransform vRT = versionObject.GetComponent<RectTransform>();
+                    RectTransform spwtRT = speedrunWatermark.GetComponent<RectTransform>().GetCopyOf(vRT);
+                    spwtRT.localPosition = vRT.localPosition;
+                    spwtRT.localScale = vRT.localScale;
+                    spwtRT.anchoredPosition = vRT.anchoredPosition;
+                    spwtRT.sizeDelta = vRT.sizeDelta;
+                    spwtRT.offsetMin = vRT.offsetMin;
+                    spwtRT.offsetMax = vRT.offsetMax;
+                    spwtRT.anchoredPosition3D = vRT.anchoredPosition3D;
+                    spwtRT.SetSiblingIndex(vRT.GetSiblingIndex() + 1);
+                    spwtRT.localPosition += new Vector3(0, 12.5f, 0);
+                    speedrunWatermark.GetComponent<TextMeshProUGUI>().text = typeof(Main).Namespace + " - v" + Version;
+                    spwtRT.name = "Watermark";
+                    watermark = speedrunWatermark;
+                }
+
+            time:
+
+                if (timer == null)
+                {
+                    GameObject rootTimer = UnityObjectUtils.GetDontDestroyOnLoadRootGameObject("Timer");
+                    if (rootTimer != null)
+                    {
+                        timer = rootTimer;
+                        goto end;
+                    }
+                    GameObject timerObject = versionObject.Instantiate();
+                    timerObject.name = "Timer";
+                    versionObject.transform.parent.gameObject.AddChild(timerObject, false);
+                    RectTransform vRT = versionObject.GetComponent<RectTransform>();
+                    RectTransform tmrRT = timerObject.GetComponent<RectTransform>().GetCopyOf(vRT);
+                    tmrRT.SetPivotAndAnchors(new Vector2(1f, 1f));
+                    tmrRT.localPosition = vRT.localPosition;
+                    tmrRT.localScale = vRT.localScale;
+                    tmrRT.anchoredPosition = vRT.anchoredPosition;
+                    tmrRT.sizeDelta = vRT.sizeDelta;
+                    tmrRT.offsetMin = vRT.offsetMin;
+                    tmrRT.offsetMax = vRT.offsetMax;
+                    tmrRT.anchoredPosition3D = vRT.anchoredPosition3D;
+                    tmrRT.SetSiblingIndex(vRT.GetSiblingIndex() + 2);
+                    tmrRT.localPosition = tmrRT.localPosition.SetY((-vRT.localPosition.y) + 4.5f);
+                    var txt = timerObject.GetComponent<TextMeshProUGUI>();
+                    txt.text = UI.TimerUI.defaultTime;
+                    //txt.alignment = TextAlignmentOptions.TopRight;
+                    timerObject.AddComponent<UI.TimerUI>();
+                    tmrRT.name = "Timer";
+                    timer = timerObject;
+                }
+            end:
+                ;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            try
+            {
+                GameObject finalUpdate = UnityObjectUtils.GetRootGameObject("FinalUpdateEmpty");
+                GameObject canvas = finalUpdate.FindChild("Canvas");
+                GameObject text = canvas.FindChild("Text (TMP)");
+                TextMeshProUGUI TMP = text.GetComponent<TextMeshProUGUI>();
+                if (text.GetComponent<TextLanguageScript>() == null)
+                    text.AddComponent<TextLanguageScript>().Edit(TMP.text, TMP.text.Replace("The Final Update", "ファイナルアップデート").Replace("Coming... Eventually", "いずれは"));
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            try
+            {
+                if (UnityObjectUtils.GetRootGameObject("ModContainer") != null)
+                    return;
+                GameObject optionsContainer = UnityObjectUtils.GetRootGameObject("Options");//UnityEngine.Object.FindObjectsOfType<TextArea>().FirstOrDefault(go => go.transform.parent.name == "CreditsEmpty").transform.root.gameObject;
+                GameObject credits = optionsContainer.FindChild("Credits", true);
+
+                GameObject gameBy = credits.FindChild("Text (TMP) (1)", true);
+                TextMeshProUGUI gameByText = gameBy.GetComponent<TextMeshProUGUI>();
+                TextLanguageScript gameByTextLanguage = gameBy.GetOrAddComponent<TextLanguageScript>();
+                gameByTextLanguage.Edit(gameByText.text, "Kevin Stevensが作ったゲーム");//"ゲーム by Kevin Stevens");//Kevin Stevensによるゲーム");
+
+                GameObject creditsList = credits.FindChild("Text (TMP) (2)", true);
+                TextArea creditsArea = creditsList.GetComponent<TextArea>();
+                (creditsArea.GetEnglishText() + "|" + creditsArea.GetJapaneseText()).CopyToClipboard();
+
+                string cText = creditsArea.GetEnglishText()
+                                          .Replace("Ninomae Ina'nis BGM", "ensolarado")
+                                          .Replace("Usada Pekora BGM", "Tamekichi no Bouken")
+                                          .Replace("Amelia Watson BGM <", "Omocha no Dansu <");
+
+                string cJaText = creditsArea.GetJapaneseText()
+                                            .Replace("フリーBGM", "ensolarado")
+                                            .Replace("兎田 ぺこら BGM", "たぬきちの冒険")
+                                            .Replace("アメリア ワトソン BGM", "おもちゃのダンス")
+                                            .Replace("Smol Ame sprite by Walfie", "Walfieが作ったスモール アメsprite")
+                                            .Replace("Wiggly Coco sprite by BobberWCC", "BobberWCCが作った波打つココsprite")
+                                            .Replace("Ollie sprite by byong", "byongが作ったオリーsprite")
+                                            .Replace("Lofi Amelia Watson BGM Remix", "アメリア ワトソン BGM(ロフィリミックス)")
+                                            .Replace("Amelia Watson Eurobeat Remix", "アメリア ワトソン BGM(ユーロビートリミックス)");
+
+                creditsArea.Edit(cText, cJaText);
+
+                GameObject container = new GameObject("ModContainer");
+                container.transform.position = optionsContainer.transform.position;
+                container.transform.rotation = optionsContainer.transform.rotation;
+                container.transform.localScale = optionsContainer.transform.localScale;
+
+                GameObject camOverride = optionsContainer.FindChild("CamOverride", true);
+                GameObject modCamOverride = camOverride.Instantiate();
+                modCamOverride.name = "CamOverride_Mods";
+                modCamOverride.transform.SetParent(container.transform, true);
+                modCamOverride.transform.localPosition = camOverride.transform.localPosition;
+                modCamOverride.transform.localPosition += new Vector3(0, 2.7f, 0);
+                modCamOverride.transform.localRotation = camOverride.transform.localRotation;
+                modCamOverride.transform.localScale = camOverride.transform.localScale;
+
+                GameObject modUI = credits.Instantiate();
+                modUI.name = "Mods";
+                modUI.transform.SetParent(container.transform, true);
+                modUI.transform.localPosition = credits.transform.localPosition;
+                modUI.transform.localRotation = credits.transform.localRotation;
+                modUI.transform.localScale = credits.transform.localScale;
+
+                GameObject modsTitle = modUI.FindChild("Text (TMP)", true);
+                modsTitle.name = "modsTitle";
+                TextLanguageScript textLanguageScript = modsTitle.GetComponent<TextLanguageScript>();
+                //Console.Console.Log("<code>" + textLanguageScript.GetEnglishText() + "</code>");
+                //Console.Console.Log("<code>" + textLanguageScript.GetJapaneseText() + "</code>");
+                textLanguageScript.translations = new List<Translation>();
+                textLanguageScript.Edit("SALT (Smol Ame Loader Thing)", "SALT (スモール アメ ローダー シング)");
+
+                GameObject loaderCreator = modUI.FindChild("Text (TMP) (1)", true);
+                loaderCreator.name = "LoaderCreator";
+                TextMeshProUGUI loaderText = loaderCreator.GetComponent<TextMeshProUGUI>();
+                TextLanguageScript loaderTextLanguage = loaderCreator.GetOrAddComponent<TextLanguageScript>();
+                string oldText = loaderText.text;
+                string enText = oldText.Replace("Game by Kevin Stevens", "Mod Loader by MegaPiggy");
+                string jaText = oldText.Replace("Game by Kevin Stevens", "MegaPiggyが作ったModLoader");//"Modローダー by MegaPiggy");//"MegaPiggyによるModローダー");
+                loaderText.text = enText;
+                loaderTextLanguage.Edit(enText, jaText);
+
+                GameObject modEmpty = modUI.FindChild("CreditsEmpty", true);
+                modEmpty.name = "ModsEmpty";
+                GameObject modList = modUI.FindChild("Text (TMP) (2)", true);
+                modEmpty.name = "ModsList";
+
+                TextArea modsArea = modList.GetComponent<TextArea>();
+                modsArea.textBox = modList.GetComponent<TextMeshProUGUI>();
+                modsArea.texts = new List<TextAssetTranslation>();
+                string modText = $"<size=25>Press Ctrl+Tab to open up the command console.</size><size=5>{System.Environment.NewLine}{System.Environment.NewLine}</size><size=40>Mods:</size><size=10>{System.Environment.NewLine}{System.Environment.NewLine}</size>";
+                string modJaText = $"<size=25>Ctrl キーを押したまま Tab キーを押し: コマンドターミナルが開きます</size><size=5>{System.Environment.NewLine}{System.Environment.NewLine}</size><size=40>Mods:</size><size=10>{System.Environment.NewLine}{System.Environment.NewLine}</size>";
+                modsArea.Edit(modText, modJaText);
+                modEmpty.AddComponent<UI.ModListUI>();
+
+                //float moveToLeft = 16f;
+                float moveDown = 11.5f;//8.8f;
+                container.transform.position += new Vector3(0, -moveDown, 0);//-moveToLeft, 0, 0);
+                //credits.DestroyImmediate();
+
+                UnityObjectUtils.GetActiveRootGameObject("Book").Activate();
+                UnityObjectUtils.GetActiveRootGameObject("Book (1)").Activate();
+                UnityObjectUtils.GetActiveRootGameObject("Desk (2)").Activate();
+                UnityObjectUtils.GetActiveRootGameObject("Desk (3)").Activate();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        private static void CopyComponentsTo(this GameObject source, GameObject destination)
+        {
+            if (source.HasComponent<RectTransform>() && destination.HasComponent<RectTransform>())
+            {
+                RectTransform stransform = source.GetComponent<RectTransform>();
+                RectTransform dtransform = destination.GetComponent<RectTransform>();
+                dtransform.anchorMin = stransform.anchorMin;
+                dtransform.anchorMax = stransform.anchorMax;
+                dtransform.offsetMin = stransform.offsetMin;
+                dtransform.offsetMax = stransform.offsetMax;
+                dtransform.pivot = stransform.pivot;
+                dtransform.sizeDelta = stransform.sizeDelta;
+                dtransform.anchoredPosition = stransform.anchoredPosition;
+                dtransform.anchoredPosition3D = stransform.anchoredPosition3D;
+                dtransform.position = stransform.position;
+                dtransform.rotation = stransform.rotation;
+                dtransform.localPosition = stransform.localPosition;
+                dtransform.localRotation = stransform.localRotation;
+                dtransform.localScale = stransform.localScale;
+                dtransform.tag = stransform.tag;
+                foreach (Component component in source.GetComponents())
+                {
+                    if (component == null)
+                        continue;
+                    Type type = component.GetType();
+                    if (type == typeof(Transform) || type == typeof(RectTransform))
+                        continue;
+                    Component dcomponent = destination.GetComponent(type);
+                    if (dcomponent == null)
+                        continue;
+                    foreach (FieldInfo field in type.GetInstanceFields(Accessibility.Public))
+                    {
+                        string lower = field.Name.ToLowerInvariant();
+                        if (lower == "name" || lower == "transform" || lower == "canvas" || lower == "canvasRenderer" || lower == "gameObject")
+                            continue;
+                        if (field.FieldType.IsSubclassOf(typeof(Component)) || field.FieldType == typeof(GameObject))
+                            continue;
+                        dcomponent.SetField(field.Name, component.GetField(field.Name));
+                    }
+                    foreach (FieldInfo field in type.GetInstanceFields(Accessibility.NonPublic))
+                    {
+                        if (!(field.GetCustomAttributes(typeof(SerializeField), false).Length > 0))
+                            continue;
+                        string lower = field.Name.ToLowerInvariant();
+                        if (lower == "name" || lower == "transform" || lower == "canvas" || lower == "canvasRenderer" || lower == "gameObject")
+                            continue;
+                        if (field.FieldType.IsSubclassOf(typeof(Component)) || field.FieldType == typeof(GameObject))
+                            continue;
+                        dcomponent.SetField(field.Name, component.GetField(field.Name));
+                    }
+                    foreach (PropertyInfo property in type.GetInstanceProperties(Accessibility.Public))
+                    {
+                        string lower = property.Name.ToLowerInvariant();
+                        if (lower == "name" || lower == "transform" || lower == "canvas" || lower == "canvasRenderer" || lower == "gameObject")
+                            continue;
+                        if (property.PropertyType.IsSubclassOf(typeof(Component)) || property.PropertyType == typeof(GameObject))
+                            continue;
+                        dcomponent.SetProperty(property.Name, component.GetProperty(property.Name));
+                    }
+                }
+            }
+            else
+            {
+                Transform stransform = source.GetComponent<Transform>();
+                Transform dtransform = destination.GetComponent<Transform>();
+                dtransform.position = stransform.position;
+                dtransform.rotation = stransform.rotation;
+                dtransform.localPosition = stransform.localPosition;
+                dtransform.localRotation = stransform.localRotation;
+                dtransform.localScale = stransform.localScale;
+                dtransform.tag = stransform.tag;
+                foreach (Component component in source.GetComponents())
+                {
+                    if (component == null)
+                        continue;
+                    Type type = component.GetType();
+                    if (type == typeof(Transform) || type == typeof(RectTransform))
+                        continue;
+                    Component dcomponent = destination.GetComponent(type);
+                    if (dcomponent == null)
+                        continue;
+                    foreach (FieldInfo field in type.GetInstanceFields(Accessibility.Public))
+                    {
+                        string lower = field.Name.ToLowerInvariant();
+                        if (lower == "name" || lower == "transform" || lower == "canvas" || lower == "canvasRenderer" || lower == "gameObject")
+                            continue;
+                        if (field.FieldType.IsSubclassOf(typeof(Component)) || field.FieldType == typeof(GameObject))
+                            continue;
+                        dcomponent.SetField(field.Name, component.GetField(field.Name));
+                    }
+                    foreach (FieldInfo field in type.GetInstanceFields(Accessibility.NonPublic))
+                    {
+                        if (!(field.GetCustomAttributes(typeof(SerializeField), false).Length > 0))
+                            continue;
+                        string lower = field.Name.ToLowerInvariant();
+                        if (lower == "name" || lower == "transform" || lower == "canvas" || lower == "canvasRenderer" || lower == "gameObject")
+                            continue;
+                        if (field.FieldType.IsSubclassOf(typeof(Component)) || field.FieldType == typeof(GameObject))
+                            continue;
+                        dcomponent.SetField(field.Name, component.GetField(field.Name));
+                    }
+                    foreach (PropertyInfo property in type.GetInstanceProperties(Accessibility.Public))
+                    {
+                        string lower = property.Name.ToLowerInvariant();
+                        if (lower == "name" || lower == "transform" || lower == "canvas" || lower == "canvasRenderer" || lower == "gameObject")
+                            continue;
+                        if (property.PropertyType.IsSubclassOf(typeof(Component)) || property.PropertyType == typeof(GameObject))
+                            continue;
+                        dcomponent.SetProperty(property.Name, component.GetProperty(property.Name));
+                    }
+                }
+            }
+        }
+
+        private static void MainMenuOld()
+        {
+            Patches.SavePatch.stopSave = false;
+
+            GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
+
             var waterMark = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "speedrunWatermark");
             if (waterMark == null)
             {
-                GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
-                GameObject speedrunWatermark = versionObject.CloneInstance();
+                GameObject speedrunWatermark = versionObject.Instantiate();
                 speedrunWatermark.name = "speedrunWatermark";
                 versionObject.transform.parent.gameObject.AddChild(speedrunWatermark, false);
                 RectTransform vRT = versionObject.GetComponent<RectTransform>();
@@ -241,8 +673,7 @@ namespace SALT
             var Timer = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "timer");
             if (Timer == null)
             {
-                GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
-                GameObject timerObject = versionObject.CloneInstance();
+                GameObject timerObject = versionObject.Instantiate();
                 timerObject.name = "timer";
                 versionObject.transform.parent.gameObject.AddChild(timerObject, false);
                 RectTransform vRT = versionObject.GetComponent<RectTransform>();
@@ -274,12 +705,12 @@ namespace SALT
             //string text = creditsText.text.text.Replace("Smol Ame sprite by Walfie", "Smol Ame sprite by Walfie" + NewLine + "Mod Loader by MegaPiggy");
             //creditsText.Edit(text);
             GameObject creditsDesk = creditsObject.transform.root.gameObject;
-            GameObject topDesk = creditsDesk.CloneInstance();
+            GameObject topDesk = creditsDesk.Instantiate();
             topDesk.name = "Desk2 (Mod)";
             topDesk.FindChild("Credits", true).Destroy();
             float moveToLeft = 16f;
             topDesk.transform.position += new Vector3(-moveToLeft, 8.76f, 0);
-            GameObject desk = creditsDesk.CloneInstance();
+            GameObject desk = creditsDesk.Instantiate();
             desk.name = "Desk (Mod)";
             desk.transform.position += new Vector3(-moveToLeft, 0, 0);
             GameObject modUI = desk.FindChild("Credits", true);
@@ -304,7 +735,7 @@ namespace SALT
             modsArea.Edit(modText, modJaText);
 
             GameObject bookObject = UnityEngine.Object.FindObjectsOfType<BookRandomColor>().FirstOrDefault(b => b.GetComponent<BouncyScript>().bounceFactor == 1.5f).gameObject;
-            GameObject book = bookObject.CloneInstance();
+            GameObject book = bookObject.Instantiate();
             book.name = "BookMod";
             book.transform.position = book.transform.position.SetXY(-43f, -12.1f);
             book.transform.localScale = bookObject.transform.localScale;
