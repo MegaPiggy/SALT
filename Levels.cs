@@ -48,4 +48,6 @@ public static class Levels
     public static bool isInumore() => Levels.IsLevel(Level.INUMORE);//SceneManager.GetActiveScene().buildIndex == 9;
     public static bool isRushia() => Levels.IsLevel(Level.RUSHIA);//SceneManager.GetActiveScene().buildIndex == 10;
     public static bool isInascapableMadness() => Levels.IsLevel(Level.INASCAPABLE_MADNESS);//SceneManager.GetActiveScene().buildIndex == 11;
+    public static bool isHereComesHope() => Levels.IsLevel(Level.HERE_COMES_HOPE);//SceneManager.GetActiveScene().buildIndex == 12;
+    public static bool isReflect() => Levels.IsLevel(Level.REFLECT);//SceneManager.GetActiveScene().buildIndex == 13;
 }

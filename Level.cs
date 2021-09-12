@@ -13,6 +13,8 @@
         MOGU_MOGU,
         INUMORE,
         RUSHIA,
-        INASCAPABLE_MADNESS
+        INASCAPABLE_MADNESS,
+        HERE_COMES_HOPE,
+        REFLECT
     }
 }
