@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using HarmonyLib;
 using SALT.Extensions;
+using SALT.Utils;
 
 namespace SALT
 {
@@ -308,7 +309,7 @@ namespace SALT
 
         private void RunInInputDetector(System.Action<InputDetector> action)
         {
-            foreach (InputDetector inputDetector in ObjectExtensions.Find<InputDetector>().Keys)
+            foreach (InputDetector inputDetector in UnityObjectUtils.GetObjectsOfInterface<InputDetector>().Keys)
             {
                 action(inputDetector);
             }
@@ -316,7 +317,7 @@ namespace SALT
 
         private void RunInTouchDetector(System.Action<TouchDetector> action)
         {
-            foreach (TouchDetector touchDetector in ObjectExtensions.Find<TouchDetector>().Keys)
+            foreach (TouchDetector touchDetector in UnityObjectUtils.GetObjectsOfInterface<TouchDetector>().Keys)
             {
                 action(touchDetector);
             }

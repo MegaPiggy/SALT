@@ -4,6 +4,11 @@ namespace SALT.Extensions
 {
     public static class ColorExtensions
     {
+        public static void Log(this Color color)
+        {
+            Debug.Log("<color=#" + ColorUtility.ToHtmlStringRGB(color) + ">████████████</color> = " + color);
+        }
+
         public static Color RandomBright
         {
             get { return new Color(Random.Range(.4f, 1), Random.Range(.4f, 1), Random.Range(.4f, 1)); }

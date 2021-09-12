@@ -42,6 +42,25 @@ namespace SALT.Utils
             }
             return string.Empty;
         }
+        public static Scene GetDontDestroyOnLoadScene()
+        {
+            GameObject temp = null;
+            try
+            {
+                temp = new GameObject();
+                UnityEngine.Object.DontDestroyOnLoad(temp);
+                Scene dontDestroyOnLoad = temp.scene;
+                UnityEngine.Object.DestroyImmediate(temp);
+                temp = null;
+
+                return dontDestroyOnLoad;
+            }
+            finally
+            {
+                if (temp != null)
+                    UnityEngine.Object.DestroyImmediate(temp);
+            }
+        }
         public static Scene GetActiveScene() => SceneManager.GetActiveScene();
         public static bool SetActiveScene(Scene scene) => SceneManager.SetActiveScene(scene);
         private static LoadSceneParameters sceneParameters = new LoadSceneParameters { loadSceneMode = LoadSceneMode.Single, localPhysicsMode = LocalPhysicsMode.Physics2D };
@@ -74,7 +93,7 @@ namespace SALT.Utils
         public static PhysicsScene GetPhysicsScene(Scene scene) => scene.GetPhysicsScene();
         public static void MoveGameObjectToScene(GameObject go, Scene scene) => SceneManager.MoveGameObjectToScene(go, scene);
 
-        public static void CheckDifference() => Console.Console.Log("Length = " + SceneLength + " | BuildLength = " + SceneBuildLength);
+        internal static void CheckDifference() => Console.Console.Log("Length = " + SceneLength + " | BuildLength = " + SceneBuildLength);
 
         public static List<Scene> GetAllScenes()
         {

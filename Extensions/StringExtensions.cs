@@ -5,10 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 namespace SALT.Extensions
 {
     /// <summary>
@@ -31,6 +27,8 @@ namespace SALT.Extensions
 
         public static int ToInt(this string str) => int.Parse(str);
 
+        public static string Concat(this IEnumerable<char> charSequence) => string.Concat(charSequence);
+
         public static string Pad(this int val, int numDigits)
         {
             string str = string.Empty + (object)val;
@@ -39,52 +37,55 @@ namespace SALT.Extensions
             return str;
         }
 
-        #if UNITY_EDITOR
-        /// <summary>
-        /// Get string representation of serialized property, even for non-string fields
-        /// </summary>
-        public static string AsStringValue(this SerializedProperty property)
-        {
-            switch (property.propertyType)
-            {
-                case SerializedPropertyType.String:
-                    return property.stringValue;
-                case SerializedPropertyType.Character:
-                case SerializedPropertyType.Integer:
-                    if (property.type == "char") return System.Convert.ToChar(property.intValue).ToString();
-                    return property.intValue.ToString();
-                case SerializedPropertyType.ObjectReference:
-                    return property.objectReferenceValue != null ? property.objectReferenceValue.ToString() : "null";
-                case SerializedPropertyType.Boolean:
-                    return property.boolValue.ToString();
-                case SerializedPropertyType.Enum:
-                    return property.enumNames[property.enumValueIndex];
-                default:
-                    return string.Empty;
-            }
-        }
-        #endif
+        public static string Join(this string[] strs, string seperator = " ") => string.Join(seperator, strs);
+
+        public static string Join(this string[] strs, int startIndex, int count, string seperator = " ") => string.Join(seperator, strs, startIndex, count);
+
+        public static string Join(this object[] objects, string seperator = " ") => string.Join(seperator, objects);
+
+        public static string Join(this IEnumerable<string> strs, string seperator = " ") => string.Join(seperator, strs);
+
+        public static string Join<T>(this IEnumerable<T> objects, string seperator = " ") => string.Join(seperator, objects);
+
+        /// <summary>Indicates whether the specified string is <see langword="null" /> or an empty string ("").</summary>
+        /// <returns><see langword="true" /> if the <paramref name="value" /> parameter is <see langword="null" /> or an empty string (""); otherwise, <see langword="false" />.</returns>
+        public static bool IsNullOrEmpty(this string value) => string.IsNullOrEmpty(value);
+
+        /// <summary>Indicates whether a specified string is <see langword="null" />, empty, or consists only of white-space characters.</summary>
+        /// <returns><see langword="true" /> if the <paramref name="value" /> parameter is <see langword="null" /> or <see cref="F:System.String.Empty" />, or if <paramref name="value" /> consists exclusively of white-space characters.</returns>
+        public static bool IsNullOrWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
 
         /// <summary>
-        /// Check of string is empty.
+        ///     Returns a String array containing the substrings in this string that are delimited by elements of a specified
+        ///     String array. A parameter specifies whether to return empty array elements.
         /// </summary>
-        public static bool IsEmpty(this string str)
+        /// <param name="this">The @this to act on.</param>
+        /// <param name="separator">A string that delimit the substrings in this string.</param>
+        /// <param name="option">
+        ///     (Optional) Specify RemoveEmptyEntries to omit empty array elements from the array returned,
+        ///     or None to include empty array elements in the array returned.
+        /// </param>
+        /// <returns>
+        ///     An array whose elements contain the substrings in this string that are delimited by the separator.
+        /// </returns>
+        public static string[] Split(this string @this, string separator, StringSplitOptions option = StringSplitOptions.None)
         {
-            return str.Replace(" ", "").Equals("");
-        }
-
-        /// <summary>
-        /// Puts the string into the Clipboard.
-        /// </summary>
-        public static void CopyToClipboard(this string str)
-        {
-            GUIUtility.systemCopyBuffer = str;
+            return @this.Split(new[] { separator }, option);
         }
 
         /// <summary>
         /// Copy specified string to the system copy buffer.
         /// </summary>
-        /// <param name="source">>Source string.</param>
+        /// <param name="source">Source string.</param>
+        public static void CopyToClipboard(this string source)
+        {
+            GUIUtility.systemCopyBuffer = source;
+        }
+
+        /// <summary>
+        /// Puts the string into the Clipboard.
+        /// </summary>
+        /// <param name="source">Source string.</param>
         public static void CopyToClipboardAlt(this string source)
         {
             var textEditor = new TextEditor { text = source };
@@ -97,24 +98,27 @@ namespace SALT.Extensions
         /// </summary>
         public static string Reverse(this string original)
         {
-            string[] division = original.Split(' ');
-            string result = "";
+            char[] charArray = original.ToCharArray();
+            Array.Reverse(charArray);
+            return new string(charArray);
+            //string[] division = original.Split(' ');
+            //string result = "";
 
-            foreach (string value in division)
-            {
-                // Currently compatible with Hebrew, Arabic and Syriac Characters
-                if (!Regex.IsMatch(value, @"[\u0591-\u05F4]+|[\u060C-\u06FE\uFB50-\uFDFF\uFE70-\uFEFE]+|[\u0700-\u074A]+|[\u0780-\u07B0]+"))
-                {
-                    result += " " + value;
-                    continue;
-                }
+            //foreach (string value in division)
+            //{
+            //    // Currently compatible with Hebrew, Arabic and Syriac Characters
+            //    if (!Regex.IsMatch(value, @"[\u0591-\u05F4]+|[\u060C-\u06FE\uFB50-\uFDFF\uFE70-\uFEFE]+|[\u0700-\u074A]+|[\u0780-\u07B0]+"))
+            //    {
+            //        result += " " + value;
+            //        continue;
+            //    }
 
-                char[] chars = value.ToCharArray();
-                Array.Reverse(chars);
-                result += " " + new string(chars);
-            }
+            //    char[] chars = value.ToCharArray();
+            //    Array.Reverse(chars);
+            //    result += " " + new string(chars);
+            //}
 
-            return result.TrimStart();
+            //return result.TrimStart();
         }
 
         public static string ToTitleCase(this string title)
@@ -154,7 +158,7 @@ namespace SALT.Extensions
         /// <summary>
         /// Convert a string value to an Enum value.
         /// </summary>
-        public static T AsEnum<T>(this string source, bool ignoreCase = true) where T : Enum => (T)Enum.Parse(typeof(T), source, ignoreCase);
+        public static T AsEnum<T>(this string source, bool ignoreCase = true, T errorReturn = default) where T : Enum => EnumUtils.Parse<T>(source, ignoreCase, errorReturn);
 
 
         /// <summary>
@@ -223,32 +227,35 @@ namespace SALT.Extensions
         /// </summary>
         public static string Italics(this string message) => $"<i>{message}</i>";
 
-        // /// <summary>
-        // /// Checks to see if a string that came from translation is a comment.
-        // /// </summary>
-        // public static bool IsTranslationComment(this string line)
-        // {
-        //      return (line.StartsWith("#") || line.Equals(string.Empty) || !line.Contains(":"));
-        // }
+        /// <summary>
+        /// Removes anything after the <paramref name="value"/> parameter
+        /// </summary>
+        /// <param name="str">The string to remove from.</param>
+        /// <param name="value">The string to seek</param>
+        /// <param name="include">Whether to remove the <paramref name="value"/></param>
+        public static string RemoveEverythingAfter(this string str, string value, bool include = false)
+        {
+            int index = str.IndexOf(value);
+            if (index >= 0)
+                str = str.Substring(0, include ? index : (index + value.Length));
+            return str;
+        }
 
-        //public static Tuple<string, string> ToTranslation(this string line)
-        //{
-        //    string key = line.Substring(0, line.IndexOf(':'));
-        //    string value = line.Replace($"{key}:", string.Empty);
-        //    return new Tuple<string, string>(key.Trim('"'), value.FixTranslatedString());
-        //}
-
-        // /// <summary>
-        // /// Fixes the string that came from translation
-        // /// </summary>
-        // public static string FixTranslatedString(this string toFix)
-        // {
-        //      return toFix.TrimStart()
-        //                 .TrimStart('"')
-        //                 .TrimEnd('"')
-        //                 .Replace("\\n", "\n")
-        //                 .Replace("\\\"", "\"");
-        //}
+        /// <summary>
+        /// Removes anything after the <paramref name="value"/> parameter
+        /// </summary>
+        /// <param name="str">The string to remove from.</param>
+        /// <param name="value">The string to seek</param>
+        /// <param name="include">Whether to remove the <paramref name="value"/></param>
+        public static string RemoveEverythingBefore(this string str, string value, bool include = false)
+        {
+            int index = str.IndexOf(value);
+            if (index >= 0)
+                str = str.Substring(index);
+            if (include)
+                str = str.Substring(value.Length);
+            return str;
+        }
 
         internal static string ToQuotedString(this string str)
         {
@@ -290,7 +297,7 @@ namespace SALT.Extensions
             return str1;
         }
 
-        public static string ToYesOrNo(this bool torf) => torf ? "Yes" : "No";
+        public static string ToYesOrNo(this bool torf, bool japanese = false) => japanese ? (torf ? "はい" : "いいえ") : (torf ? "Yes" : "No");
         public static string ToOnOff(this bool torf, bool japanese = false) => japanese ? (torf ? "オン" : "オフ") : (torf ? "On" : "Off");
 
         public static string ReplaceWithJapanese(this string str)
@@ -299,12 +306,12 @@ namespace SALT.Extensions
             string watson = amelia.Replace("Watson", "ワトソン");
             string smol = watson.Replace("Smol", "スモール").Replace("SMOL", "スモール");
             string ame = smol.Replace("Ame", "アメ").Replace("AME", "アメ");
-            string beeg = ame;//.Replace("Beeg", "ビーグ");
+            string beeg = ame.Replace("Beeg", "ビーグ");
             string infinity = beeg.Replace("Infinite ", "無限");
-            string increased = infinity;//.Replace("Increased ", "倍");
+            string increased = infinity.Replace("Increased ", "ダブル");
             string jump = increased.Replace("Jump", "ジャンプ");
-            string speed = jump;//.Replace("Speed", "速度");//スピード");
-            string slower = speed;//.Replace("Slower ", "ゆっくりと");//遅い");
+            string speed = jump.Replace("Speed", "スピード");
+            string slower = speed.Replace("Slower ", "遅い");
             string groundpound = slower.Replace("Ground Pound", "グラウンドパウンド");
             return groundpound;
         }
@@ -414,7 +421,6 @@ namespace SALT.Extensions
     /// </summary>
     public enum Colors
     {
-        // ReSharper disable InconsistentNaming
         aqua,
         black,
         blue,
@@ -435,8 +441,6 @@ namespace SALT.Extensions
         silver,
         teal,
         white,
-
         yellow
-        // ReSharper restore InconsistentNaming
     }
 }

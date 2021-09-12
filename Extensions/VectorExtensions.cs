@@ -27,13 +27,15 @@ namespace SALT.Extensions
             return new Vector3(vx, vy, vz);
         }
 
-        public static Vector3 New(float x = 0f, float y = 0f, float z = 0f) => new Vector3(x, y, z);
-
         #endregion
-
-        #region Set X/Y/Z
+        #region Set X/Y/Z/W
 
         // Set X
+
+        public static Vector4 SetX(this Vector4 vector, float x)
+        {
+            return new Vector4(x, vector.y, vector.z, vector.w);
+        }
 
         public static Vector3 SetX(this Vector3 vector, float x)
         {
@@ -52,6 +54,11 @@ namespace SALT.Extensions
 
         // Set Y
 
+        public static Vector4 SetY(this Vector4 vector, float y)
+        {
+            return new Vector4(vector.x, y, vector.z, vector.w);
+        }
+
         public static Vector3 SetY(this Vector3 vector, float y)
         {
             return new Vector3(vector.x, y, vector.z);
@@ -69,6 +76,11 @@ namespace SALT.Extensions
 
         // Set Z
 
+        public static Vector4 SetZ(this Vector4 vector, float z)
+        {
+            return new Vector4(vector.x, vector.y, z, vector.w);
+        }
+
         public static Vector3 SetZ(this Vector3 vector, float z)
         {
             return new Vector3(vector.x, vector.y, z);
@@ -79,7 +91,19 @@ namespace SALT.Extensions
             transform.position = transform.position.SetZ(z);
         }
 
+        // Set W
+
+        public static Vector4 SetW(this Vector4 vector, float w)
+        {
+            return new Vector4(vector.x, vector.y, vector.z, w);
+        }
+
         // Set XY
+
+        public static Vector4 SetXY(this Vector4 vector, float x, float y)
+        {
+            return new Vector4(x, y, vector.z, vector.w);
+        }
 
         public static Vector3 SetXY(this Vector3 vector, float x, float y)
         {
@@ -93,6 +117,11 @@ namespace SALT.Extensions
 
         // Set XZ
 
+        public static Vector4 SetXZ(this Vector4 vector, float x, float z)
+        {
+            return new Vector4(x, vector.y, z, vector.w);
+        }
+
         public static Vector3 SetXZ(this Vector3 vector, float x, float z)
         {
             return new Vector3(x, vector.y, z);
@@ -105,6 +134,11 @@ namespace SALT.Extensions
 
         // Set YZ
 
+        public static Vector4 SetYZ(this Vector4 vector, float y, float z)
+        {
+            return new Vector4(vector.x, y, z, vector.w);
+        }
+
         public static Vector3 SetYZ(this Vector3 vector, float y, float z)
         {
             return new Vector3(vector.x, y, z);
@@ -113,6 +147,48 @@ namespace SALT.Extensions
         public static void SetYZ(this Transform transform, float y, float z)
         {
             transform.position = transform.position.SetYZ(y, z);
+        }
+
+        // Set XW
+
+        public static Vector4 SetXW(this Vector4 vector, float x, float w)
+        {
+            return new Vector4(x, vector.y, vector.z, w);
+        }
+
+        // Set TW
+
+        public static Vector4 SetYW(this Vector4 vector, float y, float w)
+        {
+            return new Vector4(vector.x, y, vector.z, w);
+        }
+
+        // Set ZW
+
+        public static Vector4 SetZW(this Vector4 vector, float z, float w)
+        {
+            return new Vector4(vector.x, vector.y, z, w);
+        }
+
+        // Set XYW
+
+        public static Vector4 SetXYW(this Vector4 vector, float x, float y, float w)
+        {
+            return new Vector4(x, y, vector.z, w);
+        }
+
+        // Set XZW
+
+        public static Vector4 SetXZW(this Vector4 vector, float x, float z, float w)
+        {
+            return new Vector4(x, vector.y, z, w);
+        }
+
+        // Set YZW
+
+        public static Vector4 SetYZW(this Vector4 vector, float y, float z, float w)
+        {
+            return new Vector4(vector.x, y, z, w);
         }
 
         //Reset
@@ -202,13 +278,38 @@ namespace SALT.Extensions
         #endregion
 
 
-        #region Offset X/Y/Z
+        #region Offset X/Y/Z/W
+
+        public static Vector4 Offset(this Vector4 vector, Vector2 offset)
+        {
+            return new Vector4(vector.x + offset.x, vector.y + offset.y, vector.z, vector.w);
+        }
+
+        public static Vector4 Offset(this Vector4 vector, Vector3 offset)
+        {
+            return new Vector4(vector.x + offset.x, vector.y + offset.y, vector.z + offset.z, vector.w);
+        }
+
+        public static Vector4 Offset(this Vector4 vector, Vector4 offset)
+        {
+            return new Vector4(vector.x + offset.x, vector.y + offset.y, vector.z + offset.z, vector.w + offset.w);
+        }
 
         public static Vector3 Offset(this Vector3 vector, Vector2 offset)
         {
             return new Vector3(vector.x + offset.x, vector.y + offset.y, vector.z);
         }
 
+        public static Vector3 Offset(this Vector3 vector, Vector3 offset)
+        {
+            return new Vector3(vector.x + offset.x, vector.y + offset.y, vector.z + offset.z);
+        }
+
+
+        public static Vector4 OffsetX(this Vector4 vector, float x)
+        {
+            return new Vector4(vector.x + x, vector.y, vector.z, vector.w);
+        }
 
         public static Vector3 OffsetX(this Vector3 vector, float x)
         {
@@ -226,9 +327,9 @@ namespace SALT.Extensions
         }
 
 
-        public static Vector2 OffsetY(this Vector2 vector, float y)
+        public static Vector4 OffsetY(this Vector4 vector, float y)
         {
-            return new Vector2(vector.x, vector.y + y);
+            return new Vector4(vector.x, vector.y + y, vector.z, vector.w);
         }
 
         public static Vector3 OffsetY(this Vector3 vector, float y)
@@ -236,11 +337,21 @@ namespace SALT.Extensions
             return new Vector3(vector.x, vector.y + y, vector.z);
         }
 
+        public static Vector2 OffsetY(this Vector2 vector, float y)
+        {
+            return new Vector2(vector.x, vector.y + y);
+        }
+
         public static void OffsetY(this Transform transform, float y)
         {
             transform.position = transform.position.OffsetY(y);
         }
 
+
+        public static Vector4 OffsetZ(this Vector4 vector, float z)
+        {
+            return new Vector4(vector.x, vector.y, vector.z + z, vector.w);
+        }
 
         public static Vector3 OffsetZ(this Vector3 vector, float z)
         {
@@ -252,6 +363,17 @@ namespace SALT.Extensions
             transform.position = transform.position.OffsetZ(z);
         }
 
+
+        public static Vector4 OffsetW(this Vector4 vector, float w)
+        {
+            return new Vector4(vector.x, vector.y, vector.z, vector.w + w);
+        }
+
+
+        public static Vector4 OffsetXY(this Vector4 vector, float x, float y)
+        {
+            return new Vector4(vector.x + x, vector.y + y, vector.z, vector.w);
+        }
 
         public static Vector3 OffsetXY(this Vector3 vector, float x, float y)
         {
@@ -269,6 +391,11 @@ namespace SALT.Extensions
         }
 
 
+        public static Vector4 OffsetXZ(this Vector4 vector, float x, float z)
+        {
+            return new Vector4(vector.x + x, vector.y, vector.z + z, vector.w);
+        }
+
         public static Vector3 OffsetXZ(this Vector3 vector, float x, float z)
         {
             return new Vector3(vector.x + x, vector.y, vector.z + z);
@@ -280,6 +407,11 @@ namespace SALT.Extensions
         }
 
 
+        public static Vector4 OffsetYZ(this Vector4 vector, float y, float z)
+        {
+            return new Vector4(vector.x, vector.y + y, vector.z + z, vector.w);
+        }
+
         public static Vector3 OffsetYZ(this Vector3 vector, float y, float z)
         {
             return new Vector3(vector.x, vector.y + y, vector.z + z);
@@ -290,10 +422,42 @@ namespace SALT.Extensions
             transform.position = transform.position.OffsetYZ(y, z);
         }
 
+
+        public static Vector4 OffsetXW(this Vector4 vector, float x, float w)
+        {
+            return new Vector4(vector.x + x, vector.y, vector.z, vector.w + w);
+        }
+        public static Vector4 OffsetYW(this Vector4 vector, float y, float w)
+        {
+            return new Vector4(vector.x, vector.y + y, vector.z, vector.w + w);
+        }
+        public static Vector4 OffsetZW(this Vector4 vector, float z, float w)
+        {
+            return new Vector4(vector.x, vector.y, vector.z + z, vector.w + w);
+        }
+
+        public static Vector4 OffsetXYW(this Vector4 vector, float x, float y, float w)
+        {
+            return new Vector4(vector.x + x, vector.y + y, vector.z, vector.w + w);
+        }
+        public static Vector4 OffsetYZW(this Vector4 vector, float y, float z, float w)
+        {
+            return new Vector4(vector.x, vector.y + y, vector.z + z, vector.w + w);
+        }
+        public static Vector4 OffsetXZW(this Vector4 vector, float x, float z, float w)
+        {
+            return new Vector4(vector.x + x, vector.y, vector.z + z, vector.w + w);
+        }
+
         #endregion
 
 
-        #region Clamp X/Y
+        #region Clamp X/Y/Z/W
+
+        public static Vector4 ClampX(this Vector4 vector, float min, float max)
+        {
+            return vector.SetX(Mathf.Clamp(vector.x, min, max));
+        }
 
         public static Vector3 ClampX(this Vector3 vector, float min, float max)
         {
@@ -311,29 +475,92 @@ namespace SALT.Extensions
         }
 
 
+        public static Vector4 ClampY(this Vector4 vector, float min, float max)
+        {
+            return vector.SetY(Mathf.Clamp(vector.y, min, max));
+        }
+
         public static Vector3 ClampY(this Vector3 vector, float min, float max)
         {
-            return vector.SetY(Mathf.Clamp(vector.x, min, max));
+            return vector.SetY(Mathf.Clamp(vector.y, min, max));
         }
 
         public static Vector2 ClampY(this Vector2 vector, float min, float max)
         {
-            return vector.SetY(Mathf.Clamp(vector.x, min, max));
+            return vector.SetY(Mathf.Clamp(vector.y, min, max));
         }
 
         public static void ClampY(this Transform transform, float min, float max)
         {
-            transform.SetY(Mathf.Clamp(transform.position.x, min, max));
+            transform.SetY(Mathf.Clamp(transform.position.y, min, max));
         }
 
+
+        public static Vector4 ClampZ(this Vector4 vector, float min, float max)
+        {
+            return vector.SetZ(Mathf.Clamp(vector.z, min, max));
+        }
+
+        public static Vector3 ClampZ(this Vector3 vector, float min, float max)
+        {
+            return vector.SetZ(Mathf.Clamp(vector.z, min, max));
+        }
+
+        public static void ClampZ(this Transform transform, float min, float max)
+        {
+            transform.SetZ(Mathf.Clamp(transform.position.z, min, max));
+        }
+
+
+        public static Vector4 ClampW(this Vector4 vector, float min, float max)
+        {
+            return vector.SetW(Mathf.Clamp(vector.w, min, max));
+        }
         #endregion
 
 
         #region Invert
 
+        public static Vector4 Invert(this Vector4 vector)
+        {
+            return new Vector4(-vector.x, -vector.y, -vector.z, -vector.w);
+        }
+
+        public static Vector3 Invert(this Vector3 vector)
+        {
+            return new Vector3(-vector.x, -vector.y, -vector.z);
+        }
+
+        public static Vector2 Invert(this Vector2 vector)
+        {
+            return new Vector2(-vector.x, -vector.y);
+        }
+
+
+        public static Vector4 InvertX(this Vector4 vector)
+        {
+            return new Vector4(-vector.x, vector.y, vector.z, vector.w);
+        }
+
+        public static Vector3 InvertX(this Vector3 vector)
+        {
+            return new Vector3(-vector.x, vector.y, vector.z);
+        }
+
         public static Vector2 InvertX(this Vector2 vector)
         {
             return new Vector2(-vector.x, vector.y);
+        }
+
+
+        public static Vector4 InvertY(this Vector4 vector)
+        {
+            return new Vector4(vector.x, -vector.y, vector.z, vector.w);
+        }
+
+        public static Vector3 InvertY(this Vector3 vector)
+        {
+            return new Vector3(vector.x, -vector.y, vector.z);
         }
 
         public static Vector2 InvertY(this Vector2 vector)
@@ -341,6 +568,22 @@ namespace SALT.Extensions
             return new Vector2(vector.x, -vector.y);
         }
 
+
+        public static Vector4 InvertZ(this Vector4 vector)
+        {
+            return new Vector4(vector.x, vector.y, -vector.z, vector.w);
+        }
+
+        public static Vector3 InvertZ(this Vector3 vector)
+        {
+            return new Vector3(vector.x, vector.y, -vector.z);
+        }
+
+
+        public static Vector4 InvertW(this Vector4 vector)
+        {
+            return new Vector4(vector.x, vector.y, vector.z, -vector.w);
+        }
         #endregion
 
 
@@ -351,9 +594,29 @@ namespace SALT.Extensions
             return new Vector2(vector.x, vector.y);
         }
 
+        public static Vector2 ToVector2(this Vector4 vector)
+        {
+            return new Vector2(vector.x, vector.y);
+        }
+
         public static Vector3 ToVector3(this Vector2 vector)
         {
             return new Vector3(vector.x, vector.y);
+        }
+
+        public static Vector3 ToVector3(this Vector4 vector)
+        {
+            return new Vector3(vector.x, vector.y, vector.z);
+        }
+
+        public static Vector4 ToVector4(this Vector3 vector)
+        {
+            return new Vector4(vector.x, vector.y, vector.z);
+        }
+
+        public static Vector4 ToVector4(this Vector2 vector)
+        {
+            return new Vector4(vector.x, vector.y);
         }
 
 
@@ -382,6 +645,18 @@ namespace SALT.Extensions
 
 
         #region Snap
+
+        /// <summary>
+        /// Snap to grid of snapValue
+        /// </summary>
+        public static Vector4 SnapValue(this Vector4 val, float snapValue)
+        {
+            return new Vector4(
+                val.x.Snap(snapValue),
+                val.y.Snap(snapValue),
+                val.z.Snap(snapValue),
+                val.w.Snap(snapValue));
+        }
 
         /// <summary>
         /// Snap to grid of snapValue
@@ -428,10 +703,34 @@ namespace SALT.Extensions
             return new Vector3(Mathf.Round(vector.x), Mathf.Round(vector.y), Mathf.Round(vector.z));
         }
 
+        /// <summary>
+        /// Snap to one unit grid
+        /// </summary>
+        public static Vector4 SnapToOne(this Vector4 vector)
+        {
+            return new Vector4(Mathf.Round(vector.x), Mathf.Round(vector.y), Mathf.Round(vector.z), Mathf.Round(vector.w));
+        }
+
         #endregion
 
 
         #region Average
+
+        public static Vector4 AverageVector(this Vector4[] vectors)
+        {
+            if (vectors.IsNullOrEmpty()) return Vector4.zero;
+
+            float x = 0f, y = 0f, z = 0f, w = 0f;
+            for (var i = 0; i < vectors.Length; i++)
+            {
+                x += vectors[i].x;
+                y += vectors[i].y;
+                z += vectors[i].z;
+                w += vectors[i].w;
+            }
+
+            return new Vector4(x / vectors.Length, y / vectors.Length, z / vectors.Length, w / vectors.Length);
+        }
 
         public static Vector3 AverageVector(this Vector3[] vectors)
         {
@@ -670,6 +969,48 @@ namespace SALT.Extensions
             b.y *= a.y;
 
             return b;
+        }
+        #endregion
+
+        #region Other
+
+
+        public static Vector3 manualWorldToScreenPoint(this Camera cam, Vector3 wp)
+        {
+            // calculate view-projection matrix
+            Matrix4x4 mat = cam.projectionMatrix * cam.worldToCameraMatrix;
+
+            // multiply world point by VP matrix
+            Vector4 temp = mat * new Vector4(wp.x, wp.y, wp.z, 1f);
+
+            if (temp.w == 0f)
+            {
+                // point is exactly on camera focus point, screen point is undefined
+                // unity handles this by returning 0,0,0
+                return Vector3.zero;
+            }
+            else
+            {
+                // convert x and y from clip space to window coordinates
+                temp.x = (temp.x / temp.w + 1f) * .5f * cam.pixelWidth;
+                temp.y = (temp.y / temp.w + 1f) * .5f * cam.pixelHeight;
+                return new Vector3(temp.x, temp.y, wp.z);
+            }
+        }
+
+        public static bool IsWorldPointOnScreen(this Camera camera, Vector3 point)
+        {
+            var position = camera.WorldToViewportPoint(point);
+            //float distX = Vector3.Distance(new Vector3(Screen.width / 2, 0f, 0f), new Vector3(position.x, 0f, 0f));
+            //float distY = Vector3.Distance(new Vector3(0f, Screen.height / 2, 0f), new Vector3(0f, position.y, 0f));
+            //bool isVisible = !(distX > Screen.width / 2 || distY > Screen.height / 2);
+            return position.z > 0 && position.x > 0 && position.x < 1 && position.y > 0 && position.y < 1;
+        }
+
+        public static bool IsWorldPointInViewport(this Camera camera, Vector3 point)
+        {
+            var position = camera.WorldToViewportPoint(point);
+            return position.x > 0 && position.y > 0;
         }
         #endregion
     }

@@ -43,11 +43,11 @@ namespace SALT.Console.Commands
                 return true;
             }
             Character character = EnumUtils.Parse<Character>(name, true, Character.NONE);
-            //if (character == Character.NONE)
-            //{
-            //    Console.LogError("Character change failed");
-            //    return false;
-            //}
+            if (character == Character.NONE)
+            {
+                Console.LogError("Character change failed");
+                return false;
+            }
             Main.SetCharacter((int)character);
             Console.LogSuccess("Successfully changed character");
             return true;
@@ -58,16 +58,17 @@ namespace SALT.Console.Commands
             if (argIndex == 0)
             {
                 List<Character> characters = EnumUtils.GetAll<Character>().ToList();
+                characters.Remove(Character.NONE);
                 PlayerScript player = PlayerScript.player;
                 if (player == null)
                     return characters.Select(c => c.ToString()).ToList();
                 Dictionary<int, string> dCharacters = new Dictionary<int, string>();
                 foreach (var c in characters)
-                    dCharacters.Add((int)c,c.ToFriendlyName());
+                    dCharacters.Add((int)c, c.ToFriendlyName());
                 int unknownNumber = 0;
                 for (int i = 0; i < player.characterPacks.Count-1; i++)
                 {
-                    if (!dCharacters.ContainsKey(i))
+                    if (i != (int)Character.NONE && !dCharacters.ContainsKey(i))
                     {
                         unknownNumber++;
                         dCharacters.Add(i, (UnknownStart + unknownNumber));

@@ -68,6 +68,7 @@ namespace SALT.Extensions
         {
             SetSize(trans, new Vector2(trans.rect.size.x, newSize));
         }
+
         public static string GetPath(this Transform current)
         {
             if (current.parent == null)

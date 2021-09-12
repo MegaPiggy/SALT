@@ -6,7 +6,7 @@ namespace SALT.UI
     internal class ModListUI : MonoBehaviour
     {
         private GameObject modList => this.gameObject;
-        private TextArea modArea => this.gameObject.GetComponentInChildren<TextArea>();
+        private TextArea modArea => modList.GetComponentInChildren<TextArea>();
         internal bool NoModsYet = true;
         private string NewLine => this.NoModsYet ? "  " : System.Environment.NewLine + "  ";
         private const string ModFormat = "<size=25>[Name] v[Version] </size><size=22>--- [Author] </size><size=20>--- [Description]</size>";

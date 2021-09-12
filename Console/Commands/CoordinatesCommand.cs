@@ -36,14 +36,10 @@ namespace SALT.Console.Commands
 						return true;
 					}
 					else
-					{
 						Console.LogError("Incorrect arguments!");
-					}
 				}
 				else
-				{
-					//Console.LogError("Incorrect number of arguments!");
-				}
+					Console.LogError("Incorrect number of arguments!");
 			}
 			else if (select == "get")
 			{
@@ -57,9 +53,7 @@ namespace SALT.Console.Commands
 					return true;
 				}
 				else
-				{
-					//Console.LogError("Incorrect number of arguments!");
-				}
+					Console.LogError("Incorrect number of arguments!");
 			}
 			return false;
 		}
@@ -78,5 +72,5 @@ namespace SALT.Console.Commands
 		}
 
 		public override List<string> GetAutoComplete(int argIndex, string argText) => argIndex == 0 ? new List<string> { "help", "set", "get" } : base.GetAutoComplete(argIndex, argText);
-    }
+	}
 }

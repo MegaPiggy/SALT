@@ -9,7 +9,12 @@ namespace SALT.Extensions
 {
     public static class GameObjectExtensions
     {
-        public static string GetPath(this GameObject gameObject) => gameObject.transform.GetHierarchyString();
+        public static string GetPath(this GameObject gameObject)
+        {
+            if (gameObject.GetComponent<Transform>() == null)
+                throw new System.NullReferenceException("Cannot get path of GameObject because transform is null.");
+            return gameObject.transform.GetHierarchyString();
+        }
         public static T Initialize<T>(this T obj, System.Action<T> action) where T : UnityEngine.Object
         {
             action(obj);
@@ -60,13 +65,6 @@ namespace SALT.Extensions
             return gameObject.AddComponent<T>();
         }
 
-        public static T GetOrAddComponent<T>(this Component component) where T : Component
-        {
-            var toGet = component.gameObject.GetComponent<T>();
-            if (toGet != null) return toGet;
-            return component.gameObject.AddComponent<T>();
-        }
-
         public static bool HasComponentShort<T>(this GameObject gameObject)
         {
             return gameObject.GetComponent<T>() != null;
@@ -102,59 +100,73 @@ namespace SALT.Extensions
             }
         }
 
+        // CHILD STUFF
 
+        public static void AddChild(this GameObject obj, GameObject child)
+        {
+            child.transform.SetParent(obj.transform);
+        }
+
+        public static void AddChild(this GameObject obj, GameObject child, bool worldPositionStays)
+        {
+            child.transform.SetParent(obj.transform, worldPositionStays);
+        }
 
         public static GameObject FindChildWithPartialName(
           this GameObject obj,
           string name,
           bool noDive = false)
         {
-            GameObject gameObject = (GameObject)null;
-            foreach (Transform transform in obj.transform)
+            GameObject result = null;
+
+            foreach (Transform child in obj.transform)
             {
-                if (transform.name.StartsWith(name))
+                if (child.name.StartsWith(name))
                 {
-                    gameObject = transform.gameObject;
+                    result = child.gameObject;
                     break;
                 }
-                if (transform.childCount > 0 && !noDive)
+
+                if (child.childCount > 0 && !noDive)
                 {
-                    gameObject = transform.gameObject.FindChildWithPartialName(name);
-                    if (gameObject != null)
+                    result = child.gameObject.FindChildWithPartialName(name);
+                    if (result != null)
                         break;
                 }
             }
-            return gameObject;
+
+            return result;
         }
 
         public static GameObject FindChild(this GameObject obj, string name, bool dive = false)
         {
             if (!dive)
+                return obj.transform.Find(name)?.gameObject;
+            else
             {
-                Transform found = obj.transform.Find(name);
-                if (found != null)
-                    return found.gameObject;
-                return null;
-            }
-            GameObject gameObject = null;
-            foreach (Transform transform in obj?.transform)
-            {
-                if (transform != null)
+                GameObject result = null;
+
+                foreach (Transform child in obj?.transform)
                 {
-                    if (transform.name.Equals(name))
+                    if (child == null)
+                        continue;
+
+                    if (child.name.Equals(name))
                     {
-                        gameObject = transform.gameObject;
+                        result = child.gameObject;
                         break;
                     }
-                    if (transform.childCount > 0)
+
+                    if (child.childCount > 0)
                     {
-                        gameObject = transform.gameObject.FindChild(name, dive);
-                        if (gameObject != null)
+                        result = child.gameObject.FindChild(name, dive);
+                        if (result != null)
                             break;
                     }
                 }
+
+                return result;
             }
-            return gameObject;
         }
 
         public static GameObject[] FindChildrenWithPartialName(
@@ -162,48 +174,40 @@ namespace SALT.Extensions
           string name,
           bool noDive = false)
         {
-            List<GameObject> gameObjectList = new List<GameObject>();
-            foreach (Transform transform in obj.transform)
+            List<GameObject> result = new List<GameObject>();
+
+            foreach (Transform child in obj.transform)
             {
-                if (transform.name.StartsWith(name))
-                    gameObjectList.Add(transform.gameObject);
-                if (transform.childCount > 0 && !noDive)
-                    gameObjectList.AddRange((IEnumerable<GameObject>)transform.gameObject.FindChildrenWithPartialName(name));
+                if (child.name.StartsWith(name))
+                    result.Add(child.gameObject);
+
+                if (child.childCount > 0 && !noDive)
+                    result.AddRange(child.gameObject.FindChildrenWithPartialName(name));
             }
-            return gameObjectList.ToArray();
+
+            return result.ToArray();
         }
 
         public static GameObject[] FindChildren(this GameObject obj, string name, bool noDive = false)
         {
-            List<GameObject> gameObjectList = new List<GameObject>();
-            foreach (Transform transform in obj.transform)
+            List<GameObject> result = new List<GameObject>();
+
+            foreach (Transform child in obj.transform)
             {
-                if (transform.name.Equals(name))
-                    gameObjectList.Add(transform.gameObject);
-                if (transform.childCount > 0 && !noDive)
-                    gameObjectList.AddRange((IEnumerable<GameObject>)transform.gameObject.FindChildren(name));
+                if (child.name.Equals(name))
+                    result.Add(child.gameObject);
+
+                if (child.childCount > 0 && !noDive)
+                    result.AddRange(child.gameObject.FindChildren(name));
             }
-            return gameObjectList.ToArray();
+
+            return result.ToArray();
         }
 
+        // PARENT STUFF
         public static T FindComponentInParent<T>(this GameObject obj) where T : Component
         {
-            T obj1;
-            if (obj != null)
-            {
-                Transform parent1 = obj.transform.parent;
-                T obj2 = parent1 != null ? parent1.GetComponent<T>() : default(T);
-                if ((object)obj2 == null)
-                {
-                    Transform parent2 = obj.transform.parent;
-                    obj1 = parent2 != null ? parent2.gameObject.FindComponentInParent<T>() : default(T);
-                }
-                else
-                    obj1 = obj2;
-            }
-            else
-                obj1 = default(T);
-            return obj1;
+            return obj == null ? default : obj.transform.parent?.GetComponent<T>() ?? obj.transform.parent?.gameObject.FindComponentInParent<T>();
         }
 
         public static bool IsDescendantOf(this GameObject obj, GameObject parent)
@@ -216,6 +220,7 @@ namespace SALT.Extensions
             return false;
         }
 
+        // OBTAIN CHILD
         public static GameObject GetChildCopy(this GameObject obj, string name)
         {
             GameObject prefabCopy = obj.CreatePrefabCopy();
@@ -227,6 +232,19 @@ namespace SALT.Extensions
             return child;
         }
 
+        public static GameObject[] GetChildren(this GameObject obj, bool noDive = false)
+        {
+            List<GameObject> gameObjectList = new List<GameObject>();
+            foreach (Transform transform in obj.transform)
+            {
+                gameObjectList.Add(transform.gameObject);
+                if (transform.childCount > 0 && !noDive)
+                    gameObjectList.AddRange((IEnumerable<GameObject>)transform.gameObject.GetChildren(noDive));
+            }
+            return gameObjectList.ToArray();
+        }
+
+        // COPY STUFF
         public static GameObject CreatePrefabCopy(this GameObject obj) => PrefabUtils.CopyPrefab(obj);
 
 
@@ -254,10 +272,38 @@ namespace SALT.Extensions
             return comp as T;
         }
 
-        public static Component[] GetComponents(this GameObject gameObject)
+        // COMPONENT STUFF
+        public static Component[] GetComponents(this GameObject gameObject) => gameObject.GetComponents<Component>();
+
+        public static void RemoveComponent<T>(this GameObject go) where T : Component => UnityEngine.Object.Destroy(go.GetComponent<T>());
+        public static void RemoveComponentImmediate<T>(this GameObject go) where T : Component => UnityEngine.Object.DestroyImmediate(go.GetComponent<T>());
+        public static void RemoveComponent<T>(this GameObject go, T component) where T : Component => UnityEngine.Object.Destroy(component);
+        public static void RemoveComponentImmediate<T>(this GameObject go, T component) where T : Component => UnityEngine.Object.DestroyImmediate(component);
+        public static T AddComponent<T>(this GameObject go, T toAdd) where T : Component => go.AddComponent<T>().GetCopyOf<T>(toAdd);
+
+        /// <summary>
+        /// Is the component present in the object?
+        /// </summary>
+        /// <param name="obj">Object to test</param>
+        /// <param name="comp">The component if found, null if not</param>
+        /// <typeparam name="T">The type of component</typeparam>
+        /// <returns>True if the component is found, false otherwise</returns>
+        public static bool HasComponent<T>(this GameObject obj, out T comp) where T : Component
         {
-            var allComponents = gameObject.GetComponents<Component>();
-            return allComponents;
+            comp = obj.GetComponent<T>();
+
+            return comp != null;
+        }
+
+        /// <summary>
+        /// Is the component present in the object?
+        /// </summary>
+        /// <param name="obj">Object to test</param>
+        /// <typeparam name="T">The type of component</typeparam>
+        /// <returns>True if the component is found, false otherwise</returns>
+        public static bool HasComponent<T>(this GameObject obj) where T : Component
+        {
+            return obj.GetComponent<T>() != null;
         }
 
         public static bool HasComponentLong<T>(this GameObject gameObject)
@@ -273,6 +319,109 @@ namespace SALT.Extensions
             return foundType;
         }
 
+        // SHORTCUTS
+        public static void Prefabitize(this GameObject go) => GameObjectUtils.Prefabitize(go);
+        public static void Activate(this GameObject obj) => obj.SetActive(true);
+        public static void Deactivate(this GameObject obj) => obj.SetActive(false);
+        public static bool IsActive(this GameObject obj) => obj.activeSelf;
+
+        // INSTANTIATE INACTIVE
+        public static GameObject InstantiateInactive(this GameObject original, bool keepOriginalName = false)
+        {
+            GameObject clone = GameObjectUtils.InstantiateInactive(original);
+            if (keepOriginalName)
+                clone.name = original.name;
+            return clone;
+        }
+
+        public static GameObject InstantiateInactive(this GameObject original, UnityEngine.Transform parent, bool keepOriginalName = false)
+        {
+            GameObject clone = GameObjectUtils.InstantiateInactive(original, parent);
+            if (keepOriginalName)
+                clone.name = original.name;
+            return clone;
+        }
+
+        public static GameObject InstantiateInactive(this GameObject original, UnityEngine.Transform parent, bool worldPositionStays, bool keepOriginalName = false)
+        {
+            GameObject clone = GameObjectUtils.InstantiateInactive(original, parent, worldPositionStays);
+            if (keepOriginalName)
+                clone.name = original.name;
+            return clone;
+        }
+
+        public static GameObject InstantiateInactive(this GameObject original, UnityEngine.Vector3 position, UnityEngine.Quaternion rotation, bool keepOriginalName = false)
+        {
+            GameObject clone = GameObjectUtils.InstantiateInactive(original, position, rotation);
+            if (keepOriginalName)
+                clone.name = original.name;
+            return clone;
+        }
+
+        public static GameObject InstantiateInactive(this GameObject original, UnityEngine.Vector3 position, UnityEngine.Quaternion rotation, UnityEngine.Transform parent, bool keepOriginalName = false)
+        {
+            GameObject clone = GameObjectUtils.InstantiateInactive(original, position, rotation, parent);
+            if (keepOriginalName)
+                clone.name = original.name;
+            return clone;
+        }
+
+        //INTERFACES
+
+        /// <summary>
+        /// Returns all monobehaviours (casted to T)
+        /// </summary>
+        /// <typeparam name="T">interface type</typeparam>
+        /// <param name="gObj"></param>
+        /// <returns></returns>
+        public static T[] GetInterfaces<T>(this GameObject gObj)
+        {
+            if (!typeof(T).IsInterface) throw new System.Exception("Specified type is not an interface!");
+            var mObjs = gObj.GetComponents<MonoBehaviour>();
+
+            return (from a in mObjs where a.GetType().GetInterfaces().Any(k => k == typeof(T)) select (T)(object)a).ToArray();
+        }
+
+        /// <summary>
+        /// Returns the first monobehaviour that is of the interface type (casted to T)
+        /// </summary>
+        /// <typeparam name="T">Interface type</typeparam>
+        /// <param name="gObj"></param>
+        /// <returns></returns>
+        public static T GetInterface<T>(this GameObject gObj)
+        {
+            if (!typeof(T).IsInterface) throw new System.Exception("Specified type is not an interface!");
+            return gObj.GetInterfaces<T>().FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Returns the first instance of the monobehaviour that is of the interface type T (casted to T)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="gObj"></param>
+        /// <returns></returns>
+        public static T GetInterfaceInChildren<T>(this GameObject gObj)
+        {
+            if (!typeof(T).IsInterface) throw new System.Exception("Specified type is not an interface!");
+            return gObj.GetInterfacesInChildren<T>().FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets all monobehaviours in children that implement the interface of type T (casted to T)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="gObj"></param>
+        /// <returns></returns>
+        public static T[] GetInterfacesInChildren<T>(this GameObject gObj)
+        {
+            if (!typeof(T).IsInterface) throw new System.Exception("Specified type is not an interface!");
+
+            var mObjs = gObj.GetComponentsInChildren<MonoBehaviour>();
+
+            return (from a in mObjs where a.GetType().GetInterfaces().Any(k => k == typeof(T)) select (T)(object)a).ToArray();
+        }
+
+        //OTHER
         public static void PrintNamesOfChildren(this GameObject gameObject)
         {
             GameObject[] allChildren = gameObject.GetChildren();
@@ -289,43 +438,6 @@ namespace SALT.Extensions
                 Debug.Log(gameObject.name + "'s component: " + (component.GetType()).ToString());
             }
         }
-        public static void Prefabitize(this GameObject go) => GameObjectUtils.Prefabitize(go);
-        public static void Destroy(this GameObject go) => UnityEngine.Object.Destroy(go);
-        public static void DestroyImmediate(this GameObject go) => UnityEngine.Object.DestroyImmediate(go);
-
-        public static void RemoveComponent<T>(this GameObject go) where T : Component => UnityEngine.Object.Destroy(go.GetComponent<T>());
-
-        public static void RemoveComponentImmediate<T>(this GameObject go) where T : Component => UnityEngine.Object.DestroyImmediate(go.GetComponent<T>());
-
-        public static T AddComponent<T>(this GameObject go, T toAdd) where T : Component => go.AddComponent<T>().GetCopyOf<T>(toAdd);
-
-        public static void AddChild(this GameObject obj, GameObject child)
-        {
-            child.transform.SetParent(obj.transform);
-        }
-
-        public static void AddChild(this GameObject obj, GameObject child, bool worldPositionStays)
-        {
-            child.transform.SetParent(obj.transform, worldPositionStays);
-        }
-
-        public static GameObject[] GetChildren(this GameObject obj, bool noDive = false)
-        {
-            List<GameObject> gameObjectList = new List<GameObject>();
-            foreach (Transform transform in obj.transform)
-            {
-                gameObjectList.Add(transform.gameObject);
-                if (transform.childCount > 0 && !noDive)
-                    gameObjectList.AddRange((IEnumerable<GameObject>)transform.gameObject.GetChildren(noDive));
-            }
-            return gameObjectList.ToArray();
-        }
-
-        public static void Activate(this GameObject obj, bool active = true) => obj.SetActive(active);
-
-        public static void Deactivate(this GameObject obj) => obj.Activate(false);
-
-        public static bool IsActive(this GameObject obj) => obj.activeSelf;
 
         /// <summary>
         /// Set layer to all GameObject children, including inactive.

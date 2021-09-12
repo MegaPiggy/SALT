@@ -79,7 +79,17 @@ namespace SALT.Extensions
             return value;
         }
 
-        public static float Pow(this float f, float p) => Mathf.Pow(f, p);
+        public static long Floor(this double f) => (long)f;
+        public static long Round(this double f) => (long)(f + 0.5d);
+        public static long Ceil(this double f) => (long)(f + 1d);
+        public static int Floor(this float f) => (int)f;
+        public static int Round(this float f) => (int)(f + 0.5f);
+        public static int Ceil(this float f) => (int)(f + 1f);
+
+        public static double Pow(this double f, double p) => Math.Pow(f, p);
+        public static int Pow(this int f, int p) => Convert.ToInt32(Pow(Convert.ToDouble(f), Convert.ToDouble(p)));
+        public static long Pow(this long f, long p) => Convert.ToInt64(Pow(Convert.ToDouble(f), Convert.ToDouble(p)));
+        public static float Pow(this float f, float p) => Mathf.Pow(f,p);
 
         /// <summary>
         /// Stop value from going above max or below min values.

@@ -23,7 +23,7 @@ namespace SALT.UI
         {
             MainScript.paused = true;
             GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
-            GameObject errorUI = versionObject.CloneInstance();
+            GameObject errorUI = versionObject.Instantiate();
             errorUI.name = "errorUI";
             errorUI.AddComponent<UI.ErrorUI>();
             GameObject errorCanvas = new GameObject("errorCanvas", typeof(RectTransform));

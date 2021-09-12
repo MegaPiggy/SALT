@@ -1,4 +1,5 @@
 ﻿using SALT.Extensions;
+using SALT.Utils;
 using UnityEngine;
 
 namespace SALT.Console.Commands
@@ -40,7 +41,7 @@ namespace SALT.Console.Commands
 
         private static void CompleteRedHeart()
         {
-            SAObjects.GetRootGameObject("PotTrap").SetChildActive("LevelClearEmpty", true);
+            UnityObjectUtils.GetActiveRootGameObject("PotTrap").SetChildActive("LevelClearEmpty", true);
             CompleteLevel();
             Patches.PotClosedPatch.OnPotClosed -= CompleteRedHeart;
         }
@@ -53,7 +54,9 @@ namespace SALT.Console.Commands
                 Console.LogError("Failed to complete level. No 'mom' button found.");
                 return false;
             }
-            Main.StopSave();
+#if !DEBUG
+            //Main.StopSave();
+#endif
             LevelManager.levelManager.deaths = 0;
             LevelManager.levelManager.bubbaTokens = new bool[3] { true, true, true };
             LevelManager.levelManager.collectedMoustaches = LevelManager.levelManager.totalMoustaches;

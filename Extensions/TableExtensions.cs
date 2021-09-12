@@ -5,14 +5,20 @@ namespace SALT.Extensions
 {
     public static class TableExtensions
     {
-        public static void ArrayResize<T>(this T[] array, int capacity)
+        [System.Obsolete("Use TableExtensions.Resize instead.")]
+        public static void ArrayResize<T>(T[] array, int capacity) => Resize(array, capacity);
+
+        [System.Obsolete("Use TableExtensions.Expand instead.")]
+        public static void ArrayExpand<T>(T[] array, int capacity) => Expand(array, capacity);
+
+        public static void Resize<T>(this T[] array, int capacity)
         {
             if (array != null && capacity <= array.Length)
                 return;
             System.Array.Resize<T>(ref array, capacity.NextPowerOfTwo());
         }
 
-        public static void ArrayExpand<T>(this T[] array, int capacity)
+        public static void Expand<T>(this T[] array, int capacity)
         {
             if (array != null && capacity <= array.Length)
                 return;
@@ -34,7 +40,10 @@ namespace SALT.Extensions
 
         public static List<TSource> DeepCopy<TSource>(this List<TSource> source) => new List<TSource>(source);
 
-        public static void RandomizeList<T>(this List<T> list)
+        [System.Obsolete("Use TableExtensions.Randomize instead.")]
+        public static void RandomizeList<T>(List<T> list) => Randomize(list);
+
+        public static void Randomize<T>(this List<T> list)
         {
             int count = list.Count;
             for (int index1 = 0; index1 < count; ++index1)
@@ -50,7 +59,7 @@ namespace SALT.Extensions
         {
             List<T> objList = new List<T>();
             objList.AddRange((IEnumerable<T>)list);
-            objList.RandomizeList<T>();
+            objList.Randomize<T>();
             return objList.FirstOrDefault<T>();
         }
 

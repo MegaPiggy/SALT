@@ -72,23 +72,107 @@ namespace SALT.Utils
 
         public static GameObject InstantiateInactive(GameObject original)
         {
-            bool activeSelf = original.activeSelf;
+            var state = original.activeSelf;
             original.SetActive(false);
-            bool flag = false;
-            RuntimePrefab component = original.GetComponent<RuntimePrefab>();
-            if ((bool)(UnityEngine.Object)component)
+            bool originalRuntimeValue = false;
+            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
+            if (comp)
             {
-                flag = component.ShouldEnableOnInstantiate;
-                component.ShouldEnableOnInstantiate = false;
+                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
+                comp.ShouldEnableOnInstantiate = false;
             }
-            GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(original);
-            if ((bool)(UnityEngine.Object)component)
+            var newObj = GameObject.Instantiate(original);
+            if (comp)
             {
-                component.ShouldEnableOnInstantiate = flag;
-                gameObject.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = flag;
+                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
+                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
             }
-            original.SetActive(activeSelf);
-            return gameObject;
+            original.SetActive(state);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Transform parent)
+        {
+            var state = original.activeSelf;
+            original.SetActive(false);
+            bool originalRuntimeValue = false;
+            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
+            if (comp)
+            {
+                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
+                comp.ShouldEnableOnInstantiate = false;
+            }
+            var newObj = GameObject.Instantiate(original, parent);
+            if (comp)
+            {
+                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
+                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
+            }
+            original.SetActive(state);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Transform parent, bool worldPositionStays)
+        {
+            var state = original.activeSelf;
+            original.SetActive(false);
+            bool originalRuntimeValue = false;
+            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
+            if (comp)
+            {
+                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
+                comp.ShouldEnableOnInstantiate = false;
+            }
+            var newObj = GameObject.Instantiate(original, parent, worldPositionStays);
+            if (comp)
+            {
+                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
+                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
+            }
+            original.SetActive(state);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation)
+        {
+            var state = original.activeSelf;
+            original.SetActive(false);
+            bool originalRuntimeValue = false;
+            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
+            if (comp)
+            {
+                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
+                comp.ShouldEnableOnInstantiate = false;
+            }
+            var newObj = GameObject.Instantiate(original, position, rotation);
+            if (comp)
+            {
+                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
+                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
+            }
+            original.SetActive(state);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            var state = original.activeSelf;
+            original.SetActive(false);
+            bool originalRuntimeValue = false;
+            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
+            if (comp)
+            {
+                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
+                comp.ShouldEnableOnInstantiate = false;
+            }
+            var newObj = GameObject.Instantiate(original, position, rotation, parent);
+            if (comp)
+            {
+                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
+                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
+            }
+            original.SetActive(state);
+            return newObj;
         }
     }
 }

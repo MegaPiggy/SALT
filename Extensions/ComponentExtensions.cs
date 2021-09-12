@@ -33,8 +33,7 @@ namespace SALT.Extensions
                 return (T)null;
             for (; type != typeof(Component) && type != null; type = type.BaseType)
             {
-                BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-                foreach (PropertyInfo property in type.GetProperties(bindingAttr))
+                foreach (PropertyInfo property in type.GetInstanceProperties())
                 {
                     if (!((IEnumerable<string>)SKIP_PROP_NAMES).Contains<string>(property.Name) && property.CanWrite && property.CanRead)
                     {
@@ -51,7 +50,7 @@ namespace SALT.Extensions
                         }
                     }
                 }
-                foreach (FieldInfo field in type.GetFields(bindingAttr))
+                foreach (FieldInfo field in type.GetInstanceFields())
                 {
                     if (field.IsPublic || field.GetCustomAttributes(typeof(SerializeField), true).Length != 0)
                     {
@@ -96,6 +95,7 @@ namespace SALT.Extensions
             return copy;
         }
 
+        // MATERIAL CONTROL
         public static Material SetInfo(this Material mat, Color color, string name)
         {
             mat.SetColor("_Color", color);
@@ -118,6 +118,7 @@ namespace SALT.Extensions
             }
         }
 
+        // OBJECT CONTROL
         public static T[] Group<T>(this T obj) where T : Object => new T[1]
         {
             obj
@@ -130,53 +131,28 @@ namespace SALT.Extensions
             return objList.ToArray();
         }
 
+        // PRIVATE FIELDS STUFF
+        [System.Obsolete("Use ObjectExtensions.SetField instead.")]
         public static T SetPrivateField<T>(this T comp, string name, object value) where T : Component
         {
-            try
-            {
-                comp.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).SetValue((object)comp, value);
-            }
-            catch
-            {
-            }
+            comp.SetField(name, value);
+
             return comp;
         }
 
+        [System.Obsolete("Use ObjectExtensions.SetProperty instead.")]
         public static T SetPrivateProperty<T>(this T comp, string name, object value) where T : Component
         {
-            try
-            {
-                comp.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.NonPublic).SetValue((object)comp, value, (object[])null);
-            }
-            catch
-            {
-            }
+            comp.SetProperty(name, value);
+
             return comp;
         }
 
-        public static E GetPrivateField<E>(this Component comp, string name)
-        {
-            try
-            {
-                return (E)comp.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue((object)comp);
-            }
-            catch
-            {
-            }
-            return default(E);
-        }
+        [System.Obsolete("Use ObjectExtensions.GetField instead.")]
+        public static E GetPrivateField<E>(this Component comp, string name) => comp.GetField<E>(name);
 
-        public static E GetPrivateProperty<E>(this Component comp, string name)
-        {
-            try
-            {
-                return (E)comp.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.NonPublic).GetValue((object)comp, (object[])null);
-            }
-            catch
-            {
-            }
-            return default(E);
-        }
+        [System.Obsolete("Use ObjectExtensions.GetProperty instead.")]
+        public static E GetPrivateProperty<E>(this Component comp, string name) => comp.GetProperty<E>(name);
 
         public static void CopyAllTo<T>(this T comp, T otherComp) where T : Component
         {
@@ -295,6 +271,38 @@ namespace SALT.Extensions
             if ((UnityEngine.Object)target == (UnityEngine.Object)null)
                 return (Component)null;
             return (UnityEngine.Object)target != (UnityEngine.Object)target.transform ? (Component)target.transform : (Component)target.transform.parent;
+        }
+
+        public static T GetOrAddComponent<T>(this Component component) where T : Component
+        {
+            var toGet = component.gameObject.GetComponent<T>();
+            if (toGet != null) return toGet;
+            return component.gameObject.AddComponent<T>();
+        }
+
+        /// <summary>
+        /// Is the component present in the object?
+        /// </summary>
+        /// <param name="obj">Object to test</param>
+        /// <param name="comp">The component if found, null if not</param>
+        /// <typeparam name="T">The type of component</typeparam>
+        /// <returns>True if the component is found, false otherwise</returns>
+        public static bool HasComponent<T>(this Component obj, out T comp) where T : Component
+        {
+            comp = obj.GetComponent<T>();
+
+            return comp != null;
+        }
+
+        /// <summary>
+        /// Is the component present in the object?
+        /// </summary>
+        /// <param name="obj">Object to test</param>
+        /// <typeparam name="T">The type of component</typeparam>
+        /// <returns>True if the component is found, false otherwise</returns>
+        public static bool HasComponent<T>(this Component obj) where T : Component
+        {
+            return obj.GetComponent<T>() != null;
         }
     }
 }

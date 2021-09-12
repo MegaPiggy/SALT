@@ -7,11 +7,13 @@ namespace SALT.Extensions
         /// <summary>
         /// Create new sprite out of Texture
         /// </summary>
+        /// <param name="texture">A texture to created sprite from.</param>
+        /// <returns>New sprite instance.</returns>
         public static Sprite AsSprite(this Texture2D texture)
         {
-            var rect = new Rect(0, 0, texture.width, texture.height);
-            var pivot = new Vector2(0.5f, 0.5f);
-            return Sprite.Create(texture, rect, pivot);
+            Sprite spr = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            spr.name = texture.name;
+            return spr;
         }
 
         /// <summary>
@@ -132,18 +134,6 @@ namespace SALT.Extensions
             var decodedFromBase64 = System.Convert.FromBase64String(base64EncodedString);
             texture.LoadImage(decodedFromBase64);
             return texture;
-        }
-
-        /// <summary>
-        /// Create new sprite instance for the texture.
-        /// </summary>
-        /// <param name="texture">A texture to created sprite from.</param>
-        /// <returns>New sprite instance.</returns>
-        public static Sprite CreateSprite(this Texture2D texture)
-        {
-            Sprite spr = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            spr.name = texture.name;
-            return spr;
         }
     }
 }
