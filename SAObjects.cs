@@ -188,9 +188,11 @@ namespace SALT
 			//Cheese = cheese;
 		}
 
-		public static GameObject[] GetAllRootGameObjects() => SceneManager.GetActiveScene().GetRootGameObjects();
+		[System.Obsolete("Use UnityObjectUtils.GetActiveRootGameObjects instead")]
+		public static GameObject[] GetAllRootGameObjects() => UnityObjectUtils.GetActiveRootGameObjects();
 
-		public static GameObject GetRootGameObject(string name) => GetAllRootGameObjects().FirstOrDefault(go => go.name == name);
+		[System.Obsolete("Use UnityObjectUtils.GetActiveRootGameObject instead")]
+		public static GameObject GetRootGameObject(string name) => UnityObjectUtils.GetActiveRootGameObject(name);
 
 		/// <summary>
 		/// Gets an object of a type by its name and a custom condition.
