@@ -97,7 +97,7 @@ namespace SALT.Console
             RegisterButton("help", new ConsoleButton("Show Help", "help"));
             RegisterButton("mods", new ConsoleButton("Show Mods", "mods"));
             RegisterButton("reload", new ConsoleButton("Run Reload", "reload"));
-            RegisterButton("dump.all", new ConsoleButton("Dump All Files", "dump all"));
+            RegisterButton("dump.game", new ConsoleButton("Dump Game", "dump game"));
             RegisterButton("level", new ConsoleButton("Load Level", "loadlevel"));
             RegisterButton("respawn", new ConsoleButton("Respawn", "respawn"));
 
@@ -355,7 +355,9 @@ namespace SALT.Console
             if (message.Equals(string.Empty))
                 return;
 
-            if (message.StartsWith("The character used for Ellipsis") || message.StartsWith("The character used for Underline and Strikethrough") || message.EndsWith("Consider using the SetParent method instead, with the worldPositionStays argument set to false. This will retain local orientation and scale rather than world orientation and scale, which can prevent common UI scaling issues."))
+            if (message.StartsWith("The character used for Ellipsis") || 
+                message.StartsWith("The character used for Underline and Strikethrough") || 
+                message.EndsWith("Consider using the SetParent method instead, with the worldPositionStays argument set to false. This will retain local orientation and scale rather than world orientation and scale, which can prevent common UI scaling issues."))
                 return;
 
             string toDisplay = message;
