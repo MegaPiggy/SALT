@@ -63,7 +63,7 @@ namespace SALT.DevTools.DevMenu
 		private static UnityEngine.Object selectObject;
 		private static ObjectInspector selectInspector;
 
-		private static readonly List<Scene> ALL_SCENES = new List<Scene>();
+		private static List<Scene> ALL_SCENES = new List<Scene>();
 		private static readonly List<SceneHierarchyObject> SCENE_HIERARCHY = new List<SceneHierarchyObject>();
 		private static readonly List<ObjectComponent> OBJECT_COMPONENTS = new List<ObjectComponent>();
 
@@ -79,6 +79,7 @@ namespace SALT.DevTools.DevMenu
 		internal override void OnShow()
 		{
 			searchFilter = string.Empty;
+			ALL_SCENES = new List<Scene>();
 			for (int i = 0; i < SceneManager.sceneCount; i++)
 				ALL_SCENES.Add(SceneManager.GetSceneAt(i));
 			
