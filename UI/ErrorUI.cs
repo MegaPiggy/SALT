@@ -13,7 +13,7 @@ namespace SALT.UI
     {
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Return))
             {
                 Application.Quit();
                 return;

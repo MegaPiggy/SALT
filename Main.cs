@@ -198,8 +198,8 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ParseTrace());
-                UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
+                Debug.LogError(e.Message);
+                UI.ErrorUI.CreateError(e.Message);
                 return;
             }
 #if !POST
@@ -218,8 +218,8 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ParseTrace());
-                UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
+                Debug.LogError(e.Message);
+                UI.ErrorUI.CreateError(e.Message);
             }
 
             // Clears all the temporary memory
@@ -234,7 +234,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ParseTrace());
+                Debug.LogError(e.Message);
             }
         }
 
@@ -246,7 +246,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ParseTrace());
+                Debug.LogError(e.Message);
             }
         }
 
@@ -258,7 +258,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ParseTrace());
+                Debug.LogError(e.Message);
             }
         }
 
@@ -270,7 +270,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ParseTrace());
+                Debug.LogError(e.Message);
             }
         }
 
@@ -282,7 +282,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e.ParseTrace());
+                Debug.LogError(e.Message);
             }
         }
         
