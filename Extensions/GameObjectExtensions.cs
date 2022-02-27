@@ -9,6 +9,19 @@ namespace SALT.Extensions
 {
     public static class GameObjectExtensions
     {
+        /// <summary>
+        /// Gets the full name of a game object (includes the parents)
+        /// </summary>
+        /// <param name="this">The object to get the name from</param>
+        /// <returns>The full name of this game object</returns>
+        public static string GetFullName(this GameObject @this)
+        {
+            string str = @this.name;
+            for (Transform parent = @this.transform.parent; (Object)parent != (Object)null; parent = parent.parent)
+                str = parent.name + "/" + str;
+            return str;
+        }
+
         public static string GetPath(this GameObject gameObject)
         {
             if (gameObject.GetComponent<Transform>() == null)
@@ -280,6 +293,17 @@ namespace SALT.Extensions
         public static void RemoveComponent<T>(this GameObject go, T component) where T : Component => UnityEngine.Object.Destroy(component);
         public static void RemoveComponentImmediate<T>(this GameObject go, T component) where T : Component => UnityEngine.Object.DestroyImmediate(component);
         public static T AddComponent<T>(this GameObject go, T toAdd) where T : Component => go.AddComponent<T>().GetCopyOf<T>(toAdd);
+
+        /// <summary>
+        /// Is the component present in the object?
+        /// </summary>
+        /// <param name="obj">Object to test</param>
+        /// <param name="type">The type of component</param>
+        /// <returns>True if the component is found, false otherwise</returns>
+        public static bool HasComponent(this GameObject obj, System.Type type)
+        {
+            return obj.GetComponent(type) != null;
+        }
 
         /// <summary>
         /// Is the component present in the object?

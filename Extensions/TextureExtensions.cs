@@ -1,9 +1,139 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 
 namespace SALT.Extensions
 {
     public static class TextureExtensions
     {
+        private static readonly DirectoryInfo TEXTURE_DIR = new DirectoryInfo(Application.dataPath + "/../Textures");
+
+        public static Texture2D Duplicate(this Texture2D source)
+        {
+            byte[] pix = source.GetRawTextureData();
+            Texture2D readableText = new Texture2D(source.width, source.height, source.format, false);
+            readableText.LoadRawTextureData(pix);
+            readableText.Apply();
+            return readableText;
+        }
+
+        public static Sprite GetReadable(this Sprite source) => Sprite.Create(source.texture.GetReadable(), source.rect, source.pivot, source.pixelsPerUnit);
+
+        public static Texture2D GetReadable(this Texture2D texture)
+        {
+            // Create a temporary RenderTexture of the same size as the texture
+            RenderTexture tmp = RenderTexture.GetTemporary(
+                                texture.width,
+                                texture.height,
+                                0,
+                                RenderTextureFormat.Default,
+                                RenderTextureReadWrite.Linear);
+
+
+            // Blit the pixels on texture to the RenderTexture
+            Graphics.Blit(texture, tmp);
+
+
+            // Backup the currently set RenderTexture
+            RenderTexture previous = RenderTexture.active;
+
+
+            // Set the current RenderTexture to the temporary one we created
+            RenderTexture.active = tmp;
+
+
+            // Create a new readable Texture2D to copy the pixels to it
+            Texture2D myTexture2D = new Texture2D(texture.width, texture.height);
+            myTexture2D.name = texture.name;
+
+
+            // Copy the pixels from the RenderTexture to the new Texture
+            myTexture2D.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
+            myTexture2D.Apply();
+
+
+            // Reset the active RenderTexture
+            RenderTexture.active = previous;
+
+
+            // Release the temporary RenderTexture
+            RenderTexture.ReleaseTemporary(tmp);
+
+            return myTexture2D;
+        }
+
+
+        public static void ModifyTexturePixels(this Texture2D texture, System.Func<Color, Color> colorChange)
+        {
+            for (int miplevel = 0; miplevel < texture.mipmapCount; ++miplevel)
+            {
+                Color[] pixels = texture.GetPixels(miplevel);
+                for (int index = 0; index < pixels.Length; ++index)
+                    pixels[index] = colorChange(pixels[index]);
+                texture.SetPixels(pixels, miplevel);
+            }
+            texture.Apply(true);
+        }
+
+        public static void ModifyTexturePixels(
+          this Texture2D texture,
+          System.Func<Color, float, float, Color> colorChange)
+        {
+            for (int miplevel = 0; miplevel < texture.mipmapCount; ++miplevel)
+            {
+                Color[] pixels = texture.GetPixels(miplevel);
+                for (int index = 0; index < pixels.Length; ++index)
+                    pixels[index] = colorChange(pixels[index], (float)(index % texture.width + 1) / (float)texture.width, (float)(index / texture.width + 1) / (float)texture.height);
+                texture.SetPixels(pixels, miplevel);
+            }
+            texture.Apply(true);
+        }
+
+        public static Color Overlay(this Texture2D t, Color c, float u, float v)
+        {
+            Color pixelBilinear = t.GetPixelBilinear(u, v);
+            return new Color((float)((double)c.r * (1.0 - (double)pixelBilinear.a) + (double)pixelBilinear.r * (double)pixelBilinear.a), (float)((double)c.g * (1.0 - (double)pixelBilinear.a) + (double)pixelBilinear.g * (double)pixelBilinear.a), (float)((double)c.b * (1.0 - (double)pixelBilinear.a) + (double)pixelBilinear.b * (double)pixelBilinear.a), Mathf.Max(c.a, pixelBilinear.a));
+        }
+
+        public static void SaveTextureAsPNG(this Texture2D _texture)
+        {
+            try
+            {
+                Texture2D texture = _texture;
+                if (!texture.isReadable)
+                {
+                    texture = texture.GetReadable();
+                    //Console.LogError($"Texture '{_texture.name}' is not readable.");
+                    //return;
+                }
+                byte[] _bytes = texture.EncodeToPNG();
+
+                if (!TEXTURE_DIR.Exists)
+                    TEXTURE_DIR.Create();
+
+                FileInfo file = new FileInfo(Path.Combine(TEXTURE_DIR.FullName, $"{texture.name}.png"));
+
+                if (!file.Directory.Exists)
+                    file.Directory.Create();
+
+                if (!file.Exists)
+                    file.Create().Close();
+
+                File.WriteAllBytes(file.FullName, _bytes);
+                Console.Console.Log(_bytes.Length + "bytes was saved as: " + file.FullName);
+            }
+            catch (System.ArgumentException ex)
+            {
+                if (ex.Message.Contains("is not readable"))
+                    Console.Console.LogError($"Texture '{_texture.name}' is not readable.");
+                else
+                    Console.Console.LogException(ex);
+            }
+            catch (System.Exception ex)
+            {
+                Console.Console.LogException(ex);
+            }
+        }
+
         /// <summary>
         /// Create new sprite out of Texture
         /// </summary>

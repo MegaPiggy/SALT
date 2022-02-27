@@ -47,33 +47,33 @@ namespace SALT.Config
             Max = max;
             Value = initialValue;
         }
+    }
 
-        public class RangeParser<T> : IStringParser
+    public class RangeParser<T> : IStringParser
+    {
+        public Type ParsedType => typeof(Range<T>);
+        private Range<T> range;
+
+        public RangeParser(Range<T> range)
         {
-            public Type ParsedType => typeof(Range<T>);
-            private Range<T> range;
+            this.range = range;
+        }
 
-            public RangeParser(Range<T> range)
-            {
-                this.range = range;
-            }
+        public string EncodeObject(object obj)
+        {
+            Range<T> erange = (Range<T>)obj;
+            return ParserRegistry.GetParser(typeof(T)).EncodeObject(erange.Value);
+        }
 
-            public string EncodeObject(object obj)
-            {
-                Range<T> erange = (Range<T>)obj;
-                return ParserRegistry.GetParser(typeof(T)).EncodeObject(erange.Value);
-            }
+        public string GetUsageString()
+        {
+            return typeof(T) + " in range of " + range.Min + " to " + range.Max;
+        }
 
-            public string GetUsageString()
-            {
-                return typeof(T) + " in range of " + range.Min + " to " + range.Max;
-            }
-
-            public object ParseObject(string str)
-            {
-                range.Value = (T)ParserRegistry.GetParser(typeof(T)).ParseObject(str);
-                return range;
-            }
+        public object ParseObject(string str)
+        {
+            range.Value = (T)ParserRegistry.GetParser(typeof(T)).ParseObject(str);
+            return range;
         }
     }
 }

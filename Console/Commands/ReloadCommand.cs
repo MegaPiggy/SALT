@@ -18,7 +18,7 @@ namespace SALT.Console.Commands
 		/// <returns><see langword="true"/> if it executed, <see langword="false"/> otherwise</returns>
 		public override bool Execute(string[] args)
 		{
-			if (args != null)
+			if (args != null && args.Length != 0)
 			{
 				Console.LogError($"The '<color=white>{ID}</color>' command takes no arguments");
 				return false;
@@ -36,7 +36,7 @@ namespace SALT.Console.Commands
 			catch (Exception e)
 			{
 				Console.LogError("Reload Failed! Reason displayed below:");
-				Console.LogError(e.Message + "\n" + e.StackTrace);
+				Console.LogException(e);
 				return false;
 			}
 		}

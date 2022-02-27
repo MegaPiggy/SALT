@@ -10,7 +10,7 @@ namespace SALT.Console.Commands
     {
         public override string ID => "unbind";
 
-        public override string Usage => "unbind [key]";
+        public override string Usage => "unbind <key>";
 
         public override string Description => "unbinds a key";
 

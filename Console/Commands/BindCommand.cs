@@ -10,7 +10,7 @@ namespace SALT.Console.Commands
     {
         public override string ID => "bind";
 
-        public override string Usage => "bind [key] [command]";
+        public override string Usage => "bind <key> <command>";
 
         public override string Description => "binds a command to a key";
 

@@ -13,6 +13,8 @@ public static class ObjectExtensions
 {
     private const string MIDDLE = " cannot be converted to type ";
 
+    public static bool Is<T>(this T obj, Func<T, bool> predicate) => predicate(obj);
+
     /// <summary>
     /// Performs a TRUE null-check.
     /// </summary>

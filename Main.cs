@@ -24,7 +24,7 @@ namespace SALT
         /// <summary>
         /// The current version of SALT
         /// </summary>
-        public const string Version = "1.2";
+        public const string Version = "1.3";
         private static string NewLine { get => System.Environment.NewLine + "  "; }
 
         private static bool isPreInitialized;
@@ -121,12 +121,16 @@ namespace SALT
         internal static AssetBundle notoserifjp = LoadAssetbundle("notoserifjp");
         public static TMP_FontAsset NotoSerifJP_Bold = notoserifjp.LoadAsset<TMP_FontAsset>("NotoSerifJP-Bold SDF");
 
+        internal static AssetBundle GUIPack = LoadAssetbundle("SystemGUI.pack");
+        public static GUISkin GUISkin = GUIPack.LoadAsset<GUISkin>("guiSkin");
+
         internal static void PreLoad()
         {
             if (Main.isPreInitialized)
                 return;
             Main.isPreInitialized = true;
-            Debug.Log((object)"SALT has successfully invaded the game!");
+            Debug.Log("SALT has successfully invaded the game!");
+            EntryPoint.Main();
             for (int i = 0; i < 32; i++)
                 layerNames.Add(i, LayerMask.LayerToName(i));
             for (int i = 0; i < SceneManager.sceneCountInBuildSettings; ++i)
@@ -141,7 +145,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
                 UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
@@ -154,17 +158,28 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
                 UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
             ReplacerCache.ClearCache();
-            HarmonyPatcher.Instance.Patch((MethodBase)typeof(MainScript).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic), null, new HarmonyMethod(typeof(Callbacks).GetMethod("OnLoad", BindingFlags.Static | BindingFlags.NonPublic)));
-            HarmonyPatcher.Instance.Patch((MethodBase)typeof(MainScript).GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic), new HarmonyMethod(typeof(Main).GetMethod("Load", BindingFlags.Static | BindingFlags.NonPublic)));//, new HarmonyMethod(typeof(Main).GetMethod("PostLoad", BindingFlags.Static | BindingFlags.NonPublic)));
+            MethodInfo start = typeof(MainScript).GetInstanceMethod(nameof(MainScript.Start));
+            MethodInfo callbacks = typeof(Callbacks).GetStaticMethod(nameof(Callbacks.OnLoad));
+            MethodInfo load = typeof(Main).GetStaticMethod(nameof(Load));
+#if POST
+            MethodInfo postload = typeof(Main).GetStaticMethod(nameof(PostLoad));
+#endif
+            HarmonyPatcher.Instance.Patch(start, postfix: new HarmonyMethod(callbacks));
+            HarmonyPatcher.Instance.Patch(start, new HarmonyMethod(load)
+#if POST
+                , new HarmonyMethod(postload));
+#else
+                );
+#endif
         }
 
         internal static GameObject watermark = null;
-        internal static GameObject timer = null; 
+        internal static GameObject timer = null;
 
         private static void Load()
         {
@@ -174,19 +189,22 @@ namespace SALT
             PrefabUtils.ProcessReplacements();
             Console.KeyBindManager.ReadBinds();
             mainScript.AddComponent<UserInputService>();
-            mainScript.AddComponent<ModManager>(); 
+            mainScript.AddComponent<ModManager>();
             mainScript.AddComponent<Console.KeyBindManager.ProcessAllBindings>();
+            EntryPoint.IntializeInternalServices();
             try
             {
                 ModLoader.LoadMods();
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
                 UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
                 return;
             }
+#if !POST
             Main.PostLoad();
+#endif
         }
 
         private static void PostLoad()
@@ -200,7 +218,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
                 UI.ErrorUI.CreateError($"{e.GetType().Name}: {e.Message}");
             }
 
@@ -216,7 +234,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
             }
         }
 
@@ -228,7 +246,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
             }
         }
 
@@ -240,7 +258,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
             }
         }
 
@@ -252,7 +270,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
             }
         }
 
@@ -264,7 +282,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogError(e);
+                Debug.LogError(e.ParseTrace());
             }
         }
         
@@ -278,14 +296,14 @@ namespace SALT
         /// <summary>
         /// Whether the player can save thier score when the current level is completed
         /// </summary>
-        public static bool SavesEnabled => ModLoader.AllowSaves && !Patches.SavePatch.stopSave;
+        public static bool SavesEnabled => ModLoader.AllowSaves && !SaveScript.stopSave;
 
         /// <summary>
         /// Disable saving for the current level
         /// </summary>
         public static void StopSave()
         {
-            Patches.SavePatch.stopSave = true;
+            SaveScript.stopSave = true;
         }
 
         private static void SetFonts()
@@ -321,7 +339,7 @@ namespace SALT
 
         private static void Level()
         {
-            Patches.SavePatch.stopSave = false;
+            SaveScript.stopSave = false;
 
             SetFonts();
 
@@ -337,13 +355,17 @@ namespace SALT
 
         private static void MainMenu()
         {
-            Patches.SavePatch.stopSave = false;
+            SaveScript.stopSave = false;
 
             SetFonts();
 
             try
             {
-                GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
+                Transform versionTransform = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version");
+                GameObject versionObject = versionTransform != null ? versionTransform.gameObject : null;
+
+                if (versionObject == null)
+                    goto end;
 
                 if (watermark == null)
                 {
@@ -409,7 +431,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                Console.Console.LogException(e);
             }
 
             try
@@ -423,7 +445,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                Console.Console.LogException(e);
             }
 
             try
@@ -523,7 +545,7 @@ namespace SALT
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                Console.Console.LogException(e);
             }
         }
 
@@ -643,7 +665,7 @@ namespace SALT
 
         private static void MainMenuOld()
         {
-            Patches.SavePatch.stopSave = false;
+            SaveScript.stopSave = false;
 
             GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
 

@@ -20,7 +20,7 @@ namespace SALT.Console.Commands
 		/// <returns><see langword="true"/> if it executed, <see langword="false"/> otherwise</returns>
 		public override bool Execute(string[] args)
 		{
-			if (args == null)
+			if (args == null || args.Length == 0)
 			{
 				Console.LogError($"The '<color=white>{ID}</color>' command takes 1 argument");
 				return false;

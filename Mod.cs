@@ -3,6 +3,7 @@ using SALT.Config;
 using SALT.Utils;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace SALT
@@ -21,11 +22,13 @@ namespace SALT
 
         public Type EntryType { get; private set; }
 
-        public static Mod GetCurrentMod() => Mod.forcedContext != null ? Mod.forcedContext : ModLoader.GetModForAssembly(ReflectionUtils.GetRelevantAssembly());
+        public Assembly Assembly => EntryType.Assembly;
 
-        internal static void ForceModContext(Mod mod) => Mod.forcedContext = mod;
+        public static Mod GetCurrentMod() => forcedContext != null ? forcedContext : ModLoader.GetModForAssembly(ReflectionUtils.GetRelevantAssembly());
 
-        internal static void ClearModContext() => Mod.forcedContext = (Mod)null;
+        internal static void ForceModContext(Mod mod) => forcedContext = mod;
+
+        internal static void ClearModContext() => forcedContext = null;
 
         public Harmony HarmonyInstance
         {

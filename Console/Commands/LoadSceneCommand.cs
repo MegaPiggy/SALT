@@ -27,7 +27,7 @@ namespace SALT.Console.Commands
 
         public override bool Execute(string[] args)
         {
-            if (args == null)
+            if (args == null || args.Length == 0)
             {
                 SceneUtils.LoadScene(Increment());//LevelLoader.loader.LoadLevel(Increment());
                 Console.LogSuccess("Successfully loaded scene");

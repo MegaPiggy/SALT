@@ -28,24 +28,24 @@ namespace SALT.Extensions
 
         public static T GetCopyOf<T>(this Component copyInto, T copyFrom) where T : Component
         {
-            System.Type type = copyInto.GetType();
+            Type type = copyInto.GetType();
             if (type != copyFrom.GetType())
-                return (T)null;
+                return null;
             for (; type != typeof(Component) && type != null; type = type.BaseType)
             {
                 foreach (PropertyInfo property in type.GetInstanceProperties())
                 {
-                    if (!((IEnumerable<string>)SKIP_PROP_NAMES).Contains<string>(property.Name) && property.CanWrite && property.CanRead)
+                    if (!SKIP_PROP_NAMES.Contains(property.Name) && property.CanWrite && property.CanRead)
                     {
                         if (property.Name != "material")
                         {
                             try
                             {
-                                property.SetValue((object)copyInto, property.GetValue((object)copyFrom, (object[])null), (object[])null);
+                                property.SetValue(copyInto, property.GetValue(copyFrom, null), null);
                             }
                             catch (Exception ex)
                             {
-                                Debug.LogError("ZOMG! Cannot set property when copying component. " + (object)property + " err: " + (object)ex);
+                                Debug.LogError("ZOMG! Cannot set property when copying component. " + property + " err: " + ex.ParseTrace());
                             }
                         }
                     }
@@ -55,11 +55,11 @@ namespace SALT.Extensions
                     if (field.IsPublic || field.GetCustomAttributes(typeof(SerializeField), true).Length != 0)
                     {
                         if (field.FieldType.IsValueType)
-                            field.SetValue((object)copyInto, field.GetValue((object)copyFrom));
+                            field.SetValue(copyInto, field.GetValue(copyFrom));
                         else if (field.FieldType.IsSerializable)
-                            field.SetValue((object)copyInto, ObjectCopier.Clone<object>(field.GetValue((object)copyFrom)));
+                            field.SetValue(copyInto, ObjectCopier.Clone(field.GetValue(copyFrom)));
                         else
-                            field.SetValue((object)copyInto, field.GetValue((object)copyFrom));
+                            field.SetValue(copyInto, field.GetValue(copyFrom));
                     }
                 }
             }
@@ -160,7 +160,7 @@ namespace SALT.Extensions
             {
                 try
                 {
-                    field.SetValue((object)otherComp, field.GetValue((object)comp));
+                    field.SetValue(otherComp, field.GetValue(comp));
                 }
                 catch
                 {
@@ -172,7 +172,7 @@ namespace SALT.Extensions
                 {
                     try
                     {
-                        field.SetValue((object)otherComp, field.GetValue((object)comp));
+                        field.SetValue(otherComp, field.GetValue(comp));
                     }
                     catch
                     {
@@ -183,7 +183,7 @@ namespace SALT.Extensions
             {
                 try
                 {
-                    property.SetValue((object)otherComp, property.GetValue((object)comp, (object[])null), (object[])null);
+                    property.SetValue(otherComp, property.GetValue(comp, (object[])null), (object[])null);
                 }
                 catch
                 {

@@ -8,39 +8,30 @@ namespace SALT
     /// </summary>
     public class CharacterIdentifiable : MonoBehaviour
     {
-        private int idnt = (int)Character.NONE;
-        internal bool HasBeenSet { get; private set; } = false;
+        private Character idnt = Character.NONE;
 
         /// <summary>
         /// The current <see cref="Character"/> id of the <see cref="CharacterPack"/>
         /// </summary>
-        public Character Id { get => SALT.Registries.CharacterRegistry.GetFromInt(idnt); set => SetId(value); }
+        public Character Id { get => idnt; set => SetId(value); }
 
         /// <summary>
         /// Sets the <see cref="Id"/>
         /// </summary>
         /// <param name="enumValue">The value the id will be set to</param>
-        public void SetId(Character enumValue)
-        {
-            idnt = (int)enumValue;
-            HasBeenSet = true;
-        }
+        public void SetId(Character enumValue) => idnt = enumValue;
 
         /// <summary>
         /// Sets the <see cref="Id"/>
         /// </summary>
         /// <param name="enumValue">An <see cref="int"/> equal to the <see cref="Character"/> id</param>
-        public void SetId(int enumValue)
-        {
-            idnt = enumValue;
-            HasBeenSet = true;
-        }
+        public void SetId(int enumValue) => idnt = SALT.Registries.CharacterRegistry.GetFromInt(enumValue);
 
         /// <summary>
         /// Gets the <see cref="Id"/>
         /// </summary>
         /// <returns></returns>
-        public Character GetId() => SALT.Registries.CharacterRegistry.GetFromInt(idnt);
+        public Character GetId() => idnt;
 
         /// <summary>
         /// Gets the <see cref="Id"/> from the <see cref="GameObject"/>

@@ -10,6 +10,179 @@ namespace SALT.Extensions
 {
     public static class CollectionExtensions
     {
+        /// <summary>
+        /// Adds a range of values into the Collection based on a predicate. This means
+        /// only values that pass the predicate will be added.
+        /// </summary>
+        /// <param name="this">This Collection</param>
+        /// <param name="range">The range to add</param>
+        /// <param name="predicate">The predicate to test</param>
+        /// <typeparam name="T">The type of values</typeparam>
+        public static void AddAll<T>(
+          this ICollection<T> @this,
+          IEnumerable<T> range,
+          Predicate<T> predicate)
+        {
+            foreach (T obj in range)
+            {
+                if (predicate(obj))
+                    @this.Add(obj);
+            }
+        }
+
+        /// <summary>
+        /// Adds a range of values into the Collection, it follows the rules of Add, so, for example,
+        /// if the list is a HashSet it will only add uniques.
+        /// </summary>
+        /// <param name="this">This Collection</param>
+        /// <param name="range">The range to add</param>
+        /// <typeparam name="T">The type of values</typeparam>
+        public static void AddRange<T>(this ICollection<T> @this, IEnumerable<T> range)
+        {
+            switch (@this)
+            {
+                case List<T> objList:
+                    objList.AddRange(range);
+                    break;
+                case HashSet<T> objSet:
+                    objSet.UnionWith(range);
+                    break;
+                default:
+                    using (IEnumerator<T> enumerator = range.GetEnumerator())
+                    {
+                        while (enumerator.MoveNext())
+                        {
+                            T current = enumerator.Current;
+                            @this.Add(current);
+                        }
+                        break;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Adds a range of values into the Collection, it follows the rules of Add, so, for example,
+        /// if the list is a HashSet it will only add uniques.
+        /// </summary>
+        /// <param name="this">This Collection</param>
+        /// <param name="range">The range to add</param>
+        /// <typeparam name="T">The type of values</typeparam>
+        public static void AddRange<T>(this ICollection<T> @this, params T[] range)
+        {
+            switch (@this)
+            {
+                case List<T> objList:
+                    objList.AddRange((IEnumerable<T>)range);
+                    break;
+                case HashSet<T> objSet:
+                    objSet.UnionWith((IEnumerable<T>)range);
+                    break;
+                default:
+                    foreach (T obj in range)
+                        @this.Add(obj);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Does a soft check using only <see cref="M:System.Object.Equals(System.Object)" /> to verify if a object exists in the collection,
+        /// similar to the <see cref="M:System.Collections.Generic.List`1.Exists(System.Predicate{`0})" /> method, but generates less garbage.
+        /// </summary>
+        /// <param name="this">This Collection</param>
+        /// <param name="obj">The object to check for</param>
+        /// <typeparam name="T">The type of values</typeparam>
+        /// <returns>True if the object is found, false otherwise</returns>
+        public static bool SoftContains<T>(this ICollection<T> @this, object obj)
+        {
+            foreach (T thi in (IEnumerable<T>)@this)
+            {
+                if (thi.Equals(obj))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="this"></param>
+        /// <param name="action"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="R"></typeparam>
+        /// <returns></returns>
+        public static R Each<T, R>(this R @this, Action<T> action) where R : ICollection<T>
+        {
+            foreach (T thi in @this)
+            {
+                if (action != null)
+                    action(thi);
+            }
+            return @this;
+        }
+
+        public static List<T> Apply<T>(this List<T> @this, Func<T, T> func)
+        {
+            for (int index = 0; index < @this.Count; ++index)
+                @this[index] = func == null ? @this[index] : func(@this[index]);
+            return @this;
+        }
+
+        /// <summary>Clones this List into a new one</summary>
+        /// <param name="this">This list</param>
+        /// <typeparam name="T">The type of values</typeparam>
+        /// <returns>The new List</returns>
+        public static List<T> Clone<T>(this List<T> @this) => new List<T>((IEnumerable<T>)@this);
+
+        /// <summary>Clones this HashSet into a new one</summary>
+        /// <param name="this">This hash set</param>
+        /// <typeparam name="T">The type of values</typeparam>
+        /// <returns>The new HashSet</returns>
+        public static HashSet<T> Clone<T>(this HashSet<T> @this) => new HashSet<T>((IEnumerable<T>)@this);
+
+        public static T[] Find<T>(this T[] source, params Predicate<T>[] predicates)
+        {
+            List<T> results = new List<T>();
+            foreach (T item in source)
+            {
+                foreach (Predicate<T> predicate in predicates)
+                {
+                    if (predicate(item))
+                        results.Add(item);
+                }
+            }
+            return results.ToArray();
+        }
+
+        public static IEnumerable<T> Find<T>(this IEnumerable<T> source, params Predicate<T>[] predicates)
+        {
+            List<T> results = new List<T>();
+            foreach (T item in source)
+            {
+                foreach (Predicate<T> predicate in predicates)
+                {
+                    if (predicate(item))
+                        results.Add(item);
+                }
+            }
+            return results;
+        }
+
+        public static int Count(this IEnumerable source)
+        {
+            int i = 0;
+            foreach (object child in source)
+                i++;
+            return i;
+        }
+
+        public static IEnumerable<T> Join<T>(this IEnumerable<T> source, IEnumerable<T> with)
+        {
+            List<T> joined = new List<T>();
+            joined.AddRange(source);
+            joined.AddRange(with);
+            return joined;
+        }
+
         /// <summary>Determines whether a sequence contains a specified element by using the <paramref name="predicate"/>.</summary>
         /// <param name="source">A sequence in which to locate a value.</param>
         /// <param name="predicate">A function to test each element for a condition.</param>
@@ -656,6 +829,143 @@ namespace SALT.Extensions
             return source.Aggregate((e, n) => selector(e).CompareTo(selector(n)) < 0 ? e : n);
         }
 
+        public static IEnumerable<TSource> Prepend<TSource>(this IEnumerable<TSource> source, TSource element)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            yield return element;
+            using (var enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                    yield return enumerator.Current;
+            }
+        }
+
+        public static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, TSource element)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            using (var enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                    yield return enumerator.Current;
+            }
+            yield return element;
+        }
+
+        public static IEnumerable<TSource> Prepend<TSource>(this IEnumerable<TSource> source, IEnumerable<TSource> addition)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            if (addition == null)
+                throw new ArgumentNullException("addition");
+
+            using (var enumerator = addition.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                    yield return enumerator.Current;
+            }
+            using (var enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                    yield return enumerator.Current;
+            }
+        }
+
+        public static IEnumerable<TSource> Append<TSource>(this IEnumerable<TSource> source, IEnumerable<TSource> addition)
+        {
+            if (source == null)
+                throw new ArgumentNullException("source");
+
+            if (addition == null)
+                throw new ArgumentNullException("addition");
+
+            using (var enumerator = source.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                    yield return enumerator.Current;
+            }
+            using (var enumerator = addition.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                    yield return enumerator.Current;
+            }
+        }
+
+        public static T MiddleOrDefault<T>(this IEnumerable<T> items)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
+
+            int count = items.Count();
+            if (count == 0)
+                return default(T);
+            else if (count % 2 == 0)
+                // count is even, return the element at the length divided by 2
+                return NthOrDefault(items, count / 2);
+            else
+                // count is odd, return the middle element
+                return NthOrDefault(items, (int)Math.Ceiling((double)count / 2D));
+        }
+
+        public static T MiddleOrDefault<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
+
+            if (predicate == null)
+                throw new ArgumentNullException("predicate");
+
+            var filteredItems = items.Where(item => predicate(item));
+            int count = filteredItems.Count();
+            if (count == 0)
+                return default(T);
+            else if (count % 2 == 0)
+                // count is even, return the element at the length divided by 2
+                return NthOrDefault(filteredItems, count / 2);
+            else
+                // count is odd, return the middle element
+                return NthOrDefault(filteredItems, (int)Math.Ceiling((double)count / 2D));
+        }
+
+        public static T SecondOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 2);
+        public static T ThirdOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 3);
+        public static T FourthOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 4);
+        public static T FifthOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 5);
+        public static T SixthOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 6);
+        public static T SeventhOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 7);
+        public static T EighthOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 8);
+        public static T NinthOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 9);
+        public static T TenthOrDefault<T>(this IEnumerable<T> items) => NthOrDefault(items, 10);
+
+        public static T NthOrDefault<T>(this IEnumerable<T> items, int n)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
+
+            if (n <= 1)
+                return items.FirstOrDefault();
+
+            return items.Skip(n - 1).FirstOrDefault();
+        }
+
+        public static T NthOrDefault<T>(this IEnumerable<T> items, int n, Func<T, bool> predicate)
+        {
+            if (items == null)
+                throw new ArgumentNullException("items");
+
+            if (predicate == null)
+                throw new ArgumentNullException("predicate");
+
+            if (n <= 1)
+                return items.FirstOrDefault(predicate);
+
+            return items.Where(item => predicate(item)).Skip(n - 1).FirstOrDefault();
+        }
+
         #region Log Array
         private static StringBuilder _stringBuilder;
 
@@ -670,7 +980,7 @@ namespace SALT.Extensions
                 _stringBuilder.Append("\n\t").Append(i.ToString().Colored(Colors.brown)).Append(": ").Append(toLog[i]);
             }
 
-            Debug.Log(_stringBuilder.ToString());
+            Debug.Log(_stringBuilder);
         }
 
         public static void Log<T>(this IList<T> toLog)
@@ -686,7 +996,7 @@ namespace SALT.Extensions
                 _stringBuilder.Append("\n\t").Append(i.ToString().Colored(Colors.brown)).Append(": ").Append(toLog[i]);
             }
 
-            Debug.Log(_stringBuilder.ToString());
+            Debug.Log(_stringBuilder);
         }
 
         public static void Log<T1, T2>(IDictionary<T1, T2> toLog)
@@ -702,7 +1012,7 @@ namespace SALT.Extensions
                 _stringBuilder.Append("\n\t").Append(kvp.Key.ToString().Colored(Colors.brown)).Append(": ").Append(kvp.Value);
             }
 
-            Debug.Log(_stringBuilder.ToString());
+            Debug.Log(_stringBuilder);
         }
 
         public static void Log<T>(ISet<T> toLog)
@@ -720,7 +1030,171 @@ namespace SALT.Extensions
                 i++;
             }
 
-            Debug.Log(_stringBuilder.ToString());
+            Debug.Log(_stringBuilder);
+        }
+
+        public static string Print(this IEnumerable toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            Type type = toLog.GetType();
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                Type itemType = type.GetGenericArguments()[0];
+
+            }
+
+            int count = 0;
+            foreach (var _ in toLog)
+                count++;
+
+            _stringBuilder.Append(type.Name).Append("[").Append(count).Append("]\n");
+
+            int i = 0;
+            foreach (var v in toLog)
+            {
+                _stringBuilder.Append("\n\t").Append(i).Append(": ").Append(v);
+                i++;
+            }
+
+            return _stringBuilder.ToString();
+        }
+
+        public static string Print<T>(this IEnumerable<T> toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            var count = toLog.Count();
+            _stringBuilder.Append("Enumerable<").Append(typeof(T).Name).Append(">[").Append(count).Append("]\n");
+
+            int i = 0;
+            foreach (var v in toLog)
+            {
+                _stringBuilder.Append("\n\t").Append(i).Append(": ").Append(v);
+                i++;
+            }
+
+            return _stringBuilder.ToString();
+        }
+
+        public static string Print(this Array toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            _stringBuilder.Append(toLog.GetType().GetElementType().Name).Append("[").Append(toLog.Length).Append("]\n");
+            for (var i = 0; i < toLog.Length; i++)
+                _stringBuilder.Append("\n\t").Append(i).Append(": ").Append(toLog.GetValue(i));
+
+            return _stringBuilder.ToString();
+        }
+
+        public static string Print<T>(this T[] toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            _stringBuilder.Append(typeof(T).Name).Append("[").Append(toLog.Length).Append("]\n");
+            for (var i = 0; i < toLog.Length; i++)
+                _stringBuilder.Append("\n\t").Append(i).Append(": ").Append(toLog[i]);
+
+            return _stringBuilder.ToString();
+        }
+
+        public static string Print(this IList toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            var count = toLog.Count;
+            Type type = toLog.GetType();
+            if (type.IsGenericType && type.GenericTypeArguments.Length == 1)
+            {
+                Type itemType = type.GetGenericArguments()[0];
+                _stringBuilder.Append("List<").Append(itemType.Name).Append(">[").Append(count).Append("]\n");
+            }
+            else
+                _stringBuilder.Append("List<???>[").Append(count).Append("]\n");
+
+            for (var i = 0; i < count; i++)
+                _stringBuilder.Append("\n\t").Append(i).Append(": ").Append(toLog[i]);
+
+            return _stringBuilder.ToString();
+        }
+
+        public static string Print<T>(this IList<T> toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            var count = toLog.Count;
+            _stringBuilder.Append("List<").Append(typeof(T).Name).Append(">[").Append(count).Append("]\n");
+
+            for (var i = 0; i < count; i++)
+                _stringBuilder.Append("\n\t").Append(i).Append(": ").Append(toLog[i]);
+
+            return _stringBuilder.ToString();
+        }
+
+        public static string Print(IDictionary toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            var count = toLog.Count;
+            Type type = toLog.GetType();
+            if (type.IsGenericType && type.GenericTypeArguments.Length == 2)
+            {
+                Type keyType = type.GetGenericArguments()[0];
+                Type valueType = type.GetGenericArguments()[1];
+                _stringBuilder.Append("Dictionary<").Append(keyType.Name).Append(", ").Append(valueType.Name).Append(">[").Append(count).Append("]\n");
+            }
+            else if (type.IsGenericType && type.GenericTypeArguments.Length == 1)
+            {
+                Type itemType = type.GetGenericArguments()[0];
+                _stringBuilder.Append("Dictionary<").Append(itemType.Name).Append(">[").Append(count).Append("]\n");
+            }
+            else
+                _stringBuilder.Append("Dictionary<???>[").Append(count).Append("]\n");
+
+            foreach (var kvp in toLog)
+                _stringBuilder.Append("\n\t").Append(kvp);
+
+            return _stringBuilder.ToString();
+        }
+
+        public static string Print<T1, T2>(IDictionary<T1, T2> toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            var count = toLog.Count;
+            _stringBuilder.Append("Dictionary<").Append(typeof(T1).Name).Append(", ").Append(typeof(T2).Name).Append(">[").Append(count).Append("]\n");
+
+            foreach (var kvp in toLog)
+                _stringBuilder.Append("\n\t").Append(kvp.Key).Append(": ").Append(kvp.Value);
+
+            return _stringBuilder.ToString();
+        }
+
+        public static string Print<T>(ISet<T> toLog)
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder();
+            else _stringBuilder.Length = 0;
+
+            var count = toLog.Count;
+            _stringBuilder.Append("Set<").Append(typeof(T).Name).Append(">[").Append(count).Append("]\n");
+
+            int i = 0;
+            foreach (var v in toLog)
+            {
+                _stringBuilder.Append("\n\t").Append(i).Append(": ").Append(v);
+                i++;
+            }
+
+            return _stringBuilder.ToString();
         }
         #endregion
     }

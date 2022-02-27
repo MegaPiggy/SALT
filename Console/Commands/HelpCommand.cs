@@ -22,15 +22,15 @@ namespace SALT.Console.Commands
 		/// <returns><see langword="true"/> if it executed, <see langword="false"/> otherwise</returns>
 		public override bool Execute(string[] args)
 		{
-			if (args != null && ArgsOutOfBounds(args.Length, 1, 1))
+			if (args != null && ArgsOutOfBounds(args.Length, 0, 1))
 				return false;
 
-			if (args == null)
+			if (args == null || args.Length == 0)
 			{
 				Console.Log("<color=cyan>List of Commands Available:</color>");
 				Console.Log("<i><> is a required argument; [] is an optional argument</i>");
 
-				foreach (string line in ConsoleWindow.cmdsText.Split('\n'))
+				foreach (string line in Console.cmdsText.Split('\n'))
 					Console.LogSuccess(line);
 			}
 			else

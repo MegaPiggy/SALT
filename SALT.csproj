@@ -13,8 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
-    <GameDir>E:\Games\SmolAme\</GameDir>
-    <GameDir8>D:\Stuff\SmolAme_v210831.1\</GameDir8>
+    <GameDir>C:\Users\noahp\Shared\SmolAme_v210831.1\</GameDir>
     <ManagedDir>Smol Ame_Data\Managed\</ManagedDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -40,6 +39,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DocumentationFile>bin\Release\SALT.xml</DocumentationFile>
     <NoWarn>NU5128,NU5131</NoWarn>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -47,10 +47,10 @@
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Stuff\SmolAme_v210831.1\SALT\Libs\0Harmony.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\SALT\Libs\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\publicized_assemblies\Assembly-CSharp_publicized.dll</HintPath>
     </Reference>
     <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
@@ -67,55 +67,55 @@
     </Reference>
     <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.ugui, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\Unity.ugui.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\Unity.ugui.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AudioModule">
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.JSONSerializeModule">
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files\Epic Games\SlimeRancher\SlimeRancher_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Games\SmolAme\Smol Ame_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -148,7 +148,37 @@
     <Compile Include="Console\Commands\ClearCommand.cs" />
     <Compile Include="Console\Commands\CompleteLevelCommand.cs" />
     <Compile Include="Console\Commands\ConfigCommand.cs" />
+    <Compile Include="Console\DynamicCommand.cs" />
+    <Compile Include="Diagnostics\StackTracing.cs" />
+    <Compile Include="Extensions\AssemblyExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Extensions\GUIEventExtensions.cs" />
+    <Compile Include="Half.cs" />
+    <Compile Include="IService.cs" />
+    <Compile Include="Patches\EventSystemPatch.cs" />
+    <Compile Include="Patches\LevelPatch.cs" />
+    <Compile Include="Patches\ResolutionPatches.cs" />
+    <Compile Include="EntryPoint.cs" />
+    <Compile Include="Services.cs" />
+    <Compile Include="Singleton.cs" />
+    <Compile Include="USingleton.cs" />
+    <Compile Include="Utils\AssemblyUtils.cs" />
+    <Compile Include="Utils\ExceptionUtils.cs" />
+    <Compile Include="Utils\TypeUtils.cs" />
+    <Compile Include="Windows\SystemWindow.cs" />
+    <Compile Include="Windows\WindowHandler.cs" />
+    <Compile Include="Windows\WindowManager.cs" />
     <None Include="Console\Commands\LoadSceneCommand.cs" />
+    <Compile Include="DevTools\DebugHandler.cs" />
+    <Compile Include="DevTools\DevMenu\CheatMenu\CheatMenuTab.cs" />
+    <Compile Include="DevTools\DevMenu\ConsoleTab.cs" />
+    <Compile Include="DevTools\DevMenu\DevMenuWindow.cs" />
+    <Compile Include="DevTools\DevMenu\DevTab.cs" />
+    <Compile Include="DevTools\DevMenu\Inspector\InspectorTab.cs" />
+    <Compile Include="DevTools\DevMenu\Inspector\ObjectComponent.cs" />
+    <Compile Include="DevTools\DevMenu\Inspector\ObjectInspector.cs" />
+    <Compile Include="DevTools\DevMenu\Inspector\SceneHierarchyObject.cs" />
     <Compile Include="EnumPatcher.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\SceneExtensions.cs" />
@@ -158,7 +188,6 @@
     <Compile Include="Patches\HUDPatch.cs" />
     <Compile Include="Patches\VFXPatches.cs" />
     <Compile Include="Registries\IDRegistry.cs" />
-    <Compile Include="Registries\LevelRegistry.cs" />
     <Compile Include="Registries\ModdedIDRegistry.cs" />
     <Compile Include="Utils\ColorHelper.cs" />
     <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
@@ -223,7 +252,6 @@
     <Compile Include="InputDetector.cs" />
     <Compile Include="InputTouchDetector.cs" />
     <Compile Include="Levels.cs" />
-    <Compile Include="Load.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="ModEntryPoint.cs" />
@@ -261,6 +289,7 @@
     <Compile Include="Vector3Surrogate.cs" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Resources\notoserifjp" />
+    <EmbeddedResource Include="Resources\SystemGUI.pack" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\Debug\" />
@@ -284,7 +313,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "$(GameDir8)$(ManagedDir)$(TargetName).dll"
-copy /Y "$(TargetDir)$(TargetName).xml" "$(GameDir8)$(ManagedDir)$(TargetName).xml"</PostBuildEvent>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "$(GameDir)$(ManagedDir)$(TargetName).dll"
+copy /Y "$(TargetDir)$(TargetName).xml" "$(GameDir)$(ManagedDir)$(TargetName).xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -29,5 +29,7 @@ namespace SALT
         }
 
         public static Harmony GetInstance() => Mod.GetCurrentMod().HarmonyInstance;
+
+        public static Harmony GetInstance(Assembly assembly) => ModLoader.GetModForAssembly(assembly).HarmonyInstance;
     }
 }

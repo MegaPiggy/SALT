@@ -1,4 +1,7 @@
-﻿namespace SALT.Console.Commands
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace SALT.Console.Commands
 {
 	/// <summary>
 	/// A command to clear the console
@@ -16,14 +19,32 @@
 		/// <returns><see langword="true"/> if it executed, <see langword="false"/> otherwise</returns>
 		public override bool Execute(string[] args)
 		{
-			if (args != null)
+			if (args != null && args.Length > 0)
 			{
-				Console.LogError($"The '<color=white>{ID}</color>' command takes no arguments");
-				return false;
+				if (args.Length == 1 && args[0].ToLower() == "last")
+				{
+					if (Console.lines.Count < 2)
+						return true;
+					Console.lines.RemoveAt(Console.lines.Count - 1);
+					Console.lines.RemoveAt(Console.lines.Count - 1);
+					return true;
+				}
+				else
+				{
+					Console.LogError($"The '<color=white>{ID}</color>' command takes one or no arguments");
+					return false;
+				}
 			}
 
 			Console.lines.Clear();
 			return true;
+		}
+
+		public override List<string> GetAutoComplete(int argIndex, string argText)
+		{
+			if (argIndex == 1)
+				return new List<string> { "last" };
+			return base.GetAutoComplete(argIndex, argText);
 		}
 	}
 }

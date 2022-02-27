@@ -60,14 +60,14 @@ namespace SALT
         private static readonly Dictionary<string, Mod> Mods = new Dictionary<string, Mod>();
         private static readonly List<string> loadOrder = new List<string>();
 
-        public static IEnumerable<ModInfo> LoadedMods => Mods.Select<KeyValuePair<string, Mod>, ModInfo>((Func<KeyValuePair<string, Mod>, ModInfo>)(x => x.Value.ModInfo));
+        public static IEnumerable<ModInfo> LoadedMods => Mods.Select(x => x.Value.ModInfo);
 
         public static LoadingStep CurrentLoadingStep { get; private set; }
 
         internal static void InitializeMods()
         {
             FileSystem.CheckDirectory(FileSystem.ModPath);
-            HashSet<ProtoMod> mods = new HashSet<ProtoMod>((IEqualityComparer<ProtoMod>)new ProtoMod.Comparer());
+            HashSet<ProtoMod> mods = new HashSet<ProtoMod>(new ProtoMod.Comparer());
             foreach (string file in Directory.GetFiles(FileSystem.ModPath, "modinfo.json", SearchOption.AllDirectories))
             {
                 ProtoMod fromJson = ProtoMod.ParseFromJson(file);
@@ -82,31 +82,31 @@ namespace SALT
             }
             DependencyChecker.CheckDependencies(mods);
             DependencyChecker.CalculateLoadOrder(mods, loadOrder);
-            DiscoverAndLoadAssemblies((ICollection<ProtoMod>)mods);
+            DiscoverAndLoadAssemblies(mods);
         }
 
-        public static bool IsModPresent(string modid) => loadOrder.Any<string>((Func<string, bool>)(x => modid == x));
+        public static bool IsModPresent(string modid) => loadOrder.Any(x => modid == x);
 
         internal static bool TryGetEntryType(Assembly assembly, out Type entryType)
         {
-            entryType = ((IEnumerable<Type>)assembly.ManifestModule.GetTypes()).FirstOrDefault<Type>((Func<Type, bool>)(x => typeof(IModEntryPoint).IsAssignableFrom(x)));
-            return entryType != (Type)null;
+            entryType = assembly.ManifestModule.GetTypes().FirstOrDefault(x => typeof(IModEntryPoint).IsAssignableFrom(x));
+            return entryType != null;
         }
 
         private static void DiscoverAndLoadAssemblies(ICollection<ProtoMod> protomods)
         {
             HashSet<AssemblyInfo> foundAssemblies = new HashSet<AssemblyInfo>();
-            foreach (ProtoMod protomod in (IEnumerable<ProtoMod>)protomods)
+            foreach (ProtoMod protomod in protomods)
             {
                 foreach (string file in Directory.GetFiles(protomod.path, "*.dll", SearchOption.AllDirectories))
                     foundAssemblies.Add(new AssemblyInfo(AssemblyName.GetAssemblyName(Path.GetFullPath(file)), Path.GetFullPath(file), protomod));
             }
-            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(FindAssembly);//AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(FindAssembly);
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(FindAssembly);
             try
             {
                 using (IEnumerator<ProtoMod> enumerator = protomods.GetEnumerator())
                 {
-                label_21:
+                next:
                     if (enumerator.MoveNext())
                     {
                         ProtoMod mod = enumerator.Current;
@@ -118,10 +118,10 @@ namespace SALT
                                 assemblyInfo.IsModAssembly = true;
                                 AddMod(assemblyInfo.mod, entryType);
                                 HarmonyOverrideHandler.LoadOverrides(entryType.Module);
-                                goto label_21;
+                                goto next;
                             }
                         }
-                        throw new EntryPointNotFoundException(string.Format("Could not find assembly for mod '{0}'", (object)mod));
+                        throw new EntryPointNotFoundException(string.Format("Could not find assembly for mod '{0}'", mod));
                     }
                 }
             }
@@ -133,33 +133,35 @@ namespace SALT
             Assembly FindAssembly(object obj, ResolveEventArgs args)
             {
                 AssemblyName name = new AssemblyName(args.Name);
-                return foundAssemblies.FirstOrDefault<AssemblyInfo>((Func<AssemblyInfo, bool>)(x => x.DoesMatch(name)))?.LoadAssembly();
+                return foundAssemblies.FirstOrDefault(x => x.DoesMatch(name))?.LoadAssembly();
             }
         }
 
         internal static Mod GetMod(string id)
         {
             Mod Mod;
-            return Mods.TryGetValue(id, out Mod) ? Mod : (Mod)null;
+            return Mods.TryGetValue(id, out Mod) ? Mod : null;
         }
 
-        internal static Mod GetModForAssembly(Assembly a) => Mods.FirstOrDefault<KeyValuePair<string, Mod>>((Func<KeyValuePair<string, Mod>, bool>)(x => x.Value.EntryType.Assembly == a)).Value;
+        internal static Mod GetModForAssembly(Assembly a) => Mods.FirstOrDefault(x => x.Value.EntryType.Assembly == a).Value;
 
-        internal static ICollection<Mod> GetMods() => (ICollection<Mod>)Mods.Values;
+        internal static ICollection<Mod> GetMods() => Mods.Values;
 
         internal static bool AllowSaves => GetMods().All(mod => mod.ModInfo.AllowSaves == true);
 
         private static Mod AddMod(ProtoMod modInfo, Type entryType)
         {
             IModEntryPoint instance = (IModEntryPoint)Activator.CreateInstance(entryType);
-            Mod Mod = new Mod(modInfo.ToModInfo(), instance, modInfo.path);
+            ModInfo info = modInfo.ToModInfo();
+            Mod Mod = new Mod(info, instance, modInfo.path);
             Mods.Add(modInfo.id, Mod);
+            Console.Console.modsText += $"{(Console.Console.modsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{info.Name}</color> [<color=#77DDFF>Author:</color> {info.Author} | <color=#77DDFF>ID:</color> {info.Id} | <color=#77DDFF>Version:</color> {info.Version}]";
             return Mod;
         }
 
         internal static void PreLoadMods()
         {
-            Console.Console.Reload += (Console.Console.ReloadAction)Main.ReLoad;
+            Console.Console.Reload += Main.ReLoad;
             foreach (string key in loadOrder)
             {
                 Mod mod = Mods[key];
@@ -177,7 +179,7 @@ namespace SALT
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error pre-loading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error pre-loading mod '{0}'!\n{1}: {2}", key, ex.GetType().Name, ex.ParseTraceWithoutName()));
                 }
             }
         }
@@ -194,7 +196,7 @@ namespace SALT
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error loading mod '{0}'!"+Environment.NewLine+"{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error loading mod '{0}'!"+Environment.NewLine+"{1}: {2}", key, ex.GetType().Name, ex.ParseTraceWithoutName()));
                 }
             }
         }
@@ -211,7 +213,7 @@ namespace SALT
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error post-loading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error post-loading mod '{0}'!\n{1}: {2}", key, ex.GetType().Name, ex.ParseTraceWithoutName()));
                 }
             }
             CurrentLoadingStep = LoadingStep.FINISHED;
@@ -233,7 +235,7 @@ namespace SALT
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error reloading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error reloading mod '{0}'!\n{1}: {2}", key, ex.GetType().Name, ex.ParseTraceWithoutName()));
                 }
             }
             CurrentLoadingStep = LoadingStep.FINISHED;
@@ -251,7 +253,7 @@ namespace SALT
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error unloading mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error unloading mod '{0}'!\n{1}: {2}", key, ex.GetType().Name, ex.ParseTraceWithoutName()));
                 }
             }
         }
@@ -268,7 +270,7 @@ namespace SALT
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error updating mod '{0}'!\n{1}: {2}", key, ex.GetType().Name, ex.ParseTraceWithoutName()));
                 }
             }
         }
@@ -285,7 +287,7 @@ namespace SALT
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error fixed updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error fixed updating mod '{0}'!\n{1}: {2}", key, ex.GetType().Name, ex.ParseTraceWithoutName()));
                 }
             }
         }
@@ -302,7 +304,7 @@ namespace SALT
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(string.Format("Error late updating mod '{0}'!\n{1}: {2}", (object)key, (object)ex.GetType().Name, (object)ex));
+                    throw new Exception(string.Format("Error late updating mod '{0}'!\n{1}: {2}", key, ex.GetType().Name, ex.ParseTraceWithoutName()));
                 }
             }
         }
@@ -438,7 +440,7 @@ namespace SALT
 
             public class Comparer : IEqualityComparer<ProtoMod>
             {
-                public bool Equals(ProtoMod x, ProtoMod y) => x.Equals((object)y);
+                public bool Equals(ProtoMod x, ProtoMod y) => x.Equals(y);
 
                 public int GetHashCode(ProtoMod obj) => obj.GetHashCode();
             }

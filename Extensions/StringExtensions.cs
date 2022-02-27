@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SALT.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -12,6 +13,89 @@ namespace SALT.Extensions
     /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// Replaces all sources in string with a single replacement
+        /// </summary>
+        /// <param name="this">This string</param>
+        /// <param name="replacement">The string to replace with</param>
+        /// <param name="sources">The sources to replace</param>
+        /// <returns>The string after replacements</returns>
+        public static string ReplaceAll(this string @this, string[] sources, string replacement)
+        {
+            foreach (string source in sources)
+                @this = @this.Replace(source, replacement);
+            return @this;
+        }
+
+        /// <summary>
+        /// Replaces a regex pattern in string with a single replacement
+        /// </summary>
+        /// <param name="this">This string</param>
+        /// <param name="pattern">The pattern to search for</param>
+        /// <param name="replacement">The string to replace with</param>
+        /// <param name="options">The options to use when applying the Regex search</param>
+        /// <returns>The resulting string after replacement, the same as <paramref name="this" /> if pattern isn't found</returns>
+        public static string RegexReplace(
+          this string @this,
+          string pattern,
+          string replacement,
+          RegexOptions options = RegexOptions.Multiline | RegexOptions.CultureInvariant)
+        {
+            return Regex.Replace(@this, pattern, replacement, options);
+        }
+
+        /// <summary>
+        /// Parses the string as a stack trace using Tracing Technology
+        /// </summary>
+        /// <param name="this">This string</param>
+        /// <returns>The string parsed</returns>
+        public static string ParseAsTrace(this string @this) => StackTracing.ParseStackTrace(@this);
+
+        /// <summary>
+        /// Gets the index of a string inside this string using Invariant Culture
+        /// </summary>
+        /// <param name="this">This string</param>
+        /// <param name="toFind">The string to find</param>
+        /// <returns>The index if found, -1 if not</returns>
+        public static int IndexOfInvariant(this string @this, string toFind) => CultureInfo.InvariantCulture.CompareInfo.IndexOf(@this, toFind);
+
+        /// <summary>
+        /// Gets the last index of a string inside this string using Invariant Culture
+        /// </summary>
+        /// <param name="this">This string</param>
+        /// <param name="toFind">The string to find</param>
+        /// <returns>The index if found, -1 if not</returns>
+        public static int LastIndexOfInvariant(this string @this, string toFind) => CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(@this, toFind);
+
+        /// <summary>Checks if this string matches a Regex pattern</summary>
+        /// <param name="this">This string</param>
+        /// <param name="pattern">The pattern to match</param>
+        /// <returns>True if it matches, false otherwise</returns>
+        public static bool Matches(this string @this, string pattern) => @this != null && Regex.IsMatch(@this, pattern);
+
+        /// <summary>Checks if this string matches a Regex pattern</summary>
+        /// <param name="this">This string</param>
+        /// <param name="patterns">The patterns to match</param>
+        /// <returns>True if it matches, false otherwise</returns>
+        public static bool MatchesAny(this string @this, string[] patterns)
+        {
+            foreach (string pattern in patterns)
+            {
+                if (Regex.IsMatch(@this, pattern))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if a string is equal to <paramref name="condition" />, if so replaces it
+        /// </summary>
+        /// <param name="this">This string</param>
+        /// <param name="condition">The condition to match</param>
+        /// <param name="replacement">The replacement</param>
+        /// <returns><paramref name="replacement" /> if <paramref name="condition" /> matches, itself otherwise</returns>
+        public static string IfReplace(this string @this, string condition, string replacement) => !@this.Equals(condition) ? @this : replacement;
+
         public static string ToString(object arg)
         {
             switch (arg)

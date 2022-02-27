@@ -19,6 +19,10 @@ namespace SALT
         /// Event that's called when <see cref="MainScript.Start"/> ends.
         /// </summary>
         internal static event Callbacks.OnGameContextReadyDelegate OnGameContextReady;
+        /// <summary>
+        /// Triggers when the game's resolution is changed
+        /// </summary>
+        public static event OnResolutionChangedDelegate OnApplyResolution;
 
         internal static void OnLoad()
         {
@@ -44,11 +48,21 @@ namespace SALT
             onLevelLoaded();
         }
 
+        internal static void OnApplyResolution_Trigger()
+        {
+            Callbacks.OnResolutionChangedDelegate onApplyResolution = Callbacks.OnApplyResolution;
+            if (onApplyResolution == null)
+                return;
+            onApplyResolution();
+        }
+
         /// <summary>
         /// Delegate for when a level is loaded.
         /// </summary>
         public delegate void OnLevelLoadedDelegate();
 
         internal delegate void OnGameContextReadyDelegate();
+
+        public delegate void OnResolutionChangedDelegate();
     }
 }

@@ -44,7 +44,7 @@ namespace SALT.Console.Commands
 		}
 
 		public override string ID { get; } = "dump";
-		public override string Usage { get; } = "dump [type] [name]";
+		public override string Usage { get; } = "dump <type> <name>";
 		public override string Description { get; } = "Dumps an object with [name] of the given [type]";
 		public override bool AllowSpaces { get; } = true;
 

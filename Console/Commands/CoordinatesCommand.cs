@@ -14,7 +14,7 @@ namespace SALT.Console.Commands
 		/// <returns><see langword="true"/> if it executed, <see langword="false"/> otherwise</returns>
 		public override bool Execute(string[] args)
 		{
-			if (args == null)
+			if (args == null || args.Length == 0)
 			{
 				Console.LogError("Incorrect number of arguments!");
 				return false;
@@ -59,7 +59,7 @@ namespace SALT.Console.Commands
 		}
 
 		public override string ID { get; } = "coordinates";
-		public override string Usage { get; } = "coordinates [action]";
+		public override string Usage { get; } = "coordinates <action>";
 		public override string Description { get; } = "Get and set your character's coordinates. Use 'help' as the action to get more info";
 		public override string ExtendedDescription =>
 			"This command is used to edit and get the coordinates of your character.\nYou can use the 'help' action to learn all the actions and arguments";

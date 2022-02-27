@@ -9,7 +9,7 @@ namespace SALT.Console.Commands
     {
         public override string ID => "config";
 
-        public override string Usage => "config [modid] [configname] [configsection] [configelement] [value]";
+        public override string Usage => "config <modid> <configname> <configsection> <configelement> [value]";
 
         public override string Description => "sets a config value";
 
@@ -43,8 +43,11 @@ namespace SALT.Console.Commands
         public override List<string> GetAutoComplete(int argIndex, string argText)
         {
             if (argIndex == 0) return ModLoader.GetMods().Where(x => x.Configs.Count > 0).Select(x => x.ModInfo.Id).ToList();
-
+#if OLD_CONSOLE
             var strs = ConsoleWindow.cmdText.Split(' ');
+#else
+            var strs = DevTools.DevMenu.ConsoleTab.input.Split(' ');
+#endif
 
             var mod = ModLoader.GetMod(strs[1]);
 

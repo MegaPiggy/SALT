@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace SALT.Console
 {
+#if OLD_CONSOLE
     /// <summary>
     /// Draws the window for the in-game console
     /// </summary>
@@ -31,8 +32,6 @@ namespace SALT.Console
         private static Vector2 aCompleteScroll = Vector2.zero;
 
         // TEXTS TO DISPLAY
-        internal static string cmdsText = string.Empty;
-        internal static string modsText = string.Empty;
         internal static string fullText = string.Empty;
         internal static string cmdText = string.Empty;
 
@@ -119,7 +118,7 @@ namespace SALT.Console
 
             foreach (ModInfo info in ModLoader.LoadedMods)
             {
-                modsText += $"{(modsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{info.Name}</color> [<color=#77DDFF>Author:</color> {info.Author} | <color=#77DDFF>ID:</color> {info.Id} | <color=#77DDFF>Version:</color> {info.Version}]";
+                Console.modsText += $"{(Console.modsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{info.Name}</color> [<color=#77DDFF>Author:</color> {info.Author} | <color=#77DDFF>ID:</color> {info.Id} | <color=#77DDFF>Version:</color> {info.Version}]";
             }
         }
 
@@ -222,6 +221,7 @@ namespace SALT.Console
 
             if (cachedAC.Count == 0)
             {
+                //Console.LogError("AutoComplete Off: cachedAC Count 0 Window");
                 autoComplete = false;
             }
 
@@ -231,6 +231,7 @@ namespace SALT.Console
                 if (Event.current.keyCode == KeyCode.Escape && autoComplete)
                 {
                     forceClose = true;
+                    //Console.LogError("AutoComplete Off: Escape");
                     autoComplete = false;
 
                     Event.current.Use();
@@ -253,6 +254,7 @@ namespace SALT.Console
 
                     currHistory = -1;
                     completeIndex = 0;
+                    //Console.LogError("AutoComplete Off: Enter");
                     autoComplete = false;
 
                     Event.current.Use();
@@ -264,8 +266,12 @@ namespace SALT.Console
                 {
                     forceClose = false;
 
+                    //Console.LogError("AutoComplete Off: Control + Space");
                     if (Regex.Matches(cmdText, "\"").Count % 2 == 0)
+                    {
                         autoComplete = true;
+                        //Console.LogError("AutoComplete Off: TOGGLE");
+                    }
 
                     justActivated = true;
                     oldCmdText = null;
@@ -283,6 +289,7 @@ namespace SALT.Console
                         selectComplete = string.Empty;
                         moveCursor = true;
 
+                        //Console.LogError("AutoComplete Off: Tab + selectComplete");
                         autoComplete = false;
                     }
 
@@ -364,6 +371,7 @@ namespace SALT.Console
                     if (cmdText.Equals(string.Empty))
                         forceClose = false;
 
+                    //Console.LogError("AutoComplete Off: !forceClose " + (!forceClose));
                     autoComplete = !forceClose;
                 }
 
@@ -374,7 +382,10 @@ namespace SALT.Console
                         forceClose = false;
 
                     if (!forceClose)
+                    {
+                        //Console.LogError("AutoComplete Off: !forceClose FIXES");
                         autoComplete = true;
+                    }
                 }
             }
 
@@ -489,6 +500,7 @@ namespace SALT.Console
                 TextEditor txt = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl);
                 txt.MoveCursorToPosition(Vector2.one * 50000);
 
+                //Console.LogError("AutoComplete Off: moveCursor");
                 autoComplete = false;
                 moveCursor = false;
             }
@@ -557,6 +569,7 @@ namespace SALT.Console
                             GUI.FocusControl(cmdName);
                             moveCursor = true;
 
+                            //Console.LogError("AutoComplete Off: Button True");
                             autoComplete = false;
                         }
 
@@ -579,7 +592,10 @@ namespace SALT.Console
                         autoC?.RemoveAll(s => s.Contains(" "));
 
                     if (autoC == null || autoC.Count == 0 || Regex.Matches(cmdText, "\"").Count % 2 != 0)
+                    {
                         autoComplete = false;
+                        //Console.LogError("AutoComplete Off: autoC null");
+                    }
 
                     if (autoComplete)
                     {
@@ -616,6 +632,7 @@ namespace SALT.Console
                                     GUI.FocusControl(cmdName);
                                     moveCursor = true;
 
+                                    //Console.LogError("AutoComplete Off: Button False");
                                     autoComplete = false;
                                 }
 
@@ -627,7 +644,10 @@ namespace SALT.Console
             }
 
             if (cachedAC.Count == 0)
+            {
+                //Console.LogError("AutoComplete Off: cachedAC Count 0 Draw");
                 autoComplete = false;
+            }
 
             GUI.skin.textField.richText = false;
             GUI.skin.textField.normal.background = bg;
@@ -644,6 +664,7 @@ namespace SALT.Console
 
             if (showWindow)
             {
+                //Console.LogError("AutoComplete Off: ToggleWindowOn");
                 autoComplete = false;
                 currHistory = -1;
                 forceClose = false;
@@ -669,6 +690,7 @@ namespace SALT.Console
             }
             else
             {
+                //Console.LogError("AutoComplete Off: ToggleWindowOff");
                 autoComplete = false;
                 currHistory = -1;
                 forceClose = false;
@@ -695,6 +717,7 @@ namespace SALT.Console
         private void SetWindowOff()
         {
             showWindow = false;
+            //Console.LogError("AutoComplete Off: SetWindowOff");
             autoComplete = false;
             currHistory = -1;
             forceClose = false;
@@ -717,4 +740,5 @@ namespace SALT.Console
             hasAlreadyPaused = false;
         }
     }
+#endif
 }

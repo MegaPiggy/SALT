@@ -93,5 +93,85 @@ namespace SALT.Extensions
                 color.b + offset,
                 color.a);
         }
+
+        /// <summary>Sets the red value of the color</summary>
+        /// <param name="color">The color to change the value on</param>
+        /// <param name="amount">The amount to set</param>
+        /// <returns>The color for convenience</returns>
+        public static Color Red(this Color color, float amount)
+        {
+            color.r = amount;
+            return color;
+        }
+
+        /// <summary>Sets the red value of the color</summary>
+        /// <param name="color">The color to change the value on</param>
+        /// <param name="amount">The amount to set</param>
+        /// <returns>The color for convenience</returns>
+        public static Color Red(this Color color, int amount)
+        {
+            color.r = (float)amount / (float)byte.MaxValue;
+            return color;
+        }
+
+        /// <summary>Sets the blue value of the color</summary>
+        /// <param name="color">The color to change the value on</param>
+        /// <param name="amount">The amount to set</param>
+        /// <returns>The color for convenience</returns>
+        public static Color Blue(this Color color, float amount)
+        {
+            color.b = amount;
+            return color;
+        }
+
+        /// <summary>Sets the blue value of the color</summary>
+        /// <param name="color">The color to change the value on</param>
+        /// <param name="amount">The amount to set</param>
+        /// <returns>The color for convenience</returns>
+        public static Color Blue(this Color color, int amount)
+        {
+            color.b = (float)amount;
+            return color;
+        }
+
+        /// <summary>Sets the green value of the color</summary>
+        /// <param name="color">The color to change the value on</param>
+        /// <param name="amount">The amount to set</param>
+        /// <returns>The color for convenience</returns>
+        public static Color Green(this Color color, float amount)
+        {
+            color.g = amount;
+            return color;
+        }
+
+        /// <summary>Sets the green value of the color</summary>
+        /// <param name="color">The color to change the value on</param>
+        /// <param name="amount">The amount to set</param>
+        /// <returns>The color for convenience</returns>
+        public static Color Green(this Color color, int amount)
+        {
+            color.g = (float)amount;
+            return color;
+        }
+
+        /// <summary>Sets the alpha value of the color</summary>
+        /// <param name="color">The color to change the value on</param>
+        /// <param name="amount">The amount to set</param>
+        /// <returns>The color for convenience</returns>
+        public static Color Alpha(this Color color, float amount)
+        {
+            color.a = amount;
+            return color;
+        }
+
+        /// <summary>Sets the alpha value of the color</summary>
+        /// <param name="color">The color to change the value on</param>
+        /// <param name="amount">The amount to set</param>
+        /// <returns>The color for convenience</returns>
+        public static Color Alpha(this Color color, int amount)
+        {
+            color.a = (float)amount;
+            return color;
+        }
     }
 }

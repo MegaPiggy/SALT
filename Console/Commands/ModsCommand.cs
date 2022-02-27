@@ -22,7 +22,7 @@ namespace SALT.Console.Commands
 		/// <returns><see langword="true"/> if it executed, <see langword="false"/> otherwise</returns>
 		public override bool Execute(string[] args)
 		{
-			if (args != null)
+			if (args != null && args.Length != 0)
 			{
 				Console.LogError($"The '<color=white>{ID}</color>' command takes no arguments");
 				return false;
@@ -30,7 +30,7 @@ namespace SALT.Console.Commands
 
 			Console.Log("<color=cyan>List of Mods Loaded:</color>");
 
-			foreach (string line in ConsoleWindow.modsText.Split('\n'))
+			foreach (string line in Console.modsText.Split('\n'))
 				Console.Log(line);
 
 			return true;

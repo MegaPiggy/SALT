@@ -368,7 +368,7 @@ public static class EnumUtils
     }
 
     [Obsolete("Use GetMinValue instead")]
-    public static T GetLowestValue<T>() where T : Enum => GetMaxValue<T>();
+    public static T GetLowestValue<T>() where T : Enum => GetMinValue<T>();
 
     [Obsolete("Use GetMaxValue instead")]
     public static T GetHighestValue<T>() where T : Enum => GetMaxValue<T>();

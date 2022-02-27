@@ -23,7 +23,7 @@ namespace SALT.Console.Commands
                 Console.LogError("Character change failed");
                 return false;
             }
-            if (args == null)
+            if (args == null || args.Length == 0)
             {
                 Main.NextCharacter(); 
                 Console.LogSuccess("Successfully changed character");

@@ -64,10 +64,14 @@ namespace SALT
     /// </summary>
     public abstract class ModEntryPoint : IModEntryPoint
     {
+        public Assembly ExecutingAssembly => this.GetType().Assembly;
+
         /// <summary>
         /// The mod's harmony instance. Use <see cref="Harmony.PatchAll(Assembly)"/> in PreLoad to make your patches work.
         /// </summary>
-        public Harmony HarmonyInstance => HarmonyPatcher.GetInstance();
+        public Harmony HarmonyInstance => HarmonyPatcher.GetInstance(ExecutingAssembly);
+
+        protected void PatchAll() => HarmonyInstance.PatchAll(ExecutingAssembly);
 
         #region Stuff
         private static Assembly executingAssembly => SALT.Utils.ReflectionUtils.GetRelevantAssembly();
@@ -110,6 +114,7 @@ namespace SALT
 
         public virtual void PreLoad()
         {
+            PatchAll();
         }
 
         public virtual void Load()

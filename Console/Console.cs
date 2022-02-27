@@ -1,7 +1,13 @@
 ﻿using SALT.Console.Commands;
+using SALT.DevTools;
+using SALT.DevTools.DevMenu;
+using SALT.Extensions;
+using SALT.Windows;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,6 +39,9 @@ namespace SALT.Console
         internal static Dictionary<string, ConsoleCommand> commands = new Dictionary<string, ConsoleCommand>();
         internal static Dictionary<string, ConsoleButton> cmdButtons = new Dictionary<string, ConsoleButton>();
 
+        // General
+        internal static bool updateConsole;
+
         /// <summary>
         /// LINES
         /// </summary>
@@ -61,8 +70,13 @@ namespace SALT.Console
         /// <summary>
         /// COMMAND CATCHER
         /// </summary>
-        public delegate bool CommandCatcher(string cmd, string[] args);
+        public delegate bool CommandCatcher(string cmd, string[] args, bool willExecute);
         internal static List<CommandCatcher> catchers = new List<CommandCatcher>();
+
+        // TEXTS TO DISPLAY
+        internal static string cmdsText = string.Empty;
+        internal static string modsText = string.Empty;
+        internal static string fullText = string.Empty;
 
         /// <summary>
         /// Initializes the console
@@ -94,6 +108,7 @@ namespace SALT.Console
             //RegisterCommand(new Commands.LoadSceneCommand());
 
             RegisterButton("clear", new ConsoleButton("Clear Console", "clear"));
+            RegisterButton("clearll", new ConsoleButton("Clear Last Line", "clear last"));
             RegisterButton("help", new ConsoleButton("Show Help", "help"));
             RegisterButton("mods", new ConsoleButton("Show Mods", "mods"));
             RegisterButton("reload", new ConsoleButton("Run Reload", "reload"));
@@ -102,7 +117,9 @@ namespace SALT.Console
             RegisterButton("respawn", new ConsoleButton("Respawn", "respawn"));
 
             ConsoleBinder.ReadBinds();
+#if OLD_CONSOLE
             SceneManager.activeSceneChanged += ConsoleWindow.AttachWindow;
+#endif
         }
 
         /// <summary>
@@ -120,7 +137,7 @@ namespace SALT.Console
 
             cmd.belongingMod = Mod.GetCurrentMod();
             commands.Add(cmd.ID.ToLowerInvariant(), cmd);
-            ConsoleWindow.cmdsText += $"{(ConsoleWindow.cmdsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{ColorUsage(cmd.Usage)}</color> - {cmd.Description}";
+            cmdsText += $"{(cmdsText.Equals(string.Empty) ? "" : "\n")}<color=#77DDFF>{ColorUsage(cmd.Usage)}</color> - {cmd.Description}";
             return true;
         }
 
@@ -215,6 +232,26 @@ namespace SALT.Console
             console.LogEntry(LogType.Error, message, logToFile);
         }
 
+        /// <summary>
+        /// Logs a stack trace
+        /// </summary>
+        /// <param name="trace">Trace to log</param>
+        /// <param name="logToFile">Should log to file?</param>
+        public static void LogTrace(StackTrace trace, bool logToFile = true)
+        {
+            console.LogEntry(LogType.Error, trace.Parse(), logToFile);
+        }
+
+        /// <summary>
+        /// Logs an exception
+        /// </summary>
+        /// <param name="exception">Exception to log</param>
+        /// <param name="logToFile">Should log to file?</param>
+        public static void LogException(Exception exception, bool logToFile = true)
+        {
+            console.LogEntry(LogType.Error, exception.ParseTrace(), logToFile);
+        }
+
         // PROCESSES THE TEXT FROM THE CONSOLE INPUT
         internal static void ProcessInput(string command, bool forced = false)
         {
@@ -244,7 +281,7 @@ namespace SALT.Console
 
                     foreach (CommandCatcher catcher in catchers)
                     {
-                        keepExecution = catcher.Invoke(cmd, args);
+                        keepExecution = catcher.Invoke(cmd, args, true);
 
                         if (!keepExecution)
                             break;
@@ -273,7 +310,7 @@ namespace SALT.Console
             }
             catch (Exception e)
             {
-                Debug.LogException(e);
+                Console.LogException(e);
             }
         }
 
@@ -316,8 +353,48 @@ namespace SALT.Console
             if (logToFile)
                 FileLogger.LogEntry(logType, message);
 
+            updateConsole = true;
+#if OLD_CONSOLE
             ConsoleWindow.updateDisplay = true;
+#endif
         }
+
+        internal static void ExecuteCommand(string command, bool forced = false)
+        {
+            if (string.IsNullOrWhiteSpace(command))
+                return;
+            if (!forced)
+            {
+                if (history.Count == 10)
+                    history.RemoveAt(0);
+                if (history.Count == 0 || !history[history.Count - 1].Equals(command))
+                    history.Add(command);
+            }
+            try
+            {
+                bool flag = command.Contains(" ");
+                string cmd = flag ? command.Substring(0, command.IndexOf(' ')) : command;
+                Log("<color=cyan>Command:</color> " + command.Replace(cmd, "<b>" + cmd + "</b>"));
+                if (commands.ContainsKey(cmd) || commands.Values.SoftContains<ConsoleCommand>((object)cmd))
+                {
+                    string[] args = flag ? StripArgs(command) : new string[0];
+                    if (!InvokeCatchers(cmd, args, true))
+                        return;
+                    ConsoleCommand consoleCommand = commands.ContainsKey(cmd) ? commands[cmd] : commands.First<KeyValuePair<string, ConsoleCommand>>((Func<KeyValuePair<string, ConsoleCommand>, bool>)(pair => pair.Value.Equals((object)cmd))).Value;
+                    if (consoleCommand.Execute(args))
+                        return;
+                    Log("<color=cyan>Usage:</color> <color=#77DDFF>" + ColorUsage(consoleCommand.Usage) + "</color>");
+                }
+                else
+                    LogError("Unknown command. Please use 'help' for available commands.");
+            }
+            catch (Exception ex)
+            {
+                Console.LogException(ex);
+            }
+        }
+
+        private static bool InvokeCatchers(string cmd, string[] args, bool keepExecution) => catchers.Count > 0 ? catchers.Aggregate<CommandCatcher, bool>(keepExecution, (Func<bool, CommandCatcher, bool>)((current, catcher) => catcher(cmd, args, current))) : keepExecution;
 
         internal static string ColorUsage(string usage)
         {
@@ -355,7 +432,8 @@ namespace SALT.Console
             if (message.Equals(string.Empty))
                 return;
 
-            if (message.StartsWith("The character used for Ellipsis") || 
+            if (message.Equals("Setting and getting Body Position/Rotation, IK Goals, Lookat and BoneLocalRotation should only be done in OnAnimatorIK or OnStateIK") ||
+                message.StartsWith("The character used for Ellipsis") || 
                 message.StartsWith("The character used for Underline and Strikethrough") || 
                 message.EndsWith("Consider using the SetParent method instead, with the worldPositionStays argument set to false. This will retain local orientation and scale rather than world orientation and scale, which can prevent common UI scaling issues."))
                 return;
