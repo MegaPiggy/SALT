@@ -14,6 +14,8 @@ namespace SALT
         public static void Main()
         {
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(Resolve);
+            EnumPatcher.AddPartialEnumValue<Level>(Levels.DONT_DESTROY_ON_LOAD, "DONT_DESTROY_ON_LOAD");
+            new GameObject("Coroutiner", typeof(Coroutiner)).DontDestroyOnLoad();
         }
 
         public static void IntializeInternalServices()

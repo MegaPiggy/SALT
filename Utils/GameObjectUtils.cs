@@ -1,4 +1,4 @@
-﻿using SALT.Utils.Prefab;
+﻿using SALT.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -65,113 +65,58 @@ namespace SALT.Utils
 
         public static void Prefabitize(GameObject obj)
         {
-            obj.SetActive(false);
-            UnityEngine.Object.DontDestroyOnLoad((UnityEngine.Object)obj);
-            obj.AddComponent<RuntimePrefab>();
+            obj.transform.SetParent(Main.prefabParent, false);
         }
 
         public static GameObject InstantiateInactive(GameObject original)
         {
-            var state = original.activeSelf;
-            original.SetActive(false);
-            bool originalRuntimeValue = false;
-            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
-            if (comp)
-            {
-                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
-                comp.ShouldEnableOnInstantiate = false;
-            }
-            var newObj = GameObject.Instantiate(original);
-            if (comp)
-            {
-                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
-                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
-            }
-            original.SetActive(state);
+            GameObject newObj = GameObject.Instantiate(original, Main.prefabParent, true);
+            newObj.SetActive(false);
+            newObj.transform.SetParent(null, false);
             return newObj;
         }
 
-        public static GameObject InstantiateInactive(GameObject original, Transform parent)
+
+
+        public static GameObject InstantiateInactive(GameObject original, bool keepOriginalName = false)
         {
-            var state = original.activeSelf;
-            original.SetActive(false);
-            bool originalRuntimeValue = false;
-            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
-            if (comp)
-            {
-                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
-                comp.ShouldEnableOnInstantiate = false;
-            }
-            var newObj = GameObject.Instantiate(original, parent);
-            if (comp)
-            {
-                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
-                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
-            }
-            original.SetActive(state);
+            GameObject newObj = InstantiateInactive(original);
+            if (keepOriginalName) newObj.name = original.name;
             return newObj;
         }
 
-        public static GameObject InstantiateInactive(GameObject original, Transform parent, bool worldPositionStays)
+        public static GameObject InstantiateInactive(GameObject original, Transform parent, bool keepOriginalName = false)
         {
-            var state = original.activeSelf;
-            original.SetActive(false);
-            bool originalRuntimeValue = false;
-            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
-            if (comp)
-            {
-                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
-                comp.ShouldEnableOnInstantiate = false;
-            }
-            var newObj = GameObject.Instantiate(original, parent, worldPositionStays);
-            if (comp)
-            {
-                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
-                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
-            }
-            original.SetActive(state);
+            GameObject newObj = InstantiateInactive(original, keepOriginalName);
+            newObj.transform.SetParent(parent);
             return newObj;
         }
 
-        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation)
+        public static GameObject InstantiateInactive(GameObject original, Transform parent, bool worldPositionStays, bool keepOriginalName = false)
         {
-            var state = original.activeSelf;
-            original.SetActive(false);
-            bool originalRuntimeValue = false;
-            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
-            if (comp)
-            {
-                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
-                comp.ShouldEnableOnInstantiate = false;
-            }
-            var newObj = GameObject.Instantiate(original, position, rotation);
-            if (comp)
-            {
-                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
-                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
-            }
-            original.SetActive(state);
+            GameObject newObj = InstantiateInactive(original, keepOriginalName);
+            newObj.transform.SetParent(parent, worldPositionStays);
             return newObj;
         }
 
-        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation, Transform parent)
+        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation, bool keepOriginalName = false)
         {
-            var state = original.activeSelf;
-            original.SetActive(false);
-            bool originalRuntimeValue = false;
-            RuntimePrefab comp = original.GetComponent<RuntimePrefab>();
-            if (comp)
-            {
-                originalRuntimeValue = comp.ShouldEnableOnInstantiate;
-                comp.ShouldEnableOnInstantiate = false;
-            }
-            var newObj = GameObject.Instantiate(original, position, rotation, parent);
-            if (comp)
-            {
-                comp.ShouldEnableOnInstantiate = originalRuntimeValue;
-                newObj.GetComponent<RuntimePrefab>().ShouldEnableOnInstantiate = originalRuntimeValue;
-            }
-            original.SetActive(state);
+            GameObject newObj = InstantiateInactive(original, keepOriginalName);
+            newObj.transform.SetPositionAndRotation(position, rotation);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation, Transform parent, bool keepOriginalName = false)
+        {
+            GameObject newObj = InstantiateInactive(original, parent, keepOriginalName);
+            newObj.transform.SetPositionAndRotation(position, rotation);
+            return newObj;
+        }
+
+        public static GameObject InstantiateInactive(GameObject original, Vector3 position, Quaternion rotation, Transform parent, bool worldPositionStays, bool keepOriginalName = false)
+        {
+            GameObject newObj = InstantiateInactive(original, parent, worldPositionStays, keepOriginalName);
+            newObj.transform.SetPositionAndRotation(position, rotation);
             return newObj;
         }
     }

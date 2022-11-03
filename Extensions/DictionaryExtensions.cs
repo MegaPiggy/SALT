@@ -1,11 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SALT.Extensions
 {
     /// <summary>Contains extension methods for Collections that work as dictionaries</summary>
     public static class DictionaryExtensions
     {
+        public static Dictionary<object, object> ToDictionary(this IDictionary dict)
+        {
+            return dict.Keys.Cast<object>().ToDictionary(k => k, k => dict[k]);
+        }
+
         /// <summary>Adds a range of KeyValuePairs into the Dictionary</summary>
         /// <param name="this">The Dictionary</param>
         /// <param name="range">The range</param>

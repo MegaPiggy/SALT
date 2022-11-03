@@ -15,6 +15,8 @@ namespace SALT.DevTools.DevMenu
 	{
 		//+ CONSTANTS
 		private const string OBJ_INSPECTOR_NAME = "<size=16><b>Inspecting - {name}</b></size>";
+		private const string MOTION_SCENE = "Motion";
+		private const string MATERIAL_SCENE = "Materials";
 		private const string SOBJECTS_SCENE = "Scriptable Objects";
 		private const string DONT_DESTROY_SCENE = "DontDestroyOnLoad";
 		private const string PREFABS_SCENE = "Prefabs";
@@ -63,7 +65,7 @@ namespace SALT.DevTools.DevMenu
 		private static UnityEngine.Object selectObject;
 		private static ObjectInspector selectInspector;
 
-		private static List<Scene> ALL_SCENES = new List<Scene>();
+		private static readonly List<Scene> ALL_SCENES = new List<Scene>();
 		private static readonly List<SceneHierarchyObject> SCENE_HIERARCHY = new List<SceneHierarchyObject>();
 		private static readonly List<ObjectComponent> OBJECT_COMPONENTS = new List<ObjectComponent>();
 
@@ -79,7 +81,8 @@ namespace SALT.DevTools.DevMenu
 		internal override void OnShow()
 		{
 			searchFilter = string.Empty;
-			ALL_SCENES = new List<Scene>();
+
+			ALL_SCENES.Clear();
 			for (int i = 0; i < SceneManager.sceneCount; i++)
 				ALL_SCENES.Add(SceneManager.GetSceneAt(i));
 			
@@ -126,6 +129,8 @@ namespace SALT.DevTools.DevMenu
 			GUILayout.EndVertical();
 		}
 
+		private const int minScene = -5;
+
 		private static void DrawHierarchy(GUILayoutOption width)
 		{
 			//& Draws the scene selector and filter
@@ -133,16 +138,16 @@ namespace SALT.DevTools.DevMenu
 			GUILayout.BeginHorizontal();
 			if (GUILayout.Button(PREVIOUS, GUILayout.ExpandWidth(false)))
 			{
-				selectedScene = selectedScene == -3 ? ALL_SCENES.Count - 1 : selectedScene - 1;
+				selectedScene = selectedScene == minScene ? ALL_SCENES.Count - 1 : selectedScene - 1;
 				FindSceneObject();
 			}
 
 			GUILayout.Label(selectedScene == -1 ? DONT_DESTROY_SCENE : 
-							(selectedScene == -2 ? PREFABS_SCENE : (selectedScene == -3 ? SOBJECTS_SCENE : ALL_SCENES[selectedScene].name)), GUI.skin.textField, GUILayout.ExpandWidth(true));
+							(selectedScene == -2 ? PREFABS_SCENE : (selectedScene == -3 ? SOBJECTS_SCENE : (selectedScene == -4 ? MATERIAL_SCENE : (selectedScene == -5 ? MOTION_SCENE : ALL_SCENES[selectedScene].name)))), GUI.skin.textField, GUILayout.ExpandWidth(true));
 			
 			if (GUILayout.Button(NEXT, GUILayout.ExpandWidth(false)))
 			{
-				selectedScene = selectedScene == ALL_SCENES.Count - 1 ? -3 : selectedScene + 1;
+				selectedScene = selectedScene == ALL_SCENES.Count - 1 ? minScene : selectedScene + 1;
 				FindSceneObject();
 			}
 			GUILayout.EndHorizontal();
@@ -247,11 +252,12 @@ namespace SALT.DevTools.DevMenu
 			GUILayout.BeginVertical(GUI.skin.textArea);
 			GUILayout.Label(OBJ_INSPECTOR_NAME.Replace("{name}", selectObject?.name ?? "Nothing"), GUI.skin.GetStyle("centerLabel"), GUILayout.ExpandWidth(true), GUILayout.Height(20));
 			GUILayout.BeginHorizontal();
-#if DEBUG
+#if !DEBUG
 			GUI.skin.label.fontStyle = FontStyle.Bold;
 			GUILayout.Label(ACTION, GUILayout.ExpandWidth(false));
 			GUI.skin.label.fontStyle = FontStyle.Normal;
-			GUILayout.Button(DUMP, GUILayout.ExpandWidth(false));
+			if (GUILayout.Button(DUMP, GUILayout.ExpandWidth(false)))
+				Utils.DumpUtils.DumpObject(selectObject, "Inspector");
 #endif
 			GUILayout.FlexibleSpace();
 			GUI.skin.label.fontStyle = FontStyle.Bold;
@@ -336,11 +342,15 @@ namespace SALT.DevTools.DevMenu
 		private static void FindSceneObject()
 		{
 			SCENE_HIERARCHY.Clear();
-			IEnumerable<UnityEngine.Object> objects = selectedScene <= -3
+			IEnumerable<UnityEngine.Object> objects = selectedScene <= -5
+				? (IEnumerable<UnityEngine.Object>)Resources.FindObjectsOfTypeAll<Motion>()
+				: (selectedScene == -4
+				? (IEnumerable<UnityEngine.Object>)Resources.FindObjectsOfTypeAll<Material>()
+				: (selectedScene == -3
 				? (IEnumerable<UnityEngine.Object>)Resources.FindObjectsOfTypeAll<ScriptableObject>()
 				: (selectedScene == -2
-				? (IEnumerable<UnityEngine.Object>)Resources.FindObjectsOfTypeAll<GameObject>().Where(o => o.transform.parent == null && o.scene.name == null)
-				: (IEnumerable<UnityEngine.Object>)Resources.FindObjectsOfTypeAll<GameObject>().Where(o => !string.IsNullOrWhiteSpace(o.scene.name) && o.scene.name.Equals(selectedScene == -1 ? DONT_DESTROY_SCENE : ALL_SCENES[selectedScene].name) && o.transform.parent == null));
+				? (IEnumerable<UnityEngine.Object>)Resources.FindObjectsOfTypeAll<GameObject>().Where(o => o.transform.parent == null && string.IsNullOrWhiteSpace(o.scene.name))
+				: (IEnumerable<UnityEngine.Object>)Resources.FindObjectsOfTypeAll<GameObject>().Where(o => !string.IsNullOrWhiteSpace(o.scene.name) && o.scene.name.Equals(selectedScene == -1 ? DONT_DESTROY_SCENE : ALL_SCENES[selectedScene].name) && o.transform.parent == null))));
 
 			foreach (UnityEngine.Object @object in objects)
 			{
@@ -405,7 +415,7 @@ namespace SALT.DevTools.DevMenu
 				return true;
 			if (selectedScene == -3 && searchFilter.StartsWith("!"))
 				return toApply.Object.GetType().Name.Contains(searchFilter.TrimStart('!'));
-			if (selectedScene == -3 || !searchFilter.Contains("/"))
+			if (selectedScene == -3 || selectedScene == -4 || selectedScene == -5 || !searchFilter.Contains("/"))
 				return toApply.FullName.Contains(searchFilter);
 			return searchFilter.Length < toApply.FullName.Length ? toApply.FullName.StartsWith(searchFilter) : searchFilter.StartsWith(toApply.FullName);
 		}

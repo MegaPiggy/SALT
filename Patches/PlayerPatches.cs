@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using HarmonyLib;
 using SALT.Extensions;
 using SALT.Registries;
+using SALT.Utils;
 
 namespace SALT.Patches
 {
@@ -16,15 +18,21 @@ namespace SALT.Patches
         public static void Prefix(PlayerScript __instance)
         {
             Main.player = __instance.gameObject;
-            int index = 0;
-            foreach (GameObject prefab in __instance.characterPacks)
+            Console.Console.Log("Current: " + Levels.CurrentLevel);
+            if (Levels.CurrentLevel.IsModded())
+                __instance.characterPacks = Registries.CharacterRegistry.GetVanillaPrefabs().ToList();
+            else if (Levels.CurrentLevel.IsVanilla())
             {
-                if (!prefab.HasComponent<CharacterIdentifiable>())
-                    prefab.AddComponent<CharacterIdentifiable>().Id = (Character)index;
-                else
-                    prefab.GetComponent<CharacterIdentifiable>().Id = (Character)index;
-                CharacterRegistry.AddPrefab((Character)index, prefab);
-                index++;
+                int index = 0;
+                foreach (GameObject prefab in __instance.characterPacks)
+                {
+                    if (prefab == null) goto next;
+                    prefab.GetOrAddComponent<CharacterIdentifiable>().Id = (Character)index;
+                    prefab.Prefabitize();
+                    CharacterRegistry.AddPrefab((Character)index, prefab);
+                next:
+                    index++;
+                }
             }
             foreach (KeyValuePair<Character,GameObject> kvp in CharacterRegistry.objectsToPatch)
             {
@@ -52,9 +60,91 @@ namespace SALT.Patches
     internal static class PlayerStartPatch
     {
         [HarmonyPriority(Priority.First)]
-        public static void Prefix(PlayerScript __instance)
+        public static bool Prefix(PlayerScript __instance)
         {
+            __instance.EditedStart();
+            return false;
+        }
+
+        private static IEnumerator RespawnAfterNative(PlayerScript player, ModdedLevelButtonScript mlbs)
+        {
+            yield return new WaitForEndOfFrame();
+            Transform spawnPoint = mlbs.Spawnpoint;
+            if (spawnPoint != null)
+                player.checkpoint = spawnPoint;
+            else
+                Console.Console.LogWarning(mlbs.levelEnum + " does have a checkpoint script");
+            player.Respawn();
+            CheckpointScript.startCheckpoint.position = MainScript.spawnPoint;
+
+        }
+
+        private static void EditedSpawnCharacter(this PlayerScript __instance, int i)
+        {
+            PlayerSpawnCharacterPatch.Prefix(__instance, i);
+            if (i < 0 || i >= __instance.characterPacks.Count)
+            {
+                PlayerSpawnCharacterPatch.Postfix(__instance, i);
+                return;
+            }
+            if (__instance.currentCharacterPack != null)
+                UnityEngine.Object.Destroy(__instance.currentCharacterPack);
+            Console.Console.Log(__instance.anim.runtimeAnimatorController.name);
+            GameObject gameObject = __instance.characterPacks[i].Instantiate<GameObject>( __instance.transform.position, __instance.transform.rotation, __instance.transform, true);
+            __instance.anim.runtimeAnimatorController = gameObject.GetComponent<CharacterPack>().anim;
+            Console.Console.Log(__instance.anim.runtimeAnimatorController.name);
+            __instance.lastCharChange = Time.time;
+            __instance.currentCharacterPack = gameObject;
+            PlayerSpawnCharacterPatch.Postfix(__instance, i);
+        }
+
+        private static void EditedStart(this PlayerScript __instance)
+        {
+            Console.Console.Log("Currents: " + Levels.CurrentLevel);
             Main.player = __instance.gameObject;
+            PlayerScript.player = __instance;
+            __instance.anim = __instance.GetComponent<Animator>();
+            __instance.rb = __instance.GetComponent<Rigidbody2D>();
+            __instance.coll = __instance.GetComponent<BoxCollider2D>();
+            __instance.aSource = __instance.GetComponent<AudioSource>();
+            __instance.SpawnCharacter(MainScript.currentCharacter);
+            __instance.Respawn();
+            if (Levels.isMainMenu())
+            {
+                if (MainScript.spawnPoint == Vector3.zero)
+                {
+                    __instance.anim.SetTrigger("Title");
+                    __instance.currentState = PlayerState.Title;
+                }
+                else
+                {
+                    if (LevelManager.levelManager.spawnPoints.ContainsKey(MainScript.lastLevelName))
+                        __instance.checkpoint = LevelManager.levelManager.spawnPoints[MainScript.lastLevelName];
+                    else
+                    {
+                        if (ModdedLevelButtonScript.buttons.LastIfContains(m => m.levelEnum.ToTitle() == MainScript.lastLevelName, out ModdedLevelButtonScript mlbs, null))
+                        {
+                            if (mlbs.IsNativeObjectAlive())
+                            {
+                                Transform spawnPoint = mlbs.Spawnpoint;
+                                if (spawnPoint != null)
+                                    __instance.checkpoint = spawnPoint;
+                                else
+                                    Console.Console.LogWarning(mlbs.levelEnum + " does have a checkpoint script");
+                            }
+                            else
+                            {
+                                __instance.StartCoroutine(RespawnAfterNative(__instance, mlbs));
+                                return;
+                            }
+                        }
+                        else
+                            Console.Console.LogWarning(mlbs.levelEnum + " does not have a spawnpoint");
+                    }
+                    __instance.Respawn();
+                    CheckpointScript.startCheckpoint.position = MainScript.spawnPoint;
+                }
+            }
         }
     }
 
@@ -97,6 +187,7 @@ namespace SALT.Patches
             }
             __instance.currentCharacterPack.SetActive(true);
             CharacterIdentifiable.AddIdentifiable(__instance.currentCharacterPack, character);
+            Callbacks.OnCharacterSpawned_Trigger(__instance, character);
             return;
         }
     }

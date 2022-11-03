@@ -534,6 +534,7 @@ public static class ObjectExtensions
     public static bool HasField(this object target, string fieldName) => target.GetType().HasField(fieldName);
 
     public static bool HasProperty(this object target, string propertyName) => target.GetType().HasProperty(propertyName);
+
 }
 
 /// <summary>
@@ -541,11 +542,20 @@ public static class ObjectExtensions
 /// </summary>
 public static class UnityObjectExtensions
 {
+    public static bool IsNativeObjectAlive(this UnityEngine.Object obj) => obj.InvokeMethod<bool>("IsNativeObjectAlive");
+
     public static T Instantiate<T>(this T original, bool keepOriginalName = false) where T : UnityEngine.Object
     {
         T clone = UnityEngine.Object.Instantiate(original);
         if (keepOriginalName)
             clone.name = original.name;
+        return clone;
+    }
+
+    public static T Instantiate<T>(this T original, string name) where T : UnityEngine.Object
+    {
+        T clone = UnityEngine.Object.Instantiate(original);
+        clone.name = name;
         return clone;
     }
 

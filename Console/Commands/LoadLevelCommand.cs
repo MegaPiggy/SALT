@@ -39,7 +39,11 @@ namespace SALT.Console.Commands
                 return false;
             }
             Level level = EnumUtils.Parse<Level>(args[0], true);
-            LevelLoader.loader.LoadLevel((int)level);
+            MainScript.lastLevelName = level.ToSceneName();
+            if (level.IsModded())
+                SceneUtils.LoadModdedScene(level);
+            else
+                LevelLoader.loader.LoadLevel((int)level);
             Console.LogSuccess("Successfully loaded level");
             return true;
         }
@@ -58,6 +62,8 @@ namespace SALT.Console.Commands
                     realLevels.Add(lvl);
                     index++;
                 }
+                IEnumerable<Level> modded = levels.Where(l => l.IsModded());
+                realLevels.AddRange(modded);
                 return realLevels.Select<Level, string>(l => l.ToString()).ToList();
             }
             return base.GetAutoComplete(argIndex, argText);

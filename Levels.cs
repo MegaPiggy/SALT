@@ -2,6 +2,8 @@
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using SALT;
+using SALT.Utils;
+using SALT.Extensions;
 
 public static class Levels
 {
@@ -14,16 +16,42 @@ public static class Levels
     static Levels()
     {
         SceneManager.activeSceneChanged += OnActiveSceneChanged;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+    
     }
 
     private static void OnActiveSceneChanged(Scene replaced, Scene next)
     {
+        SALT.Console.Console.Log("Active Scene Changed");
         replacedScene = replaced;
         newScene = next;
+        Callbacks.OnActiveSceneChanged_Trigger(replaced.name.FromSceneName(), next.name.FromSceneName());
+    }
+
+    private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        SALT.Console.Console.Log("Scene Loaded");
         Callbacks.OnSceneLoaded();
     }
+
+    private static void OnSceneUnloaded(Scene scene)
+    {
+        SALT.Console.Console.Log("Scene Unloaded");
+        Callbacks.OnSceneUnloaded();
+    }
+
+    public static readonly Level DONT_DESTROY_ON_LOAD = (Level)Enum.ToObject(typeof(Level), -1);
     
-    public static Level CurrentLevel => (Level)Enum.ToObject(typeof(Level), SceneManager.GetActiveScene().buildIndex);
+    public static Level CurrentLevel
+    {
+        get
+        {
+            Scene scene = SceneManager.GetActiveScene();
+            if (scene == null) return DONT_DESTROY_ON_LOAD;
+            return scene.name.FromSceneName();
+        }
+    }
 
     public static string LevelName => LevelLoader.levelName;
 

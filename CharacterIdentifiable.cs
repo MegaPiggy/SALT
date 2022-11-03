@@ -38,7 +38,15 @@ namespace SALT
         /// </summary>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Character GetId(GameObject b) => b.GetComponent<CharacterIdentifiable>().Id;
+        public static Character GetId(GameObject b)
+        {
+            if (b == null)
+                return Character.NONE;
+            CharacterIdentifiable identifiable = b.GetComponent<CharacterIdentifiable>();
+            if (identifiable == null)
+                return Character.NONE;
+            return identifiable.idnt;
+        }
 
         /// <summary>
         /// Adds a <see cref="CharacterIdentifiable"/> to a <see cref="GameObject"/>

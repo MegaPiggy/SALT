@@ -18,18 +18,18 @@ namespace SALT.Utils
             StackTrace stackTrace = new StackTrace();
             Assembly calling = Assembly.GetCallingAssembly();
             StackFrame[] frames = stackTrace.GetFrames();
-            return ExceptionUtils.IgnoreErrors<Assembly>((Func<Assembly>)(() =>
+            return ExceptionUtils.IgnoreErrors(() =>
             {
                 if (frames == null)
                     return calling;
                 foreach (StackFrame stackFrame in frames)
                 {
                     Assembly assembly = stackFrame.GetMethod().DeclaringType?.Assembly;
-                    if (assembly != calling && assembly != (Assembly)null)
+                    if (assembly != calling && assembly != null)
                         return assembly;
                 }
                 return calling;
-            }), calling);
+            }, calling);
         }
 
         /// <summary>

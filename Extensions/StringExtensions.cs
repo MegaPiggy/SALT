@@ -136,7 +136,7 @@ namespace SALT.Extensions
         public static bool IsNullOrEmpty(this string value) => string.IsNullOrEmpty(value);
 
         /// <summary>Indicates whether a specified string is <see langword="null" />, empty, or consists only of white-space characters.</summary>
-        /// <returns><see langword="true" /> if the <paramref name="value" /> parameter is <see langword="null" /> or <see cref="F:System.String.Empty" />, or if <paramref name="value" /> consists exclusively of white-space characters.</returns>
+        /// <returns><see langword="true" /> if the <paramref name="value" /> parameter is <see langword="null" /> or <see cref="string.Empty" />, or if <paramref name="value" /> consists exclusively of white-space characters.</returns>
         public static bool IsNullOrWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
 
         /// <summary>
@@ -340,6 +340,10 @@ namespace SALT.Extensions
                 str = str.Substring(value.Length);
             return str;
         }
+
+        public static string GetExtension(this string file, bool includeDot = false) => file.Reverse().RemoveEverythingAfter(".", !includeDot).Reverse();
+        public static string RemoveExtension(this string file) => file.RemoveEverythingAfter(file.GetExtension(true), true);
+
 
         internal static string ToQuotedString(this string str)
         {

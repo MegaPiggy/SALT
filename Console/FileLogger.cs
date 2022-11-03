@@ -13,7 +13,7 @@ namespace SALT
         // THE LOG FILE
         internal static string saltLogFile = Path.Combine(Application.persistentDataPath, "SALT/salt.log");
 
-        private static bool Initialized = false;
+        internal static bool Initialized = false;
 
         /// <summary>
         /// Initializes the file logger (run this before Console.Init)
@@ -70,6 +70,7 @@ namespace SALT
 
         internal static void LogEntry(LogType logType, string message)
         {
+            System.Console.WriteLine($"{Initialized}[{DateTime.Now.ToString("HH:mm:ss")}][{TypeToText(logType)}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>|<color=[^>]*>|<\/color>|<i>|<\/i>", "")}");
             if (!Initialized) return;
             using (StreamWriter writer = File.AppendText(saltLogFile))
                 writer.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}][{TypeToText(logType)}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>|<color=[^>]*>|<\/color>|<i>|<\/i>", "")}");

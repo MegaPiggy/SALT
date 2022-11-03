@@ -25,6 +25,42 @@ namespace SALT.Utils
             }
         }
         public static Scene GetScene(int index) => SceneManager.GetSceneAt(index);
+        public static Scene GetSceneByLevel(Level level)
+        {
+            int index = (int)level;
+            if (index == -1)
+                return SceneUtils.GetDontDestroyOnLoadScene();
+            else if (level.IsVanilla())
+                return SceneManager.GetSceneByBuildIndex(index);
+            else if (level.IsModded() && Registries.LevelRegistry.customScenes.ContainsKey(level))
+                return Registries.LevelRegistry.customScenes[level];
+            else
+                throw new Exception($"No scene found for level '{level}'");
+        }
+        public static bool TryGetSceneByLevel(Level level, out Scene scene)
+        {
+            int index = (int)level;
+            if (index == -1)
+            {
+                scene = SceneUtils.GetDontDestroyOnLoadScene();
+                return true;
+            }
+            else if(level.IsVanilla())
+            {
+                scene = SceneManager.GetSceneByBuildIndex(index);
+                return true;
+            }
+            else if (level.IsModded() && Registries.LevelRegistry.customScenes.ContainsKey(level))
+            {
+                scene = Registries.LevelRegistry.customScenes[level];
+                return true;
+            }
+            else
+            {
+                scene = SceneUtils.GetDontDestroyOnLoadScene();
+                return false;
+            }
+        }
         public static Scene GetSceneByBuildIndex(int index) => SceneManager.GetSceneByBuildIndex(index);
         public static string GetSceneName(int index) => GetScene(index).name;
         public static string GetSceneNameByBuildIndex(int index) => GetSceneByBuildIndex(index).name;
@@ -159,22 +195,83 @@ namespace SALT.Utils
 
         internal static void UnloadModdedScene(Scene scene)
         {
-            foreach (GameObject root in scene.GetRootGameObjects())
-                root.DestroyImmediate();
+            scene.Unload();
+            //foreach (GameObject root in scene.GetRootGameObjects())
+            //    root.DestroyImmediate();
         }
 
-        internal static void UnloadAllModdedScene()
+        public static void UnloadModdedScene(Level level)
+        {
+            if (Registries.LevelRegistry.customScenes.ContainsKey(level))
+                UnloadModdedScene(Registries.LevelRegistry.customScenes[level]);
+        }
+
+        public static void UnloadAllModdedScene()
         {
             foreach (Scene moddedScene in ModdedScenes)
                 UnloadModdedScene(moddedScene);
         }
 
-        internal static void LoadModdedScene(Scene scene)
+        public static void LoadModdedScene(Level level)
         {
-            //scene.Instantiate(SAObjects.MainLevelStuff);
+            Scene scene = Registries.LevelRegistry.CreateLevel(level);
+
+            LevelLoader.level = (int)level;
+            LevelLoader.levelName = level.ToSceneName();
+            HUDScript.HUD.StartLoad();
+
+            //MainScript.loading = true;
+            MusicLooper.looper.fadeOut = true;
+
+            GameObject mainLevelStuff = scene.InstantiateInactive(SAObjects.MainLevelStuff);
+            GameObject player = scene.InstantiateInactive(SAObjects.Player);
+            PlayerScript playerScript = player.GetComponent<PlayerScript>();
+            playerScript.camTarget = mainLevelStuff.FindChild("CamTarget", true).transform;
+            playerScript.camLookTarget = mainLevelStuff.FindChild("CamLookTarget", true).transform;
+            playerScript.pointer = mainLevelStuff.FindChild("Pointer", true).transform;
+            playerScript.rotEmpty = mainLevelStuff.FindChild("RotEmpty", true).transform;
+            playerScript.checkpoint = mainLevelStuff.FindChild("Checkpoint", true).transform;
+            playerScript.groundNormalEmpty = mainLevelStuff.FindChild("GroundNormalEmpty", true).transform;
+            playerScript.canRestart = true;
+            GameObject deathZone = scene.InstantiateInactive(SAObjects.DeathZone);
+            GameObject clearButton = scene.InstantiateInactive(SAObjects.LevelClearButton);
+            GameObject bubba1 = scene.InstantiateInactive(SAObjects.BubbaToken);
+            bubba1.GetComponent<TokenScript>().tokenNum = 0;
+            bubba1.transform.position -= new Vector3(0, 2, 0);
+            GameObject bubba2 = scene.InstantiateInactive(SAObjects.BubbaToken);
+            bubba2.GetComponent<TokenScript>().tokenNum = 1;
+            bubba2.transform.position -= new Vector3(1.5f, 2, 0);
+            GameObject bubba3 = scene.InstantiateInactive(SAObjects.BubbaToken);
+            bubba3.GetComponent<TokenScript>().tokenNum = 2;
+            bubba3.transform.position -= new Vector3(-1.5f, 2, 0);
+
+            Registries.LevelRegistry.InvokeSceneCreationEvent(level, scene, mainLevelStuff);
+
+            //SceneUtils.LoadScene(scene);
             SceneUtils.SetActiveScene(scene);
             SceneUtils.UnloadBuildScenes();
-            //RenderSettings.skybox = SAObjects.Skybox.CloneInstance();
+
+            mainLevelStuff.SetActive(true);
+            player.SetActive(true);
+            deathZone.SetActive(true);
+            clearButton.SetActive(true);
+            bubba1.SetActive(true);
+            bubba2.SetActive(true);
+            bubba3.SetActive(true);
+            foreach (GameObject obj in scene.GetRootGameObjects())
+            {
+                obj.SetActive(true);
+            }
+
+            HUDScript.HUD.isLoading = false;
+            HUDScript.HUD.transitionStart = false;
+            RenderSettings.skybox = SAObjects.Skybox.Instantiate();
+            playerScript.currentState = PlayerState.Moving;
+            playerScript.SnapCam();
+
+            LevelLoader.level = -1;
+            MainScript.loading = false;
+            LevelLoader.loadCo = null;
         }
 
         internal static Scene CreateScene(string name)

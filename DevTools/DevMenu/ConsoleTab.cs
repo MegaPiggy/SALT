@@ -432,12 +432,19 @@ namespace SALT.DevTools.DevMenu
 				if (autoComplete)
 				{
 					if (!Console.Console.commands[cmd].AllowSpaces)
-						autoC?.RemoveAll(s => s.Contains(" "));
+						autoC?.RemoveAll(s =>
+                        {
+							if (!s.IsNullOrWhiteSpace())
+								return s.Contains(" ");
+							return false;
+                        });
 
 					if (!input.Equals(oldInput))
 					{
 						foreach (string arg in autoC)
 						{
+							if (arg.IsNullOrEmpty())
+								continue;
 							if (arg.ToLowerInvariant().StartsWith(last.ToLowerInvariant()))
 								acCache.Add(arg);
 						}

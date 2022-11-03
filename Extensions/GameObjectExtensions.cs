@@ -78,11 +78,6 @@ namespace SALT.Extensions
             return gameObject.AddComponent<T>();
         }
 
-        public static bool HasComponentShort<T>(this GameObject gameObject)
-        {
-            return gameObject.GetComponent<T>() != null;
-        }
-
 
         /// <summary>
         /// Get all components of specified Layer in childs
@@ -217,6 +212,8 @@ namespace SALT.Extensions
             return result.ToArray();
         }
 
+        public static GameObject GetChild(this GameObject obj, int index) => obj.transform.GetChild(index).gameObject;
+
         // PARENT STUFF
         public static T FindComponentInParent<T>(this GameObject obj) where T : Component
         {
@@ -252,7 +249,7 @@ namespace SALT.Extensions
             {
                 gameObjectList.Add(transform.gameObject);
                 if (transform.childCount > 0 && !noDive)
-                    gameObjectList.AddRange((IEnumerable<GameObject>)transform.gameObject.GetChildren(noDive));
+                    gameObjectList.AddRange(transform.gameObject.GetChildren(noDive));
             }
             return gameObjectList.ToArray();
         }
@@ -332,15 +329,15 @@ namespace SALT.Extensions
 
         public static bool HasComponentLong<T>(this GameObject gameObject)
         {
-            T type = default;
+            System.Type ttype = typeof(T);
             Component[] allComponents = gameObject.GetComponents();
-            bool foundType = false;
             foreach (Component component in allComponents)
             {
-                if (component.GetType() == type.GetType())
-                    foundType = true;
+                System.Type type = component.GetType();
+                if (type == ttype || type.IsSubclassOf(ttype) || ttype.IsAssignableFrom(type))
+                    return true;
             }
-            return foundType;
+            return false;
         }
 
         // SHORTCUTS

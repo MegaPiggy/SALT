@@ -7,6 +7,85 @@ using System.Reflection;
 
 public static class TypeExtensions
 {
+    public static object GetDefault(this Type t)
+    {
+        return typeof(TypeExtensions).GetStaticMethod("GetDefaultGeneric").MakeGenericMethod(t).Invoke(null, null);
+    }
+
+    public static T GetDefaultGeneric<T>()
+    {
+        return default(T);
+    }
+
+    //public static Type ToType(this string name)
+    //{
+    //    return Type.GetType(name) ?? Base.assembly.GetType(name) ?? typeof(GameObject).Assembly.GetType(name) ?? typeof(SlimeDefinition).Assembly.GetType(name) ?? null;
+    //}
+
+    public static Type ToType(this string TypeName)
+    {
+
+        // Try Type.GetType() first. This will work with types defined
+        // by the Mono runtime, etc.
+        var type = Type.GetType(TypeName, false, true);
+
+        // If it worked, then we're done here
+        if (type != null)
+            return type;
+
+        var saltType = SALT.Main.execAssembly.SearchForType(TypeName);
+        if (saltType != null)
+            return saltType;
+
+        var saType = typeof(MainScript).Assembly.SearchForType(TypeName);
+        if (saType != null)
+            return saType;
+
+        var unityType = typeof(UnityEngine.GameObject).Assembly.SearchForType(TypeName);
+        if (unityType != null)
+            return unityType;
+
+        var physicsType = typeof(UnityEngine.Collider).Assembly.SearchForType(TypeName);
+        if (physicsType != null)
+            return physicsType;
+
+        var audioType = typeof(UnityEngine.AudioSource).Assembly.SearchForType(TypeName);
+        if (audioType != null)
+            return audioType;
+
+        var animationType = typeof(UnityEngine.Animation).Assembly.SearchForType(TypeName);
+        if (animationType != null)
+            return animationType;
+
+        if (!TypeName.Contains(".")) return null;
+
+        // Get the name of the assembly (Assumption is that we are using
+        // fully-qualified type names)
+        var assemblyName = TypeName.Substring(0, TypeName.IndexOf('.'));
+
+        // Attempt to load the indicated Assembly
+        var assembly = Assembly.LoadWithPartialName(assemblyName);
+        if (assembly == null)
+            return null;
+
+        // Ask that assembly to return the proper Type
+        return assembly.GetType(TypeName);
+
+    }
+
+    public static Type SearchForType(this Assembly assembly, string name)
+    {
+        foreach (Module module in assembly.GetModules())
+        {
+            foreach (Type mtype in module.GetTypes())
+            {
+                if (mtype.Name.ToLower() == name.ToLower() || (mtype.Namespace + "." + mtype.Name).ToLower() == name.ToLower())
+                    return mtype;
+            }
+        }
+        return null;
+    }
+
     private const string MIDDLE = " cannot be converted to type ";
 
     private static void LogConvert(System.ArgumentException e, string what = "field")

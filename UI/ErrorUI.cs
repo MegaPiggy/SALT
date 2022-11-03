@@ -11,11 +11,22 @@ namespace SALT.UI
     /// </summary>
     internal class ErrorUI : MonoBehaviour
     {
+        private GameObject canvas;
+
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
             {
                 Application.Quit();
+                return;
+            }
+            else if (Input.GetKeyDown(KeyCode.Delete))
+            {
+                MainScript.paused = false;
+                if (canvas != null)
+                    canvas.DestroyImmediate();
+                else
+                    this.DestroyImmediate();
                 return;
             }
         } 
@@ -25,8 +36,8 @@ namespace SALT.UI
             GameObject versionObject = UnityEngine.Object.FindObjectsOfType<RectTransform>().FirstOrDefault(tmp => tmp.gameObject.name == "Version").gameObject;
             GameObject errorUI = versionObject.Instantiate();
             errorUI.name = "errorUI";
-            errorUI.AddComponent<UI.ErrorUI>();
             GameObject errorCanvas = new GameObject("errorCanvas", typeof(RectTransform));
+            errorUI.AddComponent<UI.ErrorUI>().canvas = errorCanvas;
             var canvas = errorCanvas.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.additionalShaderChannels = AdditionalCanvasShaderChannels.TexCoord1;

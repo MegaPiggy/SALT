@@ -33,7 +33,7 @@
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;RELEASE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -73,6 +73,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\Unity.ugui.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
@@ -101,6 +104,10 @@
     <Reference Include="UnityEngine.JSONSerializeModule">
       <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Users\noahp\Shared\SmolAme_v210831.1\Smol Ame_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
@@ -119,6 +126,41 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AudioPack.cs" />
+    <Compile Include="Assets\ImagePack.cs" />
+    <Compile Include="Assets\AssetPack.cs" />
+    <Compile Include="Assets\Pack.cs" />
+    <Compile Include="Audio\Decoder\BitReservoir.cs" />
+    <Compile Include="Audio\Decoder\FrameBase.cs" />
+    <Compile Include="Audio\Decoder\Huffman.cs" />
+    <Compile Include="Audio\Decoder\ID3Frame.cs" />
+    <Compile Include="Audio\Decoder\LayerDecoderBase.cs" />
+    <Compile Include="Audio\Decoder\LayerIDecoder.cs" />
+    <Compile Include="Audio\Decoder\LayerIIDecoder.cs" />
+    <Compile Include="Audio\Decoder\LayerIIDecoderBase.cs" />
+    <Compile Include="Audio\Decoder\LayerIIIDecoder.cs" />
+    <Compile Include="Audio\Decoder\MpegFrame.cs" />
+    <Compile Include="Audio\Decoder\MpegStreamReader.cs" />
+    <Compile Include="Audio\Decoder\RiffHeaderFrame.cs" />
+    <Compile Include="Audio\Decoder\VBRInfo.cs" />
+    <Compile Include="Audio\IMpegFrame.cs" />
+    <Compile Include="Audio\MpegFile.cs" />
+    <Compile Include="Audio\MpegFrameDecoder.cs" />
+    <Compile Include="Audio\MpegEnums.cs" />
+    <Compile Include="ComparerLibrary.cs" />
+    <Compile Include="Console\Commands\TranslateCommand.cs" />
+    <Compile Include="AnimatorControllerLayer.cs" />
+    <Compile Include="Coroutiner.cs" />
+    <Compile Include="GlobalMessenger.cs" />
+    <Compile Include="Honyaku.cs" />
+    <Compile Include="MaterialReplacer.cs" />
+    <Compile Include="MemoryStatsScript.cs" />
+    <Compile Include="ModdedLevelButtonScript.cs" />
+    <Compile Include="ModdedTokenScript.cs" />
+    <Compile Include="Pair.cs" />
+    <Compile Include="Patches\RotateSkyboxPatch.cs" />
+    <Compile Include="Shortcuts.cs" />
+    <Compile Include="Assets\SpriteTexture.cs" />
     <Compile Include="Callbacks.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="CharacterExtensions.cs" />
@@ -149,6 +191,7 @@
     <Compile Include="Console\Commands\CompleteLevelCommand.cs" />
     <Compile Include="Console\Commands\ConfigCommand.cs" />
     <Compile Include="Console\DynamicCommand.cs" />
+    <Compile Include="Assets\AssetLoader.cs" />
     <Compile Include="Diagnostics\StackTracing.cs" />
     <Compile Include="Extensions\AssemblyExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
@@ -162,9 +205,11 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Services.cs" />
     <Compile Include="Singleton.cs" />
+    <Compile Include="Sinusoid.cs" />
     <Compile Include="USingleton.cs" />
     <Compile Include="Utils\AssemblyUtils.cs" />
     <Compile Include="Utils\ExceptionUtils.cs" />
+    <Compile Include="Utils\SearchUtils.cs" />
     <Compile Include="Utils\TypeUtils.cs" />
     <Compile Include="Windows\SystemWindow.cs" />
     <Compile Include="Windows\WindowHandler.cs" />
@@ -188,8 +233,9 @@
     <Compile Include="Patches\HUDPatch.cs" />
     <Compile Include="Patches\VFXPatches.cs" />
     <Compile Include="Registries\IDRegistry.cs" />
+    <Compile Include="Registries\LevelRegistry.cs" />
     <Compile Include="Registries\ModdedIDRegistry.cs" />
-    <Compile Include="Utils\ColorHelper.cs" />
+    <Compile Include="Utils\ColorUtils.cs" />
     <Compile Include="Utils\Enum\EnumHolderAttribute.cs" />
     <Compile Include="Utils\Enum\EnumHolderResolver.cs" />
     <Compile Include="Utils\IdFactory.cs" />
@@ -283,24 +329,50 @@
     <Compile Include="Utils\Json.cs" />
     <Compile Include="Utils\PhysicsUtil.cs" />
     <Compile Include="Utils\PrefabUtils.cs" />
-    <Compile Include="Utils\Prefab\RuntimePrefab.cs" />
     <Compile Include="Utils\RaycastUtils.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Vector3Surrogate.cs" />
+    <None Include="Meshes\Cheese.mtl" />
+    <None Include="Meshes\Cheese.obj" />
+    <None Include="nupkg.ps1" />
     <None Include="packages.config" />
     <EmbeddedResource Include="Resources\notoserifjp" />
+    <None Include="Resources\atwriter" />
+    <EmbeddedResource Include="Resources\game" />
+    <None Include="Resources\liberationsans" />
     <EmbeddedResource Include="Resources\SystemGUI.pack" />
+    <None Include="SALT.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\Debug\" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Images\skybk.png" />
+    <None Include="Images\skydnOld.png" />
+    <EmbeddedResource Include="Images\skydn.png" />
+    <EmbeddedResource Include="Images\skyft.png" />
+    <EmbeddedResource Include="Images\skylf.png" />
+    <EmbeddedResource Include="Images\skyrt.png" />
+    <None Include="Images\skyupOld.png" />
+    <EmbeddedResource Include="Images\skyup.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\skybox_Back.png" />
+    <None Include="Images\skybox_Bottom.png" />
+    <None Include="Images\skybox_Front.png" />
+    <None Include="Images\skybox_Left.png" />
+    <None Include="Images\skybox_Right.png" />
+    <None Include="Images\skybox_Top.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="INI.dll" Pack="true" PackagePath="" />
     <None Include="README.md" Pack="true" PackagePath="">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="LICENSE" Pack="true" PackagePath="">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="SmolAmeLoaderThing.1.1.5.nupkg" />
     <None Include="WatsonAmeliaPortraitMini.png" Pack="true" PackagePath="">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -311,9 +383,16 @@
       <Name>EnumPatcher</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\bubba_outline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\magnifying_glass.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y "$(TargetDir)$(TargetName).dll" "$(GameDir)$(ManagedDir)$(TargetName).dll"
+    <PostBuildEvent>C:\Users\noahp\source\repos\SALT.Replacer\bin\Debug\SALT.Replacer.exe "$(TargetDir)$(TargetName).dll"
+copy /Y "$(TargetDir)$(TargetName).dll" "$(GameDir)$(ManagedDir)$(TargetName).dll"
 copy /Y "$(TargetDir)$(TargetName).xml" "$(GameDir)$(ManagedDir)$(TargetName).xml"</PostBuildEvent>
   </PropertyGroup>
 </Project>

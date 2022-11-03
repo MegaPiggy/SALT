@@ -24,13 +24,53 @@ namespace SALT
         /// <summary>
         /// The current version of SALT
         /// </summary>
-        public const string Version = "1.3";
+        public const string Version = "1.4";
+
+        private const string RELEASE_URL = "https://github.com/MegaPiggy/SALT/releases/tag/";
+        public static string ReleaseURL => RELEASE_URL + GithubVersion;
+        private const string GITHUB_URL = "https://raw.githubusercontent.com/MegaPiggy/SALT/main/version";
+
+        public static Version CurrentVersion => new Version(1, 4);
+
+        public static Version GithubVersion
+        {
+            get
+            {
+                try
+                {
+                    using (System.Net.WebClient client = new System.Net.WebClient())
+                    {
+                        string s = client.DownloadString("https://raw.githubusercontent.com/MegaPiggy/SALT/main/version");
+                        return new Version(s);
+                    }
+                }
+                catch
+                {
+                    return CurrentVersion;
+                }
+            }
+        }
+
+        public static bool CompareVersions() => CurrentVersion < GithubVersion;
+
+        public static bool CheckIfNeedsNewest()
+        {
+            if (CurrentVersion < GithubVersion)
+            {
+                System.Diagnostics.Process.Start(ReleaseURL);
+                return true;
+            }
+            return false;
+        }
+
         private static string NewLine { get => System.Environment.NewLine + "  "; }
 
         private static bool isPreInitialized;
         private static bool isInitialized;
         private static bool isPostInitialized;
         internal static Assembly execAssembly => Assembly.GetExecutingAssembly();
+
+        internal static Transform prefabParent;
 
         /// <summary>
         /// The <see cref="MainScript"/>'s object
@@ -118,11 +158,43 @@ namespace SALT
         //internal static AssetBundle liberationsans = LoadAssetbundle("liberationsans");
         //public static TMP_FontAsset LiberationSans = liberationsans.LoadAsset<TMP_FontAsset>("LiberationSans SDF");
 
+        internal static AssetBundle game = LoadAssetbundle("game");
+        public static AudioClip hicBloop = game.LoadAsset<AudioClip>("hicBloop");
+        public static Sprite bubba_charIcon = game.LoadAsset<Sprite>("bubba_charIcon");
+        public static Sprite bubba_outline = game.LoadAsset<Sprite>("bubba_outline");
+        public static Sprite bubba_outline2 = game.LoadAsset<Sprite>("bubba_outline2");
+        public static TMP_FontAsset atwriter_Red = game.LoadAsset<TMP_FontAsset>("atwriter SDF Red");
+        public static Material atwriter_RedMat => atwriter_Red.material;
+        public static TMP_FontAsset Typo = game.LoadAsset<TMP_FontAsset>("Typo SDF");
+        public static Material TypoMat => Typo.material;
+        public static GameObject DeathsGlassEmpty = game.LoadAsset<GameObject>("DeathsGlassEmpty");
+        public static GameObject BubbaGlassEmpty = game.LoadAsset<GameObject>("BubbaGlassEmpty");
+        public static GameObject StacheGlassEmpty = game.LoadAsset<GameObject>("StacheGlassEmpty");
+        public static GameObject Bubba1 = game.LoadAsset<GameObject>("Bubba1");
+        public static RuntimeAnimatorController glassAnim = game.LoadAsset<RuntimeAnimatorController>("glassAnim");
+        public static RuntimeAnimatorController levelClearButton_anim = game.LoadAsset<RuntimeAnimatorController>("levelClearButton_anim");
+
         internal static AssetBundle notoserifjp = LoadAssetbundle("notoserifjp");
         public static TMP_FontAsset NotoSerifJP_Bold = notoserifjp.LoadAsset<TMP_FontAsset>("NotoSerifJP-Bold SDF");
 
         internal static AssetBundle GUIPack = LoadAssetbundle("SystemGUI.pack");
         public static GUISkin GUISkin = GUIPack.LoadAsset<GUISkin>("guiSkin");
+
+        static Main()
+        {
+            if (atwriter_Red == null)
+                Console.Console.LogWarning("atwriter_Red is null");
+            else
+                Console.Console.LogError(atwriter_Red.name + " [" + atwriter_Red.GetType() + "]");
+            if (Typo == null)
+                Console.Console.LogWarning("Typo is null");
+            else
+                Console.Console.LogError(Typo.name + " [" + Typo.GetType() + "]");
+            if (NotoSerifJP_Bold == null)
+                Console.Console.LogWarning("NotoSerifJP_Bold is null");
+            else
+                Console.Console.LogError(NotoSerifJP_Bold.name + " [" + NotoSerifJP_Bold.GetType() + "]");
+        }
 
         internal static void PreLoad()
         {
@@ -131,6 +203,9 @@ namespace SALT
             Main.isPreInitialized = true;
             Debug.Log("SALT has successfully invaded the game!");
             EntryPoint.Main();
+            prefabParent = new GameObject("PrefabParent").transform;
+            prefabParent.gameObject.SetActive(false);
+            GameObject.DontDestroyOnLoad(prefabParent.gameObject);
             for (int i = 0; i < 32; i++)
                 layerNames.Add(i, LayerMask.LayerToName(i));
             for (int i = 0; i < SceneManager.sceneCountInBuildSettings; ++i)
@@ -176,6 +251,7 @@ namespace SALT
 #else
                 );
 #endif
+            CheckIfNeedsNewest();
         }
 
         internal static GameObject watermark = null;
@@ -186,11 +262,11 @@ namespace SALT
             if (Main.isInitialized)
                 return;
             Main.isInitialized = true;
-            PrefabUtils.ProcessReplacements();
             Console.KeyBindManager.ReadBinds();
             mainScript.AddComponent<UserInputService>();
             mainScript.AddComponent<ModManager>();
             mainScript.AddComponent<Console.KeyBindManager.ProcessAllBindings>();
+            //mainScript.AddComponent<MemoryStatsScript>();
             EntryPoint.IntializeInternalServices();
             try
             {
@@ -304,6 +380,10 @@ namespace SALT
         public static void StopSave()
         {
             SaveScript.stopSave = true;
+        }
+
+        private static void OnSceneUnloaded(Scene scene)
+        {
         }
 
         private static void SetFonts()
@@ -462,7 +542,7 @@ namespace SALT
 
                 GameObject creditsList = credits.FindChild("Text (TMP) (2)", true);
                 TextArea creditsArea = creditsList.GetComponent<TextArea>();
-                (creditsArea.GetEnglishText() + "|" + creditsArea.GetJapaneseText()).CopyToClipboard();
+                //(creditsArea.GetEnglishText() + "|" + creditsArea.GetJapaneseText()).CopyToClipboard();
 
                 string cText = creditsArea.GetEnglishText()
                                           .Replace("Ninomae Ina'nis BGM", "ensolarado")

@@ -106,6 +106,12 @@ namespace SALT.Extensions
 			return invoker.StartCoroutine(DelayedAction(action));
 		}
 
+		public static Coroutine StartCoroutine(this IEnumerator enumerator)
+        {
+			return Coroutiner.Instance.StartCoroutine(enumerator);
+
+		}
+
 
 		#region Log Array
 
@@ -251,6 +257,76 @@ namespace SALT.Extensions
 			return renderer.gameObject.GetRendererBounds();
 		}
 
+		public static AnimatorControllerLayer[] GetLayers(this UnityEngine.Animations.AnimatorControllerPlayable playable)
+		{
+			List<AnimatorControllerLayer> layers = new List<AnimatorControllerLayer>();
+			int count = playable.GetLayerCount();
+			for (int i = 0; i < count; i++)
+			{
+				AnimatorControllerLayer layer = new AnimatorControllerLayer(i, playable.GetLayerName(i), playable.GetLayerWeight(i), playable.GetCurrentAnimatorClipInfo(i), playable.GetCurrentAnimatorStateInfo(i), playable.GetNextAnimatorClipInfo(i), playable.GetNextAnimatorStateInfo(i));
+				layers.Add(layer);
+			}
+			return layers.ToArray();
+		}
+
+		public static AnimatorControllerParameter[] GetParameters(this UnityEngine.Animations.AnimatorControllerPlayable playable)
+		{
+			List<AnimatorControllerParameter> parameters = new List<AnimatorControllerParameter>();
+			int count = playable.GetParameterCount();
+			for (int i = 0; i < count; i++)
+			{
+				AnimatorControllerParameter parameter = playable.GetParameter(i);
+				parameters.Add(parameter);
+			}
+			return parameters.ToArray();
+		}
+
+		public static UnityEngine.Playables.Playable[] GetRootPlayables(this UnityEngine.Playables.PlayableGraph graph)
+		{
+			List<UnityEngine.Playables.Playable> playables = new List<UnityEngine.Playables.Playable>();
+			int count = graph.GetRootPlayableCount();
+			for (int i = 0; i < count; i++)
+			{
+				UnityEngine.Playables.Playable playable = graph.GetRootPlayable(i);
+				playables.Add(playable);
+			}
+			return playables.ToArray();
+		}
+
+		public static UnityEngine.Playables.PlayableOutput[] GetOutputs(this UnityEngine.Playables.PlayableGraph graph)
+		{
+			List<UnityEngine.Playables.PlayableOutput> outputs = new List<UnityEngine.Playables.PlayableOutput>();
+			int count = graph.GetOutputCount();
+			for (int i = 0; i < count; i++)
+			{
+				UnityEngine.Playables.PlayableOutput output = graph.GetOutput(i);
+				outputs.Add(output);
+			}
+			return outputs.ToArray();
+		}
+
+		public static void CopyParametersTo(this Animator from, Animator to)
+		{
+			foreach (AnimatorControllerParameter parameter in to.parameters)
+			{
+				switch (parameter.type)
+				{
+					case AnimatorControllerParameterType.Float:
+						from.SetFloat(parameter.nameHash, from.GetFloat(parameter.nameHash));
+						break;
+					case AnimatorControllerParameterType.Int:
+						from.SetInteger(parameter.nameHash, from.GetInteger(parameter.nameHash));
+						break;
+					case AnimatorControllerParameterType.Bool:
+						from.SetBool(parameter.nameHash, from.GetBool(parameter.nameHash));
+						break;
+					default:
+						break;
+				}
+			}
+
+		}
+
 		public static List<TextAssetTranslation> ToAssetTranslations(this string text)
 		{
 			return new List<TextAssetTranslation>
@@ -392,5 +468,149 @@ namespace SALT.Extensions
 		public static void SetText(this TranslationCollection translationCollection, Language language, string text) => translationCollection.translations[translationCollection.translations.IndexOf(translationCollection.translations.FirstOrDefault(translation => translation.language == language))] = new Translation { language = language, text = text };
 		public static string GetEnglishText(this TranslationCollection translationCollection) => translationCollection.GetText(Language.English);
 		public static string GetJapaneseText(this TranslationCollection translationCollection) => translationCollection.GetText(Language.Japanese);
+
+		public static bool IsVanilla(this Level level) =>
+			level == Level.MAIN_MENU ||
+			level == Level.OFFICE ||
+			level == Level.POP_ON_ROCKS ||
+			level == Level.RED_HEART ||
+			level == Level.PEKO_LAND ||
+			level == Level.OFFICE_REVERSED ||
+			level == Level.TO_THE_MOON ||
+			level == Level.NOTHING ||
+			level == Level.MOGU_MOGU ||
+			level == Level.INUMORE ||
+			level == Level.RUSHIA ||
+			level == Level.INASCAPABLE_MADNESS ||
+			level == Level.HERE_COMES_HOPE ||
+			level == Level.REFLECT ||
+			level == Levels.DONT_DESTROY_ON_LOAD;
+
+		public static bool IsVanilla(this Character character) =>
+			character == Character.AMELIA ||
+			character == Character.GURA ||
+			character == Character.KORONE ||
+			character == Character.OKAYU ||
+			character == Character.AMELIA_MOUSTACHE ||
+			character == Character.GURA_BUFF ||
+			character == Character.KEVIN ||
+			character == Character.SHUBA ||
+			character == Character.GURA_CAT ||
+			character == Character.COCO ||
+			character == Character.OLLIE ||
+			character == Character.REINE ||
+			character == Character.NONE;
+
+		public static bool IsModded(this Level level) => Registries.LevelRegistry.moddedIds.IsModdedID(level);
+		public static bool IsModded(this Character character) => Registries.CharacterRegistry.moddedIds.IsModdedID(character);
+
+		public static string ToTitle(this Level level) => level.ToString().Split("_").Join().ToLower().ToTitleCase().Replace(" ", "");
+		public static string ToSceneName(this Level level)
+		{
+			switch (level)
+			{
+				case Level.MAIN_MENU:
+					return Levels.MAIN_MENU;
+				case Level.OFFICE:
+					return "Level1";
+				case Level.POP_ON_ROCKS:
+					return "PopOnRocks";
+				case Level.RED_HEART:
+					return "BigRedHeart";
+				case Level.PEKO_LAND:
+					return "Pekoland";
+				case Level.OFFICE_REVERSED:
+					return "OfficeReverse";
+				case Level.TO_THE_MOON:
+					return "Moon";
+				case Level.NOTHING:
+					return "NothingBeatsAGroundPound";
+				case Level.MOGU_MOGU:
+					return "MoguMogu";
+				case Level.INUMORE:
+					return "Inumore";
+				case Level.RUSHIA:
+					return "Pettan";
+				case Level.INASCAPABLE_MADNESS:
+					return "InascapableMadness";
+				case Level.HERE_COMES_HOPE:
+					return "HereComesHope";
+				case Level.REFLECT:
+					return "Reflect";
+				default:
+					if (level == Levels.DONT_DESTROY_ON_LOAD)
+						return "DontDestroyOnLoad";
+					return level.ToTitle();
+			}
+		}
+		public static Level FromSceneName(this string sceneName)
+		{
+			switch (sceneName)
+			{
+				case "MainMenu":
+				case Levels.MAIN_MENU:
+					return Level.MAIN_MENU;
+				case "Office":
+				case "Level1":
+					return Level.OFFICE;
+				case "PopOnRocks":
+					return Level.POP_ON_ROCKS;
+				case "RedHeart":
+				case "BigRedHeart":
+					return Level.RED_HEART;
+				case "PekoLand":
+				case "Pekoland":
+					return Level.PEKO_LAND;
+				case "OfficeReversed":
+				case "OfficeReverse":
+					return Level.OFFICE_REVERSED;
+				case "ToTheMoon":
+				case "Moon":
+					return Level.TO_THE_MOON;
+				case "Nothing":
+				case "NothingBeatsAGroundPound":
+					return Level.NOTHING;
+				case "MoguMogu":
+					return Level.MOGU_MOGU;
+				case "Inumore":
+					return Level.INUMORE;
+				case "Pettan":
+					return Level.RUSHIA;
+				case "InascapableMadness":
+					return Level.INASCAPABLE_MADNESS;
+				case "HereComesHope":
+					return Level.HERE_COMES_HOPE;
+				case "Reflect":
+					return Level.REFLECT;
+				case "DontDestroyOnLoad":
+					return Levels.DONT_DESTROY_ON_LOAD;
+				default:
+					return EnumUtils.GetAll<Level>().Where(l => !l.IsVanilla()).FirstOrDefault(l => l.ToTitle() == sceneName, Levels.DONT_DESTROY_ON_LOAD);
+			}
+		}
+		public static void LoadLevel(this LevelLoader loader, Level level)
+        {
+			if (level.IsVanilla())
+				loader.LoadLevel((int)level);
+			else if (level.IsModded())
+				Utils.SceneUtils.LoadModdedScene(level);
+		}
+		public static string ToTitle(this Level level, bool spaces)
+        {
+			string title = level.ToString().Split("_").Join().ToLower().ToTitleCase();
+			if (spaces)
+				return title;
+			else
+				return title.Replace(" ", "");
+		}
+		public static string ToTitle(this Character character) => character.ToString().Split("_").Join().ToLower().ToTitleCase().Replace(" ", "");
+		public static string ToTitle(this Character character, bool spaces)
+		{
+			string title = character.ToString().Split("_").Join().ToLower().ToTitleCase();
+			if (spaces)
+				return title;
+			else
+				return title.Replace(" ", "");
+		}
 	}
 }

@@ -27,6 +27,7 @@ namespace SALT.Console.Commands
 
         public override bool Execute(string[] args)
         {
+            SceneUtils.UnloadAllModdedScene();
             if (args == null || args.Length == 0)
             {
                 SceneUtils.LoadScene(Increment());//LevelLoader.loader.LoadLevel(Increment());
@@ -39,7 +40,8 @@ namespace SALT.Console.Commands
                 return false;
             }
             if (Main.sceneNames.Values.Contains(args[0]))
-                SceneUtils.LoadScene(args[0]);//LevelLoader.loader.LoadLevel(args[0]);
+                LevelLoader.loader.LoadLevel(args[0]);
+            //SceneUtils.LoadScene(args[0]);
             else
                 SceneUtils.LoadModdedScene(SceneUtils.ModdedScenes.FirstOrDefault(s => s.name == args[0]));
             Console.LogSuccess("Successfully loaded scene");

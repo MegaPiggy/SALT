@@ -10,6 +10,14 @@ namespace SALT.Extensions
 {
     public static class CollectionExtensions
     {
+        public static T[] MultiArray<T>(this T item, int times)
+        {
+            List<T> list = new List<T>();
+            for (int i = 1; i <= times; i++)
+                list.Add(item);
+            return list.ToArray();
+        }
+
         /// <summary>
         /// Adds a range of values into the Collection based on a predicate. This means
         /// only values that pass the predicate will be added.
@@ -191,7 +199,7 @@ namespace SALT.Extensions
         ///     <see langword="true" /> if the source sequence contains an element that meets the <paramref name="predicate"/>'s conditions; otherwise, <see langword="false" />.</returns>
         /// <exception cref="System.ArgumentNullException">
         ///         <paramref name="source" /> is <see langword="null" />.</exception>
-        public static bool Contains<TSource>(this IEnumerable<TSource> source, Func<TSource,bool> predicate)
+        public static bool Contains<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -202,6 +210,62 @@ namespace SALT.Extensions
                 if (predicate(source1))
                     return true;
             }
+            return false;
+        }
+
+        /// <summary>Determines whether a sequence contains a specified element by using the <paramref name="predicate"/> and returns it.</summary>
+        /// <param name="source">A sequence in which to locate a value.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="value"><paramref name="customDefault"/> if <paramref name="source" /> is empty; otherwise, the first element in <paramref name="source" />.</param>
+        /// <param name="customDefault">The value returned if no such element is found.</param>
+        /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <returns>
+        ///     <see langword="true" /> if the source sequence contains an element that meets the <paramref name="predicate"/>'s conditions; otherwise, <see langword="false" />.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        ///         <paramref name="source" /> is <see langword="null" />.</exception>
+        public static bool FirstIfContains<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, out TSource value, TSource customDefault = default)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (predicate == null)
+                throw new ArgumentNullException(nameof(predicate));
+            foreach (TSource source1 in source)
+            {
+                if (predicate(source1))
+                {
+                    value = source1;
+                    return true;
+                }
+            }
+            value = customDefault;
+            return false;
+        }
+
+        /// <summary>Determines whether a sequence contains a specified element by using the <paramref name="predicate"/> and returns it.</summary>
+        /// <param name="source">A sequence in which to locate a value.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="value"><paramref name="customDefault"/> if <paramref name="source" /> is empty; otherwise, the last element in <paramref name="source" />.</param>
+        /// <param name="customDefault">The value returned if no such element is found.</param>
+        /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <returns>
+        ///     <see langword="true" /> if the source sequence contains an element that meets the <paramref name="predicate"/>'s conditions; otherwise, <see langword="false" />.</returns>
+        /// <exception cref="System.ArgumentNullException">
+        ///         <paramref name="source" /> is <see langword="null" />.</exception>
+        public static bool LastIfContains<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate, out TSource value, TSource customDefault = default)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (predicate == null)
+                throw new ArgumentNullException(nameof(predicate));
+            foreach (TSource source1 in source.Reverse())
+            {
+                if (predicate(source1))
+                {
+                    value = source1;
+                    return true;
+                }
+            }
+            value = customDefault;
             return false;
         }
 
@@ -263,6 +327,15 @@ namespace SALT.Extensions
         }
 
         public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue customDefault = default) => dictionary.ContainsKey(key) ? dictionary[key] : customDefault;
+        public static TKey GetKeyOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value, TKey customDefault = default)
+        {
+            foreach (KeyValuePair<TKey, TValue> pair in dictionary)
+            {
+                if (EqualityComparer<TValue>.Default.Equals(pair.Value, value))
+                    return pair.Key;
+            }
+            return customDefault;
+        }
 
         public static void AddIfDoesNotContain<T>(this List<T> list, T item)
         {

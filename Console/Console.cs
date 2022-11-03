@@ -77,6 +77,7 @@ namespace SALT.Console
         internal static string cmdsText = string.Empty;
         internal static string modsText = string.Empty;
         internal static string fullText = string.Empty;
+        private static List<InitializeLog> logOnInit = new List<InitializeLog>();
 
         /// <summary>
         /// Initializes the console
@@ -106,6 +107,7 @@ namespace SALT.Console
             RegisterCommand(new Commands.CoordinatesCommand());
             RegisterCommand(new Commands.LoadLevelCommand());
             //RegisterCommand(new Commands.LoadSceneCommand());
+            RegisterCommand(new Commands.TranslateCommand());
 
             RegisterButton("clear", new ConsoleButton("Clear Console", "clear"));
             RegisterButton("clearll", new ConsoleButton("Clear Last Line", "clear last"));
@@ -115,6 +117,9 @@ namespace SALT.Console
             RegisterButton("dump.game", new ConsoleButton("Dump Game", "dump game"));
             RegisterButton("level", new ConsoleButton("Load Level", "loadlevel"));
             RegisterButton("respawn", new ConsoleButton("Respawn", "respawn"));
+
+            foreach (InitializeLog log in logOnInit)
+                FileLogger.LogEntry(log.Type, log.Message);
 
             ConsoleBinder.ReadBinds();
 #if OLD_CONSOLE
@@ -252,6 +257,32 @@ namespace SALT.Console
             console.LogEntry(LogType.Error, exception.ParseTrace(), logToFile);
         }
 
+        /// <summary>
+        /// Logs an empty line
+        /// </summary>
+        /// <param name="logToFile">Should log to file?</param>
+        public static void LogEmpty(bool logToFile = true)
+        {
+            if (lines.Count >= MAX_ENTRIES)
+                lines.RemoveRange(0, 10);
+
+            lines.Add(string.Empty);
+
+            if (logToFile)
+            {
+                if (FileLogger.Initialized)
+                {
+                    using (StreamWriter streamWriter = File.AppendText(FileLogger.saltLogFile))
+                        streamWriter.WriteLine(string.Empty);
+                }
+            }
+
+            updateConsole = true;
+#if OLD_CONSOLE
+                ConsoleWindow.updateDisplay = true;
+#endif
+        }
+
         // PROCESSES THE TEXT FROM THE CONSOLE INPUT
         internal static void ProcessInput(string command, bool forced = false)
         {
@@ -351,7 +382,11 @@ namespace SALT.Console
             lines.Add($"<color=cyan>[{DateTime.Now.ToString("HH:mm:ss")}]</color><color={color}>[{type}] {Regex.Replace(message, @"<material[^>]*>|<\/material>|<size[^>]*>|<\/size>|<quad[^>]*>|<b>|<\/b>", "")}</color>");
 
             if (logToFile)
+            {
+                if (!FileLogger.Initialized)
+                    logOnInit.Add(new InitializeLog(logType, message));
                 FileLogger.LogEntry(logType, message);
+            }
 
             updateConsole = true;
 #if OLD_CONSOLE
@@ -443,6 +478,20 @@ namespace SALT.Console
                 toDisplay += "\n" + trace;
 
             LogEntry(type, Regex.Replace(toDisplay, @"\[INFO]\s|\[ERROR]\s|\[WARNING]\s", ""), true);
+        }
+
+        private class InitializeLog
+        {
+            private LogType type;
+            public LogType Type => type;
+            private string message;
+            public string Message => message;
+
+            public InitializeLog(LogType type, string message)
+            {
+                this.type = type;
+                this.message = message;
+            }
         }
     }
 }

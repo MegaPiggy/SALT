@@ -19,11 +19,12 @@ namespace SALT
     public static class EnumPatcher
     {
         internal static void RegisterAlternate(Type type, RealEnumPatcher.AlternateEnumRegister del) => RealEnumPatcher.RegisterAlternate(type, del);
-        internal static void RegisterAlternate<TEnum>(RealEnumPatcher.AlternateEnumRegister del) => RealEnumPatcher.RegisterAlternate<TEnum>(del);
+        internal static void RegisterAlternate<TEnum>(RealEnumPatcher.AlternateEnumRegister del) where TEnum : Enum => RealEnumPatcher.RegisterAlternate<TEnum>(del);
 
         static EnumPatcher()
         {
             RealEnumPatcher.RegisterAlternate<Character>((x, y) => CharacterRegistry.CreateCharacterId(x, y));
+            RealEnumPatcher.RegisterAlternate<Level>((x, y) => LevelRegistry.CreateLevelId(x, y));
         }
 
         /// <summary>
@@ -32,7 +33,7 @@ namespace SALT
         /// <typeparam name="TEnum">Type of enum to add the value to</typeparam>
         /// <param name="name">Name of the new enum value</param>
         /// <returns>The new enum value</returns>
-        public static object AddEnumValue<TEnum>(string name) => AddEnumValue(typeof(TEnum), name);
+        public static TEnum AddEnumValue<TEnum>(string name) where TEnum : Enum => (TEnum)AddEnumValue(typeof(TEnum), name);
 
         /// <summary>
         /// Add a new enum value to the given <paramref name="enumType"/> with the first free value
@@ -41,13 +42,14 @@ namespace SALT
         /// <param name="name">Name of the new enum value</param>
         /// <returns>The new enum value</returns>
         public static object AddEnumValue(Type enumType, string name) => AddEnumValue(enumType, name);
+
         /// <summary>
         /// Add a new value to the given <typeparamref name="TEnum"/> 
         /// </summary>
         /// <typeparam name="TEnum">Type of enum to add the value to</typeparam>
         /// <param name="value">Value to add to the enum</param>
         /// <param name="name">The name of the new value</param>
-        public static void AddEnumValue<TEnum>(object value, string name) => AddEnumValue(typeof(TEnum), value, name);
+        public static void AddEnumValue<TEnum>(object value, string name) where TEnum : Enum => AddEnumValue(typeof(TEnum), value, name);
 
         /// <summary>
         /// Add a new value to the given <paramref name="enumType"/> 
@@ -64,7 +66,11 @@ namespace SALT
 
         internal static void AddEnumValueInternal(Type enumType, object value, string name) => RealEnumPatcher.AddEnumValue(enumType, value, name, true);
 
-        internal static void AddEnumValueWithAlternatives<TEnum>(object value, string name) => AddEnumValueWithAlternatives(typeof(TEnum), value, name);
+        internal static void AddPartialEnumValue<TEnum>(object value, string name) where TEnum : Enum => AddPartialEnumValue(typeof(TEnum), value, name);
+
+        internal static void AddPartialEnumValue(Type enumType, object value, string name) => RealEnumPatcher.AddPartialEnumValue(enumType, value, name);
+
+        internal static void AddEnumValueWithAlternatives<TEnum>(object value, string name) where TEnum : Enum => AddEnumValueWithAlternatives(typeof(TEnum), value, name);
 
         internal static void AddEnumValueWithAlternatives(Type enumType, object value, string name)
         {
@@ -77,7 +83,7 @@ namespace SALT
         /// </summary>
         /// <typeparam name="TEnum"></typeparam>
         /// <returns>The first undefined enum value</returns>
-        public static object GetFirstFreeValue<TEnum>() => GetFirstFreeValue(typeof(TEnum));
+        public static object GetFirstFreeValue<TEnum>() where TEnum : Enum => GetFirstFreeValue(typeof(TEnum));
 
         /// <summary>
         /// Get first undefined value in an enum
@@ -85,6 +91,21 @@ namespace SALT
         /// <param name="enumType"></param>
         /// <returns>The first undefined enum value</returns>
         public static object GetFirstFreeValue(Type enumType) => RealEnumPatcher.GetFirstFreeValue(enumType);
+
+        /// <summary>
+        /// Get first undefined value in an enum
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <returns>The first undefined enum value</returns>
+        internal static object GetFirstFreeValue<TEnum>(int skip) where TEnum : Enum => GetFirstFreeValue(typeof(TEnum), skip);
+
+        /// <summary>
+        /// Get first undefined value in an enum
+        /// </summary>
+        /// <param name="enumType"></param>
+        /// <param name="skip">Value to skip</param>
+        /// <returns>The first undefined enum value</returns>
+        internal static object GetFirstFreeValue(Type enumType, int skip) => RealEnumPatcher.GetFirstFreeValue(enumType, skip);
 
         internal static bool TryGetRawPatch(Type enumType, out RealEnumPatcher.EnumPatch patch) => RealEnumPatcher.TryGetRawPatch(enumType, out patch);
     }

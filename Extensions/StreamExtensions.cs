@@ -11,13 +11,13 @@ namespace SALT.Extensions
     {
         internal static Texture2D CreateTexture2DFromImage(this string fileLocation)
         {
-            fileLocation = "Images." + fileLocation + ".png";
-            Stream manifestResourceStream = Main.execAssembly.GetManifestResourceStream(typeof(Main), fileLocation);
+            string manifestLocation = "Images." + fileLocation + ".png";
+            Stream manifestResourceStream = Main.execAssembly.GetManifestResourceStream(typeof(Main), manifestLocation);
             Texture2D texture2D = new Texture2D(4, 4);
             byte[] numArray = new byte[manifestResourceStream.Length];
             manifestResourceStream.Read(numArray, 0, (int)manifestResourceStream.Length);
             texture2D.LoadImage(numArray);
-            texture2D.name = Path.GetFileNameWithoutExtension(fileLocation);
+            texture2D.name = fileLocation;
             return texture2D;
         }
 

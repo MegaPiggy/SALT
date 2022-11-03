@@ -44,14 +44,25 @@ namespace SALT.Registries
         private static Dictionary<Character, GameObject> allPrefabs = new Dictionary<Character, GameObject>();
         private static Dictionary<Character, Sprite> allSprites = new Dictionary<Character, Sprite>();
 
+        internal static Dictionary<Character, GameObject> VanillaPrefabs
+        {
+            get
+            {
+                Dictionary<Character, GameObject> newList = new Dictionary<Character, GameObject>(12);
+                foreach (Character c in EnumUtils.GetAll<Character>().Where(c => c.IsVanilla()))
+                    newList.Add(c, allPrefabs.GetOrDefault(c));
+                return newList;
+            }
+        }
+
         internal static Dictionary<Character, GameObject> AllPrefabs
         {
             get
             {
-                var keys = allPrefabs.Keys.ToList().EnumToInt().IntToEnum<Character>();
-                Dictionary<Character, GameObject> newList = new Dictionary<Character, GameObject>();
-                foreach (Character c in keys)
-                    newList.Add(c, allPrefabs[c]);
+                int max = ((int)EnumUtils.GetMaxValue<Character>() - (int)EnumUtils.GetMinValue<Character>()) + 1;
+                Dictionary<Character, GameObject> newList = new Dictionary<Character, GameObject>(max);
+                foreach (Character c in EnumUtils.GetAll<Character>())
+                    newList.Add(c, allPrefabs.GetOrDefault(c));
                 return newList;
             }
         }
@@ -190,6 +201,7 @@ namespace SALT.Registries
         }
 
         internal static List<GameObject> GetPrefabs() => AllPrefabs.Values.ToList();
+        internal static List<GameObject> GetVanillaPrefabs() => VanillaPrefabs.Values.ToList();
 
         internal static void AddPrefab(Character id, GameObject go)
         {
@@ -242,7 +254,9 @@ namespace SALT.Registries
         {
             if (ModLoader.CurrentLoadingStep == LoadingStep.PRELOAD)
                 throw new LoadingStepException("Can't get character prefab during preload");
-            return Main.actualPlayer.characterPacks.FirstOrDefault(c => CharacterIdentifiable.GetId(c) == id);
+            if (Main.actualPlayer == null)
+                return allPrefabs.GetOrDefault(id);
+            return Main.actualPlayer.characterPacks.FirstOrDefault(c => CharacterIdentifiable.GetId(c) == id, allPrefabs.GetOrDefault(id));
         }
 
         /// <summary>

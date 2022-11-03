@@ -43,10 +43,10 @@ public static class SaveScript
             if (!canSave)
             {
                 Dictionary<string, LevelSaveData> levelData = new Dictionary<string, LevelSaveData>();
-                foreach (var kvp in levelData)
+                foreach (var kvp in SaveScript.levelData)
                     levelData.Add(kvp.Key, new LevelSaveData(kvp.Value.levelName, kvp.Value.stacheQuota, kvp.Value.allBubbas, kvp.Value.zeroDeaths, kvp.Value.caseClosed, kvp.Value.bestTime));
                 saveData.levelData = levelData;
-                Console.LogError("Save failed");
+                Console.LogError("Save failed stop (" + !stopSave + " and " + ModLoader.AllowSaves + ") or " + deleting + " = " + canSave);
             }
             else
             {
@@ -59,7 +59,7 @@ public static class SaveScript
         }
         catch (System.Exception ex)
         {
-            Console.LogError("Save failed");
+            Console.LogError("Save failed exception");
             Console.LogException(ex);
         }
     }
@@ -82,7 +82,7 @@ public static class SaveScript
         }
         catch (System.Exception ex)
         {
-            Console.LogError("Save failed");
+            Console.LogError("Save failed exception backup");
             Console.LogException(ex);
         }
     }
@@ -109,8 +109,8 @@ public static class SaveScript
         {
             Console.LogError("Load failed");
             Console.LogException(ex);
+            SALT.UI.ErrorUI.CreateError("An error occurred while loading your save file!\n"+ex.ParseTrace());
         }
-
         StoreSaveData();
     }
 

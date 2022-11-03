@@ -10,6 +10,8 @@ namespace SALT.DevTools.DevMenu
 		public Object Object { get; }
 		public GameObject GameObject => Object as GameObject;
 		public ScriptableObject ScriptableObject => Object as ScriptableObject;
+		public Material Material => Object as Material;
+		public Motion Motion => Object as Motion;
 		public ObjectInspector SOInspector { get; }
 		public int ChildIndent { get; }
 		public bool IsUnfolded { get; set; }
@@ -29,6 +31,16 @@ namespace SALT.DevTools.DevMenu
 			{
 				this.FullName = sObject.name;
 				this.SOInspector = new ObjectInspector(sObject);
+			}
+			else if (@object is Material mat)
+			{
+				this.FullName = mat.name;
+				this.SOInspector = new ObjectInspector(mat);
+			}
+			else if (@object is Motion motion)
+			{
+				this.FullName = motion.name;
+				this.SOInspector = new ObjectInspector(motion);
 			}
 			else if (@object is GameObject gameObject)
 			{

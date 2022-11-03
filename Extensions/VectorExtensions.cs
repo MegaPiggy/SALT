@@ -1013,5 +1013,20 @@ namespace SALT.Extensions
             return position.x > 0 && position.y > 0;
         }
         #endregion
+
+        #region Aidanamite
+        public static float[] ToArray(this Vector2 value) => new float[] { value.x, value.y };
+        public static float[] ToArray(this Vector3 value) => new float[] { value.x, value.y, value.z };
+        public static float[] ToArray(this Vector4 value) => new float[] { value.x, value.y, value.z, value.w };
+        public static Vector2 Abs(this Vector2 value) => new Vector2(Mathf.Abs(value.x), Mathf.Abs(value.y));
+        public static Vector3 Abs(this Vector3 value) => new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.y), Mathf.Abs(value.z));
+        public static float DistanceBetween(this float tpos, float pos) => Mathf.Abs(tpos - pos);
+        public static Vector2 DistanceBetween(this Vector2 tpos, Vector2 pos) => new Vector2(tpos.x.DistanceBetween(pos.x), tpos.y.DistanceBetween(pos.y));
+        public static Vector3 DistanceBetween(this Vector3 tpos, Vector3 pos) => new Vector3(tpos.x.DistanceBetween(pos.x), tpos.y.DistanceBetween(pos.y), tpos.z.DistanceBetween(pos.z));
+        public static float HighestWidth(this Vector3 size) => size.x > size.z ? size.x : size.z;
+        public static Vector3 Rotate(this Vector3 value, Quaternion rotation) => rotation * value;
+        public static Vector3 Rotate(this Vector3 value, Vector3 rotation) => value.Rotate(Quaternion.Euler(rotation));
+        public static Vector3 Rotate(this Vector3 value, float x, float y, float z) => value.Rotate(Quaternion.Euler(x, y, z));
+        #endregion
     }
 }

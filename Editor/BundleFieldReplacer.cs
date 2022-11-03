@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace SALT.Editor
 {
-    [CreateAssetMenu(menuName = "SRML/Replacers/FieldReplacer")]
+    [CreateAssetMenu(menuName = "SALT/Replacers/FieldReplacer")]
     public class BundleFieldReplacer : ScriptableObject, IFieldReplacer
     {
 #pragma warning disable 0649
@@ -61,7 +61,7 @@ namespace SALT.Editor
             return Resolve(fieldToReplaceType, fieldToReplaceFieldName, out field);
         }
 
-        private bool Resolve(String typeName, String fieldName, out FieldInfo field)
+        private bool Resolve(string typeName, string fieldName, out FieldInfo field)
         {
 
             if (Type.GetType(typeName + ", Assembly-CSharp") is System.Type type &&

@@ -17,10 +17,10 @@ static internal class ModdedIDRegistry
         moddedIdRegistries[registry.RegistryType] = registry;
     }
 
-    public static bool HasModdedID(object data)
-    {
-        return false;
-    }
+    //public static bool HasModdedID(object data)
+    //{
+    //    return false;
+    //}
 
     public static bool IsModdedID(object id)
     {

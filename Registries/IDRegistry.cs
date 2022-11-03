@@ -26,10 +26,17 @@ namespace SALT.Registries
             return this[(T)val];
         }
 
+        public Mod GetModForID(T id)
+        {
+            return this[id];
+        }
+
         public bool IsModdedID(object val)
         {
             return val.GetType() == RegistryType && ContainsKey((T)val);
         }
+
+        public bool IsModdedID(T id) => ContainsKey(id);
 
         public T RegisterValue(T id)
         {

@@ -134,6 +134,46 @@ namespace SALT.Extensions
             }
         }
 
+        public static void SaveCubemapFaceAsPNG(this Cubemap _cubemap, CubemapFace face)
+        {
+            var tex = new Texture2D(_cubemap.width, _cubemap.height, TextureFormat.RGB24, false);
+            tex.name = _cubemap.name + "_" + face.ToString();
+            tex.SetPixels(_cubemap.GetPixels(CubemapFace.PositiveX));
+            tex.SaveTextureAsPNG();
+            UnityEngine.Object.DestroyImmediate(tex);
+        }
+
+        public static void SaveCubemapAsPNGs(this Cubemap _cubemap)
+        {
+            try
+            {
+                Cubemap cubemap = _cubemap;
+                if (!cubemap.isReadable)
+                {
+                    Console.Console.LogError($"Cubemap '{_cubemap.name}' is not readable.");
+                    return;
+                }
+
+                cubemap.SaveCubemapFaceAsPNG(CubemapFace.PositiveX);
+                cubemap.SaveCubemapFaceAsPNG(CubemapFace.NegativeX);
+                cubemap.SaveCubemapFaceAsPNG(CubemapFace.PositiveY);
+                cubemap.SaveCubemapFaceAsPNG(CubemapFace.NegativeY);
+                cubemap.SaveCubemapFaceAsPNG(CubemapFace.PositiveZ);
+                cubemap.SaveCubemapFaceAsPNG(CubemapFace.NegativeZ);
+            }
+            catch (System.ArgumentException ex)
+            {
+                if (ex.Message.Contains("is not readable"))
+                    Console.Console.LogError($"Cubemap '{_cubemap.name}' is not readable.");
+                else
+                    Console.Console.LogException(ex);
+            }
+            catch (System.Exception ex)
+            {
+                Console.Console.LogException(ex);
+            }
+        }
+
         /// <summary>
         /// Create new sprite out of Texture
         /// </summary>

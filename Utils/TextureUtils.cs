@@ -39,14 +39,14 @@ namespace SALT.Utils
         /// </summary>
         /// <param name="colorHtmlString">
         /// Case insensitive html string to be converted into a color.
-        /// <see cref="ColorHelper.MakeColorFromHtml(string)"/> for more info about <paramref name="colorHtmlString"/> format.
+        /// <see cref="ColorUtils.MakeColorFromHtml(string)"/> for more info about <paramref name="colorHtmlString"/> format.
         /// </param>
         /// <param name="width"> Texture width.</param>
         /// <param name="height"> Texture height.</param>
         /// <param name="cacheGeneratedImage">When set to `true` the generated image is cached.</param>
         public static Texture2D MakePlainColorImage(string colorHtmlString, int width = 1, int height = 1, bool cacheGeneratedImage = true)
         {
-            var color = ColorHelper.MakeColorFromHtml(colorHtmlString);
+            var color = ColorUtils.MakeColorFromHtml(colorHtmlString);
             return MakePlainColorImage(color, width, height, cacheGeneratedImage);
         }
 

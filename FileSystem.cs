@@ -7,7 +7,7 @@ namespace SALT
 {
     public static class FileSystem
     {
-        public const string DataPath = "SlimeRancher_Data";
+        public const string DataPath = "Smol Ame_Data";
         public const string ModPath = "SALT/Mods";
         public const string LibPath = "SALT/Libs";
 

@@ -49,21 +49,38 @@ namespace SALT.Console.Commands
         private static bool CompleteLevel()
         {
             var ClearBtn = Object.FindObjectOfType<LevelClearButton>();
-            if (ClearBtn == null)
+            var MClearBtn = Object.FindObjectOfType<ModdedLevelClearButton>();
+            if (ClearBtn != null)
+            {
+#if RELEASE
+                Main.StopSave();
+#endif
+                LevelManager.levelManager.deaths = 0;
+                LevelManager.levelManager.bubbaTokens = new bool[3] { true, true, true };
+                LevelManager.levelManager.collectedMoustaches = LevelManager.levelManager.totalMoustaches;
+                MainScript.main.levelTime = 0.01f;
+                ClearBtn.Pound();
+                Console.LogSuccess("Successfully completed level.");
+                return true;
+            }
+            else if (MClearBtn != null)
+            {
+#if RELEASE
+                //Main.StopSave();
+#endif
+                LevelManager.levelManager.deaths = 0;
+                LevelManager.levelManager.bubbaTokens = new bool[3] { true, true, true };
+                LevelManager.levelManager.collectedMoustaches = LevelManager.levelManager.totalMoustaches;
+                MainScript.main.levelTime = 0.01f;
+                MClearBtn.Pound();
+                Console.LogSuccess("Successfully completed level.");
+                return true;
+            }
+            else
             {
                 Console.LogError("Failed to complete level. No 'mom' button found.");
                 return false;
             }
-#if !DEBUG
-            //Main.StopSave();
-#endif
-            LevelManager.levelManager.deaths = 0;
-            LevelManager.levelManager.bubbaTokens = new bool[3] { true, true, true };
-            LevelManager.levelManager.collectedMoustaches = LevelManager.levelManager.totalMoustaches;
-            MainScript.main.levelTime = 0.01f;
-            ClearBtn.Pound();
-            Console.LogSuccess("Successfully completed level.");
-            return true;
         }
     }
 }

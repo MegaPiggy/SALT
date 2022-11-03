@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using HarmonyLib;
+using SALT.Extensions;
 using SALT.Utils;
 using UnityEngine;
 // ReSharper disable MemberCanBeMadeStatic.Local
@@ -19,7 +20,18 @@ namespace SALT.DevTools.DevMenu
 		//+ VARIABLES
 		private static readonly Dictionary<Type, MethodInfo> DRAW_FUNCTIONS = new Dictionary<Type, MethodInfo>
 		{
+			//{ typeof(UnityEngine.Animations.AnimationPlayableOutput), TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(AnimationPlayableOutputField)) },
+			//{ typeof(UnityEngine.Animations.AnimatorControllerPlayable),  TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(AnimatorControllerPlayableField)) },
+			//{ typeof(UnityEngine.Playables.PlayableOutput),  TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(PlayableOutputField)) },
+			//{ typeof(UnityEngine.Playables.PlayableGraph),  TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(PlayableGraphField)) },
+			//{ typeof(UnityEngine.Playables.Playable),  TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(PlayableField)) },
+			{ typeof(AnimatorControllerParameter),  TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(AnimatorControllerParameterField)) },
+			{ typeof(AnimationEvent),  TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(AnimationEventField)) },
+			{ typeof(Translation),  TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(TranslationField)) },
+			{ typeof(TranslationCollection),  TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(TranslationCollectionField)) },
+			{ typeof(Vector4), TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(Vector4Field)) },
 			{ typeof(Vector3), TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(Vector3Field)) },
+			{ typeof(Vector2), TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(Vector2Field)) },
 			{ typeof(bool), TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(BoolField)) },
 			{ typeof(Texture), TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(TextureField)) },
 			{ typeof(Texture2D), TypeUtils.GetMethodBySearch(typeof(ObjectInspector), nameof(TextureField)) },
@@ -66,17 +78,28 @@ namespace SALT.DevTools.DevMenu
 					"maxVolume"
 				}
 			},
+			{
+				typeof(MeshFilter),
+				new List<string>()
+				{
+					"mesh"
+				}
+			}
 		};
 
 		private readonly Dictionary<string, bool> arrayFolds = new Dictionary<string, bool>();
 		private readonly Component component;
 		private readonly ScriptableObject sObject;
+		private readonly Material mat;
+		private readonly Motion motion;
 		private Vector2 scrollView;
 		private int lastIndent;
 
 		//+ CONSTRUCTOR
 		internal ObjectInspector(Component component) => this.component = component;
 		internal ObjectInspector(ScriptableObject sObject) => this.sObject = sObject;
+		internal ObjectInspector(Material mat) => this.mat = mat;
+		internal ObjectInspector(Motion motion) => this.motion = motion;
 
 		//+ DRAWING
 		// Draws the inspector
@@ -96,9 +119,33 @@ namespace SALT.DevTools.DevMenu
 					GUILayout.Label(ex.ParseTrace());
 				}
 			}
+			else if (mat != null)
+			{
+				try
+				{
+					this.DrawComponent(mat);
+				}
+				catch (Exception ex)
+				{
+					GUILayout.Label(ex.ParseTrace());
+				}
+			}
+			else if (motion != null)
+			{
+				try
+				{
+					this.DrawComponent(motion);
+				}
+				catch (Exception ex)
+				{
+					GUILayout.Label(ex.ParseTrace());
+				}
+			}
 			else
 			{
-				if (component is Transform transform)
+				if (component is RectTransform rectTransform)
+					DrawRectTransform(rectTransform);
+				else if(component is Transform transform)
 					DrawTransform(transform);
 				else
 				{
@@ -122,6 +169,20 @@ namespace SALT.DevTools.DevMenu
 			Vector3Field(transform.localPosition, "Position", false);
 			Vector3Field(transform.localEulerAngles, "Rotation", false);
 			Vector3Field(transform.localScale, "Scale", false);
+		}
+
+		// Draws a rect transform component
+		internal void DrawRectTransform(RectTransform rectTransform)
+		{
+			DrawTransform(rectTransform);
+			Vector2Field(rectTransform.anchoredPosition, "Anchored Position", false);
+			Vector3Field(rectTransform.anchoredPosition3D, "Anchored Position 3D", false);
+			Vector2Field(rectTransform.anchorMin, "Anchor Min", false);
+			Vector2Field(rectTransform.anchorMax, "Anchor Max", false);
+			Vector2Field(rectTransform.offsetMin, "Offset Min", false);
+			Vector2Field(rectTransform.offsetMax, "Offset Max", false);
+			Vector2Field(rectTransform.pivot, "Pivot", false);
+			Vector2Field(rectTransform.sizeDelta, "Size Delta", false);
 		}
 
 		// Draws a unidentified component
@@ -195,6 +256,24 @@ namespace SALT.DevTools.DevMenu
 					}
 				}
 			}
+
+			if (current is Material material)
+			{
+				DrawField(typeof(string[]), material.GetTexturePropertyNames(), "[P] propertyNames", false, $"{ (string.IsNullOrWhiteSpace(extraFieldName) ? extraFieldName + "." : string.Empty)}propertyNames");
+				try
+				{
+					Dictionary<string, Texture> textureProperties = new Dictionary<string, Texture>();
+					foreach (string prop in material.GetTexturePropertyNames())
+						textureProperties.Add(prop, material.GetTexture(prop));
+					DrawField(typeof(Dictionary<string, Texture>), textureProperties, "[P] textureProperties", false, $"{ (string.IsNullOrWhiteSpace(extraFieldName) ? extraFieldName + "." : string.Empty)}textureProperties");
+				}
+				catch (Exception ex)
+				{
+					GUILayout.Label(ex.ParseTrace());
+				}
+				hadProp = true;
+			}
+
 			GUILayout.EndScrollView();
 			GUI.skin.scrollView.stretchHeight = false;
 			if (objComp == null || hadProp || hadField)
@@ -210,7 +289,9 @@ namespace SALT.DevTools.DevMenu
 				if (type.IsArray && !ENUMERABLE_IGNORE.Contains(type))
 					ArrayField(value, label, isPrivate, fieldName);
 					//Field("Contains " + ((Array) value).Length + " entries", label, isPrivate);
-				if (typeof(IEnumerable).IsAssignableFrom(type) && !ENUMERABLE_IGNORE.Contains(type))
+				else if(typeof(IDictionary).IsAssignableFrom(type) && !ENUMERABLE_IGNORE.Contains(type))
+					DictionaryField(value, label, isPrivate, fieldName);
+				else if(typeof(IEnumerable).IsAssignableFrom(type) && !ENUMERABLE_IGNORE.Contains(type))
 					EnumerableField(value, label, isPrivate, fieldName);
 				else if (type.GetCustomAttribute<SerializableAttribute>() != null && !type.IsPrimitive)
 					//SerializableTypeField(value, label, isPrivate, fieldName);
@@ -221,7 +302,10 @@ namespace SALT.DevTools.DevMenu
 				return;
 			}
 			
-			DRAW_FUNCTIONS[type].Invoke(this, new []{ value, label, isPrivate });
+			if (value == null)
+				DRAW_FUNCTIONS[type].Invoke(this, new object[3] { type.GetDefault(), label, isPrivate });
+			else
+				DRAW_FUNCTIONS[type].Invoke(this, new object[3] { value, label, isPrivate });
 		}
 		
 		//+ HELPERS
@@ -229,12 +313,23 @@ namespace SALT.DevTools.DevMenu
 		{
 			GUILayout.BeginHorizontal();
 			DrawFieldLabel(label, isPrivate);
-			GUILayout.Label(value?.ToString() ?? string.Empty, GUI.skin.textField);
+			GUILayout.Label(value?.ToString() ?? "null", GUI.skin.textField);//string.Empty, GUI.skin.textField);
 			GUILayout.EndHorizontal();
 		}
 
 		private void EnumerableField(object value, string label, bool isPrivate, string fieldName)
 		{
+			if (value is Transform transform)
+			{
+				Field(transform, label, isPrivate);
+				return;
+			}
+			else if (value is string str)
+			{
+				Field(str, label, isPrivate);
+				return;
+			}
+
 			if (!this.arrayFolds.ContainsKey(fieldName))
 				this.arrayFolds.Add(fieldName, false);
 			GUILayout.BeginHorizontal();
@@ -251,7 +346,40 @@ namespace SALT.DevTools.DevMenu
 			this.lastIndent += 16;
 			foreach (object obj in enumerable)
 			{
-				this.DrawField(obj.GetType(), obj, string.Format("Element {0}", (object)num), false, string.Format("{0}.{1}", (object)fieldName, (object)num));
+				if (obj != null)
+					this.DrawField(obj.GetType(), obj, string.Format("Element {0}", (object)num), false, string.Format("{0}.{1}", (object)fieldName, (object)num));
+				else
+					this.DrawField(typeof(object), obj, string.Format("Element {0}", (object)num), false, string.Format("{0}.{1}", (object)fieldName, (object)num));
+				++num;
+			}
+			this.lastIndent -= 16;
+			GUILayout.EndVertical();
+		}
+
+		private void DictionaryField(object value, string label, bool isPrivate, string fieldName)
+		{
+			if (!this.arrayFolds.ContainsKey(fieldName))
+				this.arrayFolds.Add(fieldName, false);
+			GUILayout.BeginHorizontal();
+			GUILayout.Space((float)(4 + this.lastIndent));
+			if (GUILayout.Button(!this.arrayFolds[fieldName] || value == null ? "►" : "▼", GUI.skin.textField, GUILayout.ExpandWidth(false)))
+				this.arrayFolds[fieldName] = !this.arrayFolds[fieldName];
+			this.DrawFieldLabel(label, isPrivate, false);
+			GUILayout.EndHorizontal();
+			if (!this.arrayFolds[fieldName] || value == null)
+				return;
+			GUILayout.BeginVertical();
+			IDictionary dictionary = (IDictionary)value;
+			int num = 0;
+			this.lastIndent += 16;
+			foreach (var kv in dictionary.ToDictionary())
+			{
+				object key = kv.Key;
+				object v = kv.Value;
+				if (v != null)
+					this.DrawField(v.GetType(), v, key.ToString(), false, string.Format("{0}.{1}", (object)fieldName, (object)num));
+				else
+					this.DrawField(typeof(object), v, key.ToString(), false, string.Format("{0}.{1}", (object)fieldName, (object)num));
 				++num;
 			}
 			this.lastIndent -= 16;
@@ -266,14 +394,14 @@ namespace SALT.DevTools.DevMenu
 			GUILayout.BeginHorizontal();
 			GUILayout.Space(4 + lastIndent);
 			if (GUILayout.Button(arrayFolds[fieldName] ? InspectorTab.UNFOLDED : InspectorTab.FOLDED, GUI.skin.textField, GUILayout.ExpandWidth(false))) arrayFolds[fieldName] = !arrayFolds[fieldName];
-			DrawFieldLabel(label, isPrivate, false);
+			Array array = (Array)value;
+			DrawFieldLabel(label + " [" + array.LongLength + "]", isPrivate, false);
 			GUILayout.EndHorizontal();
 
 			if (!arrayFolds[fieldName]) return;
 
 			GUILayout.BeginVertical();
 
-			Array array = (Array)value;
 			int i = 0;
 			lastIndent += 16;
 			foreach (object obj in array)
@@ -343,19 +471,111 @@ namespace SALT.DevTools.DevMenu
 
 		private void SpriteField(object value, string label, bool isPrivate) => this.TextureField((object)((Sprite)value).texture, label, isPrivate);
 
+		private void AnimatorControllerPlayableField(object value, string label, bool isPrivate)
+		{
+			UnityEngine.Animations.AnimatorControllerPlayable playable = (UnityEngine.Animations.AnimatorControllerPlayable)value;
+			Field($"AnimatorControllerPlayable{{Handle: {playable.GetHandle()}}}", label, isPrivate);
+			ArrayField(playable.GetLayers(), label + "Layers", isPrivate, label.Replace("[P]", "").Replace("[F]", "").Trim() + "Layers");
+			ArrayField(playable.GetParameters(), label + "Parameters", isPrivate, label.Replace("[P]", "").Replace("[F]", "").Trim() + "Parameters");
+		}
+
+		private void AnimationPlayableOutputField(object value, string label, bool isPrivate)
+		{
+			UnityEngine.Animations.AnimationPlayableOutput output = (UnityEngine.Animations.AnimationPlayableOutput)value;
+			Field($"AnimationPlayableOutput{{Target: {output.GetTarget()} | Handle: {output.GetHandle()}}}", label, isPrivate);
+		}
+
+		private void PlayableField(object value, string label, bool isPrivate)
+		{
+			UnityEngine.Playables.Playable playable = (UnityEngine.Playables.Playable)value;
+			Field($"{{Type: {playable.GetPlayableType()} | Handle: {playable.GetHandle()}}}", label, isPrivate);
+		}
+
+		private void PlayableOutputField(object value, string label, bool isPrivate)
+		{
+			UnityEngine.Playables.PlayableOutput output = (UnityEngine.Playables.PlayableOutput)value;
+			Field($"{{Type: {output.GetPlayableOutputType()} | Handle: {output.GetHandle()}}}", label, isPrivate);
+		}
+
+		private void PlayableGraphField(object value, string label, bool isPrivate)
+		{
+			UnityEngine.Playables.PlayableGraph graph = (UnityEngine.Playables.PlayableGraph)value;
+			Field($"{{PlayableCount: {graph.GetPlayableCount()} | TimeUpdateMode: {graph.GetTimeUpdateMode()} | Resolver: {graph.GetResolver()}}}", label, isPrivate);
+			ArrayField(graph.GetOutputs(), label + "Outputs", isPrivate, label.Replace("[P]","").Replace("[F]", "").Trim()+ "Outputs");
+			ArrayField(graph.GetRootPlayables(), label + "RootPlayables", isPrivate, label.Replace("[P]","").Replace("[F]", "").Trim()+ "RootPlayables");
+		}
+
+		private void AnimatorControllerParameterField(object value, string label, bool isPrivate)
+		{
+			AnimatorControllerParameter controllerParameter = (AnimatorControllerParameter)value;
+			Field($"{controllerParameter.name} {{Type: {controllerParameter.type} | Hash: {controllerParameter.nameHash} | Boolean: {controllerParameter.defaultBool} | Float: {controllerParameter.defaultFloat} | Integer: {controllerParameter.defaultInt}}}", label, isPrivate);
+		}
+
+		private void AnimationEventField(object value, string label, bool isPrivate)
+		{
+			AnimationEvent @event = (AnimationEvent)value;
+			Field($"{{Function: {@event.functionName} | Object: {@event.objectReferenceParameter} | String: {@event.stringParameter} | Float: {@event.floatParameter} | Integer: {@event.intParameter}}}", label, isPrivate);
+		}
+		
+
+		private void TranslationField(object value, string label, bool isPrivate)
+		{
+			Translation translation = (Translation)value;
+			Field($"{translation.language}{{{translation.text}}}", label, isPrivate);
+		}
+		
+
+		private void TranslationCollectionField(object value, string label, bool isPrivate)
+		{
+			TranslationCollection translations = (TranslationCollection)value;
+			Field($"TranslationCollection{{{translations.GetEnglishText()},{translations.GetJapaneseText()}}}", label, isPrivate);
+		}
+
+		private void Vector4Field(object value, string label, bool isPrivate)
+		{
+			GUILayout.BeginHorizontal();
+
+			DrawFieldLabel(label, isPrivate);
+
+			Vector4 vector = (Vector4)value;
+			DrawLabelledField(vector.x, "X");
+			GUILayout.Space(5);
+			DrawLabelledField(vector.y, "Y");
+			GUILayout.Space(5);
+			DrawLabelledField(vector.z, "Z");
+			GUILayout.Space(5);
+			DrawLabelledField(vector.w, "W");
+
+			GUILayout.EndHorizontal();
+		}
+
 		private void Vector3Field(object value, string label, bool isPrivate)
 		{
 			GUILayout.BeginHorizontal();
 
 			DrawFieldLabel(label, isPrivate);
 
-			Vector3 vector = (Vector3) value;
+			Vector3 vector = (Vector3)value;
 			DrawLabelledField(vector.x, "X");
 			GUILayout.Space(5);
 			DrawLabelledField(vector.y, "Y");
 			GUILayout.Space(5);
 			DrawLabelledField(vector.z, "Z");
-			
+
+			GUILayout.EndHorizontal();
+		}
+
+		private void Vector2Field(object value, string label, bool isPrivate)
+		{
+			GUILayout.BeginHorizontal();
+
+			DrawFieldLabel(label, isPrivate);
+
+			Vector2 vector = (Vector2)value;
+			DrawLabelledField(vector.x, "X");
+			GUILayout.Space(5);
+			DrawLabelledField(vector.y, "Y");
+
 			GUILayout.EndHorizontal();
 		}
 

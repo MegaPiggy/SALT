@@ -39,4 +39,15 @@ namespace SALT.Patches
                 Main.context = MainScript.main.gameObject;
         }
     }
+
+    [HarmonyPatch(typeof(MainScript))]
+    [HarmonyPatch("ResetLevel")]
+    internal static class ResetLevelPatch
+    {
+        [HarmonyPriority(Priority.First)]
+        public static void Prefix(MainScript __instance)
+        {
+            Console.Console.Log("Reset Level");
+        }
+    }
 }

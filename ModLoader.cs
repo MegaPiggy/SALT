@@ -54,6 +54,20 @@ namespace SALT
         public LoadingStepException(string message) : base(message) => Step = ModLoader.CurrentLoadingStep;
     }
 
+    public class ModNotFoundException : Exception
+    {
+        /// <summary>
+        /// The id of the mod that was not found.
+        /// </summary>
+        public string ID { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModNotFoundException"/> class with a mod id.
+        /// </summary>
+        /// <param name="modid">The id of the mod that was not found.</param>
+        public ModNotFoundException(string modid) : base($"Cannot find '{modid}'") => ID = modid;
+    }
+
     public static class ModLoader
     {
         internal const string ModJson = "modinfo.json";
@@ -86,6 +100,12 @@ namespace SALT
         }
 
         public static bool IsModPresent(string modid) => loadOrder.Any(x => modid == x);
+        public static ModInfo.ModVersion GetModVersion(string modid)
+        {
+            if (Mods.TryGetValue(modid, out Mod Mod))
+                return Mod.ModInfo.Version;
+            throw new ModNotFoundException(modid);
+        }
 
         internal static bool TryGetEntryType(Assembly assembly, out Type entryType)
         {
@@ -425,6 +445,9 @@ namespace SALT
 
             public override string ToString() => this.id + " " + this.version;
 
+            /// <summary>
+            /// Make sure fields are in the correct form and not null
+            /// </summary>
             private void ValidateFields()
             {
                 this.id = this.id != null ? this.id.ToLower() : throw new Exception(this.path + " is missing an id field!");
