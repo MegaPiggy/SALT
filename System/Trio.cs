@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace System
 {
-    public struct Pair<A, B>
+    public struct Trio<A, B, C>
     {
         private A first;
         private B second;
+        private C third;
         public A First => first;
         public B Second => second;
+        public C Third => third;
 
-        public Pair(A first, B second)
+        public Trio(A first, B second, C third)
         {
             this.first = first;
             this.second = second;
+            this.third = third;
         }
 
         public override string ToString()
@@ -30,11 +29,12 @@ namespace System
             if (Second != null)
                 stringBuilder.Append(Second.ToString());
 
+            stringBuilder.Append(", ");
+            if (Third != null)
+                stringBuilder.Append(Third.ToString());
+
             stringBuilder.Append(']');
             return stringBuilder.ToString();
         }
-
-        public static implicit operator KeyValuePair<A, B>(Pair<A, B> pair) => new KeyValuePair<A, B>(pair.First, pair.Second);
-        public static implicit operator Pair<A, B>(KeyValuePair<A, B> pair) => new Pair<A, B>(pair.Key, pair.Value);
     }
 }

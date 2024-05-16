@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-internal class ModdedTokenScript : TokenScript
+public class ModdedTokenScript : TokenScript
 {
     public new void SpawnVFX()
     {

@@ -1,4 +1,5 @@
-﻿using SALT.Extensions;
+﻿using SALT;
+using SALT.Extensions;
 using SALT.Utils;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,11 @@ public class ModdedLevelButtonScript : LevelButtonScript
     public override void Awake()
     {
         if (levelEnum != Levels.DONT_DESTROY_ON_LOAD)
+        {
+            Callbacks.OnMainMenuLoaded += OnMainMenuLoaded;
+            Callbacks.OnLevelLoaded += OnLevelLoaded;
             UpdateLevelStuff();
+        }
         if (!buttons.Contains(mlbs => mlbs == this))
             buttons.Add(this);
     }
@@ -69,8 +74,29 @@ public class ModdedLevelButtonScript : LevelButtonScript
             buttons.Add(this);
     }
 
+    public virtual void OnDisable()
+    {
+        levelDataLoaded = false;
+    }
+
+    public virtual void OnMainMenuLoaded()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public virtual void OnLevelLoaded()
+    {
+        gameObject.SetActive(false);
+    }
+
     public virtual void OnDestroy()
     {
+        if (levelEnum != Levels.DONT_DESTROY_ON_LOAD)
+        {
+            Callbacks.OnMainMenuLoaded -= OnMainMenuLoaded;
+            Callbacks.OnLevelLoaded -= OnLevelLoaded;
+        }
+
         int indexOf = -1;
         int index = 0;
         foreach (ModdedLevelButtonScript button in buttons)
@@ -89,7 +115,10 @@ public class ModdedLevelButtonScript : LevelButtonScript
         levelName = levelEnum.ToSceneName();
         string name = levelNameTextOverride.IsNullOrWhiteSpace() ? levelEnum.ToTitle(true) : levelNameTextOverride;
         if (levelNameText != null)
+        {
             levelNameText.text = name;
+            if (levelNameTextLanguage == null) levelNameTextLanguage = levelNameText.GetComponent<TextLanguageScript>();
+        }
         if (levelNameTextLanguage != null)
         {
             if (levelNameTextOverrideJA.IsNullOrWhiteSpace())
@@ -335,6 +364,21 @@ public class ModdedLevelClearButton : ModdedLevelButtonScript
     public override void OnEnable()
     {
 
+    }
+
+    public override void OnDisable()
+    {
+
+    }
+
+    public override void OnMainMenuLoaded()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public override void OnLevelLoaded()
+    {
+        gameObject.SetActive(true);
     }
 
     public override void OnDestroy()

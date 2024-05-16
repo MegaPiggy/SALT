@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace UnityEngine
+﻿namespace UnityEngine
 {
     /// <summary>
     /// Makes a unity singleton class, said class will only allow a single instance of itself (is child of Mono Behaviour)
@@ -9,7 +7,7 @@ namespace UnityEngine
     public abstract class USingleton<T> : MonoBehaviour where T : USingleton<T>, new()
     {
         /// <summary>The instance of this singleton</summary>
-        public static T Instance { get; private set; }
+        public static T Instance { get; protected set; }
 
         /// <summary>Awakes the script</summary>
         protected virtual void Awake()

@@ -6,11 +6,8 @@ using SALT.Utils;
 
 namespace SALT
 {
-    public class UserInputService : MonoBehaviour
+    public class UserInputService : USingleton<UserInputService>
     {
-        private static UserInputService instance;
-        public static UserInputService Instance => instance;
-
         protected Vector2 mousePos = Vector2.zero;
 
         internal static string Platform { get; private set; }
@@ -243,7 +240,7 @@ namespace SALT
         public static bool IsEditor()
         {
 #if UNITY_EDITOR
-		    return true;
+            return true;
 #else
             return false;
 #endif
@@ -359,9 +356,9 @@ namespace SALT
 
         public static bool IsKeyUp(KeyCode key) => !IsKeyDown(key);
 
-        public void Awake()
+        protected override void Awake()
         {
-            UserInputService.instance = this;
+            base.Awake();
             Platform = Application.platform.ToString().ToUpper();
             KeysDown = new List<KeyCode>();
             lastInputType = TypeFromRunning();

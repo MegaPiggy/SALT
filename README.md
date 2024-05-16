@@ -1,4 +1,4 @@
-# Smol Ame Loader Thing #
+﻿# Smol Ame Loader Thing #
 A completely open source mod loader and modding framework for the game Smol Ame
 
 ## Installation ##

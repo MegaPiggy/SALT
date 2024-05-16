@@ -1,7 +1,7 @@
 ﻿using System;
 using SALT.Extensions;
 
-namespace SALT
+namespace System
 {
     /// <summary>
     /// An object used to create an <see cref="int"/> value which can never be less than the <see cref="MinValue"/> or more than the <see cref="MaxValue"/>.

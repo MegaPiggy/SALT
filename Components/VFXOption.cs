@@ -11,17 +11,17 @@ namespace SALT
 
         private void Start()
         {
-            this.po = this.GetComponent<PauseOption>();
-            this.SetStrings();
-            this.po.currentSelection = PlayerPrefs.GetInt("vfx", 0);
-            this.SetVFX();
+            po = GetComponent<PauseOption>();
+            SetStrings();
+            po.currentSelection = PlayerPrefs.GetInt("vfx", 0);
+            SetVFX();
         }
 
         private void Update()
         {
-            if (this.currentLanguage == MainScript.language)
+            if (currentLanguage == MainScript.language)
                 return;
-            this.SetStrings();
+            SetStrings();
         }
 
         internal void SetStrings()
@@ -37,14 +37,14 @@ namespace SALT
                 stringList.Add("On");
                 stringList.Add("Off");
             }
-            this.po.selectionStrings = stringList;
-            this.currentLanguage = MainScript.language;
+            po.selectionStrings = stringList;
+            currentLanguage = MainScript.language;
         }
 
         public void SetVFX()
         {
-            Patches.PoundVFXPatch.SetEnabled(this.po.currentSelection == 0);
-            PlayerPrefs.SetInt("vfx", this.po.currentSelection);
+            Patches.PoundVFXPatch.SetEnabled(po.currentSelection == 0);
+            PlayerPrefs.SetInt("vfx", po.currentSelection);
         }
 
         private void Awake()
