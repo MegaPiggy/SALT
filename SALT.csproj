@@ -275,7 +275,7 @@
     <Compile Include="Console\ConsoleWindow.cs" />
     <Compile Include="Console\KeyBindManager.cs" />
     <Compile Include="Console\FileLogger.cs" />
-    <Compile Include="Debug\DumpUtils.cs" />
+    <Compile Include="Utils\DumpUtils.cs" />
     <Compile Include="System\DoubleConstrainedInt.cs" />
     <Compile Include="Input\InputBehaviour.cs" />
     <Compile Include="Components\NoRotation.cs" />
